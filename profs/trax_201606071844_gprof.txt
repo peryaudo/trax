@@ -1,0 +1,233 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 89.16     48.07    48.07     8056     5.97     6.65  NegaMaxSearcher::SearchBestMove(Position const&)
+  4.19     50.33     2.26 518263732     0.00     0.00  void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&)
+  3.92     52.44     2.12 253069748     0.00     0.00  std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::_M_initialize_map(unsigned long)
+  1.32     53.15     0.71 369817144     0.00     0.00  void std::deque<std::pair<int, int>, std::allocator<std::pair<int, int> > >::emplace_back<std::pair<int, int> >(std::pair<int, int>&&)
+  0.68     53.52     0.37 118128436     0.00     0.00  NegaMaxSearcher::NegaMax(Position const&, int, int, int)
+  0.27     53.66     0.15     7691     0.02     0.02  RandomSearcher::SearchBestMove(Position const&)
+  0.26     53.80     0.14                             std::unordered_map<unsigned int, std::bitset<7ul>, std::hash<unsigned int>, std::equal_to<unsigned int>, std::allocator<std::pair<unsigned int const, std::bitset<7ul> > > >::~unordered_map()
+  0.16     53.89     0.09    45217     0.00     0.00  void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&)
+  0.06     53.92     0.03     1000     0.03    53.78  StartSelfGame(Searcher*, Searcher*, bool)
+  0.00     53.92     0.00 120519693     0.00     0.00  _init
+  0.00     53.92     0.00    50844     0.00     0.00  void std::vector<std::pair<int, Move>, std::allocator<std::pair<int, Move> > >::_M_emplace_back_aux<int const&, Move&>(int const&, Move&)
+  0.00     53.92     0.00     8056     0.00     0.00  Position::GenerateMoves() const
+  0.00     53.92     0.00     2000     0.00     0.00  Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&)
+  0.00     53.92     0.00     2000     0.00     0.00  void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&)
+  0.00     53.92     0.00        1     0.00     0.00  _GLOBAL__sub_I_kPlayerId
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.02% of 53.92 seconds
+
+index % time    self  children    called     name
+                0.03   53.75    1000/1000        StartMultipleSelfGames(Searcher*, Searcher*, int, bool) [2]
+[1]     99.7    0.03   53.75    1000         StartSelfGame(Searcher*, Searcher*, bool) [1]
+               48.07    5.53    8056/8056        NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.15    0.01    7691/7691        RandomSearcher::SearchBestMove(Position const&) [8]
+                0.00    0.00   31494/253069748     std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::_M_initialize_map(unsigned long) [5]
+                0.00    0.00   28755/369817144     void std::deque<std::pair<int, int>, std::allocator<std::pair<int, int> > >::emplace_back<std::pair<int, int> >(std::pair<int, int>&&) [6]
+                0.00    0.00    9901/120519693     _init [19]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]     99.7    0.00   53.78                 StartMultipleSelfGames(Searcher*, Searcher*, int, bool) [2]
+                0.03   53.75    1000/1000        StartSelfGame(Searcher*, Searcher*, bool) [1]
+-----------------------------------------------
+               48.07    5.53    8056/8056        StartSelfGame(Searcher*, Searcher*, bool) [1]
+[3]     99.4   48.07    5.53    8056         NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                2.26    0.00 517567014/518263732     void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&) [4]
+                2.11    0.00 252328554/253069748     std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::_M_initialize_map(unsigned long) [5]
+                0.71    0.00 368917327/369817144     void std::deque<std::pair<int, int>, std::allocator<std::pair<int, int> > >::emplace_back<std::pair<int, int> >(std::pair<int, int>&&) [6]
+                0.37    0.00 118128436/118128436     NegaMaxSearcher::NegaMax(Position const&, int, int, int) [7]
+                0.09    0.00   45217/45217       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [10]
+                0.00    0.00    8056/8056        Position::GenerateMoves() const [11]
+                0.00    0.00 120218456/120519693     _init [19]
+                0.00    0.00   50844/50844       void std::vector<std::pair<int, Move>, std::allocator<std::pair<int, Move> > >::_M_emplace_back_aux<int const&, Move&>(int const&, Move&) [20]
+-----------------------------------------------
+                0.00    0.00  341868/518263732     Position::GenerateMoves() const [11]
+                0.00    0.00  354850/518263732     RandomSearcher::SearchBestMove(Position const&) [8]
+                2.26    0.00 517567014/518263732     NegaMaxSearcher::SearchBestMove(Position const&) [3]
+[4]      4.2    2.26    0.00 518263732         void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&) [4]
+-----------------------------------------------
+                0.00    0.00   31494/253069748     StartSelfGame(Searcher*, Searcher*, bool) [1]
+                0.01    0.00  709700/253069748     RandomSearcher::SearchBestMove(Position const&) [8]
+                2.11    0.00 252328554/253069748     NegaMaxSearcher::SearchBestMove(Position const&) [3]
+[5]      3.9    2.12    0.00 253069748         std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::_M_initialize_map(unsigned long) [5]
+-----------------------------------------------
+                0.00    0.00   28755/369817144     StartSelfGame(Searcher*, Searcher*, bool) [1]
+                0.00    0.00  871062/369817144     RandomSearcher::SearchBestMove(Position const&) [8]
+                0.71    0.00 368917327/369817144     NegaMaxSearcher::SearchBestMove(Position const&) [3]
+[6]      1.3    0.71    0.00 369817144         void std::deque<std::pair<int, int>, std::allocator<std::pair<int, int> > >::emplace_back<std::pair<int, int> >(std::pair<int, int>&&) [6]
+-----------------------------------------------
+                0.37    0.00 118128436/118128436     NegaMaxSearcher::SearchBestMove(Position const&) [3]
+[7]      0.7    0.37    0.00 118128436         NegaMaxSearcher::NegaMax(Position const&, int, int, int) [7]
+-----------------------------------------------
+                0.15    0.01    7691/7691        StartSelfGame(Searcher*, Searcher*, bool) [1]
+[8]      0.3    0.15    0.01    7691         RandomSearcher::SearchBestMove(Position const&) [8]
+                0.01    0.00  709700/253069748     std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::_M_initialize_map(unsigned long) [5]
+                0.00    0.00  871062/369817144     void std::deque<std::pair<int, int>, std::allocator<std::pair<int, int> > >::emplace_back<std::pair<int, int> >(std::pair<int, int>&&) [6]
+                0.00    0.00  354850/518263732     void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&) [4]
+                0.00    0.00  291336/120519693     _init [19]
+-----------------------------------------------
+                                                 <spontaneous>
+[9]      0.3    0.14    0.00                 std::unordered_map<unsigned int, std::bitset<7ul>, std::hash<unsigned int>, std::equal_to<unsigned int>, std::allocator<std::pair<unsigned int const, std::bitset<7ul> > > >::~unordered_map() [9]
+-----------------------------------------------
+                0.09    0.00   45217/45217       NegaMaxSearcher::SearchBestMove(Position const&) [3]
+[10]     0.2    0.09    0.00   45217         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [10]
+-----------------------------------------------
+                0.00    0.00    8056/8056        NegaMaxSearcher::SearchBestMove(Position const&) [3]
+[11]     0.0    0.00    0.00    8056         Position::GenerateMoves() const [11]
+                0.00    0.00  341868/518263732     void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&) [4]
+                0.00    0.00    2000/2000        void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [22]
+-----------------------------------------------
+                0.00    0.00    9901/120519693     StartSelfGame(Searcher*, Searcher*, bool) [1]
+                0.00    0.00  291336/120519693     RandomSearcher::SearchBestMove(Position const&) [8]
+                0.00    0.00 120218456/120519693     NegaMaxSearcher::SearchBestMove(Position const&) [3]
+[19]     0.0    0.00    0.00 120519693         _init [19]
+-----------------------------------------------
+                0.00    0.00   50844/50844       NegaMaxSearcher::SearchBestMove(Position const&) [3]
+[20]     0.0    0.00    0.00   50844         void std::vector<std::pair<int, Move>, std::allocator<std::pair<int, Move> > >::_M_emplace_back_aux<int const&, Move&>(int const&, Move&) [20]
+-----------------------------------------------
+                0.00    0.00    2000/2000        void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [22]
+[21]     0.0    0.00    0.00    2000         Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [21]
+-----------------------------------------------
+                0.00    0.00    2000/2000        Position::GenerateMoves() const [11]
+[22]     0.0    0.00    0.00    2000         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [22]
+                0.00    0.00    2000/2000        Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [21]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [44]
+[23]     0.0    0.00    0.00       1         _GLOBAL__sub_I_kPlayerId [23]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [23] _GLOBAL__sub_I_kPlayerId (trax.cc) [21] Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [4] void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&)
+   [1] StartSelfGame(Searcher*, Searcher*, bool) [11] Position::GenerateMoves() const [22] void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&)
+   [8] RandomSearcher::SearchBestMove(Position const&) [5] std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::_M_initialize_map(unsigned long) [10] void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&)
+   [3] NegaMaxSearcher::SearchBestMove(Position const&) [9] std::unordered_map<unsigned int, std::bitset<7ul>, std::hash<unsigned int>, std::equal_to<unsigned int>, std::allocator<std::pair<unsigned int const, std::bitset<7ul> > > >::~unordered_map() [20] void std::vector<std::pair<int, Move>, std::allocator<std::pair<int, Move> > >::_M_emplace_back_aux<int const&, Move&>(int const&, Move&)
+   [7] NegaMaxSearcher::NegaMax(Position const&, int, int, int) [6] void std::deque<std::pair<int, int>, std::allocator<std::pair<int, int> > >::emplace_back<std::pair<int, int> >(std::pair<int, int>&&) [19] _init

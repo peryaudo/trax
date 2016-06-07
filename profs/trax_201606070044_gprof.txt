@@ -1,0 +1,1147 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 31.40      0.43     0.43  6284178     0.00     0.00  Position::GetPossiblePieces(int, int) const
+  8.03      0.54     0.11 43304754     0.00     0.00  std::bitset<7ul>::_Unchecked_set(unsigned long, int)
+  7.30      0.64     0.10 39702564     0.00     0.00  Position::at(int, int)
+  6.57      0.73     0.09   332164     0.00     0.00  Position::FillForcedPieces(int, int)
+  5.84      0.81     0.08 58482184     0.00     0.00  Position::at(int, int) const
+  5.11      0.88     0.07   332164     0.00     0.00  __gnu_cxx::__enable_if<!std::__is_scalar<Piece>::__value, void>::__type std::__fill_a<Piece*, Piece>(Piece*, Piece*, Piece const&)
+  3.65      0.93     0.05 53581498     0.00     0.00  std::bitset<7ul>::_M_check(unsigned long, char const*) const
+  2.92      0.97     0.04 49588932     0.00     0.00  std::_Base_bitset<1ul>::_M_getword(unsigned long)
+  2.92      1.01     0.04 43304754     0.00     0.00  std::bitset<7ul>::set(unsigned long, bool)
+  2.92      1.05     0.04  1037655     0.00     0.00  Position::TraceVictoryLineOrLoop(int, int, bool)
+  2.92      1.09     0.04   332164     0.00     0.00  void std::fill<Piece*, Piece>(Piece*, Piece*, Piece const&)
+  2.56      1.13     0.04 53581498     0.00     0.00  std::_Base_bitset<1ul>::_S_maskbit(unsigned long)
+  2.19      1.16     0.03  3992566     0.00     0.00  std::bitset<7ul>::_Unchecked_test(unsigned long) const
+  2.19      1.19     0.03   332164     0.00     0.00  Position::DoMove(Move, Position*) const
+  1.83      1.21     0.03 53581498     0.00     0.00  std::_Base_bitset<1ul>::_S_whichbit(unsigned long)
+  1.46      1.23     0.02 18371834     0.00     0.00  std::_Base_bitset<1ul>::_M_do_count() const
+  1.46      1.25     0.02  3992566     0.00     0.00  std::_Base_bitset<1ul>::_M_getword(unsigned long) const
+  1.46      1.27     0.02                             operator delete(void*, void*)
+  1.10      1.29     0.02 18371834     0.00     0.00  std::bitset<7ul>::count() const
+  0.73      1.30     0.01  8483776     0.00     0.00  int const& std::min<int>(int const&, int const&)
+  0.73      1.31     0.01   765915     0.00     0.00  operator new(unsigned long, void*)
+  0.73      1.32     0.01   433348     0.00     0.00  void std::_Construct<Move, Move>(Move*, Move&&)
+  0.73      1.33     0.01   332150     0.00     0.00  __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator*() const
+  0.73      1.34     0.01    50396     0.00     0.00  Move* std::__uninitialized_copy<false>::__uninit_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*)
+  0.73      1.35     0.01        2     0.01     0.01  void std::vector<Move, std::allocator<Move> >::emplace_back<char const (&) [4], Position const&>(char const (&) [4], Position const&)
+  0.73      1.36     0.01        2     0.01     0.01  void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&)
+  0.37      1.36     0.01  6284178     0.00     0.00  std::bitset<7ul>::reset(unsigned long)
+  0.37      1.37     0.01  3992566     0.00     0.00  std::bitset<7ul>::test(unsigned long) const
+  0.37      1.37     0.01       42     0.00     0.00  std::remove_reference<Piece*&>::type&& std::move<Piece*&>(Piece*&)
+  0.00      1.37     0.00  6284178     0.00     0.00  std::bitset<7ul>::_Unchecked_reset(unsigned long)
+  0.00      1.37     0.00  2093586     0.00     0.00  int& std::forward<int&>(std::remove_reference<int&>::type&)
+  0.00      1.37     0.00  1046793     0.00     0.00  Piece&& std::forward<Piece>(std::remove_reference<Piece>::type&)
+  0.00      1.37     0.00   967488     0.00     0.00  std::move_iterator<Move*>::base() const
+  0.00      1.37     0.00   678938     0.00     0.00  __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::base() const
+  0.00      1.37     0.00   664328     0.00     0.00  Piece* std::__niter_base<Piece*>(Piece*)
+  0.00      1.37     0.00   532426     0.00     0.00  Position::FillWinnerFlags(int, int)
+  0.00      1.37     0.00   483744     0.00     0.00  bool std::operator==<Move*>(std::move_iterator<Move*> const&, std::move_iterator<Move*> const&)
+  0.00      1.37     0.00   483744     0.00     0.00  bool std::operator!=<Move*>(std::move_iterator<Move*> const&, std::move_iterator<Move*> const&)
+  0.00      1.37     0.00   433348     0.00     0.00  std::move_iterator<Move*>::operator*() const
+  0.00      1.37     0.00   433348     0.00     0.00  std::move_iterator<Move*>::operator++()
+  0.00      1.37     0.00   433348     0.00     0.00  Move* std::__addressof<Move>(Move&)
+  0.00      1.37     0.00   433348     0.00     0.00  Move&& std::forward<Move>(std::remove_reference<Move>::type&)
+  0.00      1.37     0.00   339469     0.00     0.00  bool __gnu_cxx::operator!=<Move*, std::vector<Move, std::allocator<Move> > >(__gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&, __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&)
+  0.00      1.37     0.00   332165     0.00     0.00  Position::Position()
+  0.00      1.37     0.00   332165     0.00     0.00  Position::~Position()
+  0.00      1.37     0.00   332150     0.00     0.00  __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator++()
+  0.00      1.37     0.00   332148     0.00     0.00  Move::Move(int, int, Piece)
+  0.00      1.37     0.00   332148     0.00     0.00  void __gnu_cxx::new_allocator<Move>::construct<Move, int&, int&, Piece>(Move*, int&, int&, Piece&&)
+  0.00      1.37     0.00   332148     0.00     0.00  void std::allocator_traits<std::allocator<Move> >::construct<Move, int&, int&, Piece>(std::allocator<Move>&, Move*, int&, int&, Piece&&)
+  0.00      1.37     0.00   332148     0.00     0.00  void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&)
+  0.00      1.37     0.00   331919     0.00     0.00  Position::finished() const
+  0.00      1.37     0.00   331692     0.00     0.00  int const& std::max<int>(int const&, int const&)
+  0.00      1.37     0.00   251987     0.00     0.00  std::vector<Move, std::allocator<Move> >::size() const
+  0.00      1.37     0.00   151188     0.00     0.00  __gnu_cxx::new_allocator<Move>::max_size() const
+  0.00      1.37     0.00   108118     0.00     0.00  std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator()
+  0.00      1.37     0.00   100792     0.00     0.00  std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator() const
+  0.00      1.37     0.00   100792     0.00     0.00  std::vector<Move, std::allocator<Move> >::max_size() const
+  0.00      1.37     0.00   100792     0.00     0.00  std::move_iterator<Move*>::move_iterator(Move*)
+  0.00      1.37     0.00   100792     0.00     0.00  std::allocator_traits<std::allocator<Move> >::max_size(std::allocator<Move> const&)
+  0.00      1.37     0.00   100792     0.00     0.00  std::move_iterator<Move*> std::__make_move_if_noexcept_iterator<Move, std::move_iterator<Move*> >(Move*)
+  0.00      1.37     0.00    57722     0.00     0.00  void std::_Destroy_aux<true>::__destroy<Move*>(Move*, Move*)
+  0.00      1.37     0.00    57722     0.00     0.00  std::_Vector_base<Move, std::allocator<Move> >::_M_deallocate(Move*, unsigned long)
+  0.00      1.37     0.00    57722     0.00     0.00  void std::_Destroy<Move*>(Move*, Move*)
+  0.00      1.37     0.00    57722     0.00     0.00  void std::_Destroy<Move*, Move>(Move*, Move*, std::allocator<Move>&)
+  0.00      1.37     0.00    53637     0.00     0.00  Position::red_to_move() const
+  0.00      1.37     0.00    50396     0.00     0.00  __gnu_cxx::new_allocator<Move>::deallocate(Move*, unsigned long)
+  0.00      1.37     0.00    50396     0.00     0.00  __gnu_cxx::new_allocator<Move>::allocate(unsigned long, void const*)
+  0.00      1.37     0.00    50396     0.00     0.00  std::vector<Move, std::allocator<Move> >::_M_check_len(unsigned long, char const*) const
+  0.00      1.37     0.00    50396     0.00     0.00  std::_Vector_base<Move, std::allocator<Move> >::_M_allocate(unsigned long)
+  0.00      1.37     0.00    50396     0.00     0.00  std::allocator_traits<std::allocator<Move> >::deallocate(std::allocator<Move>&, Move*, unsigned long)
+  0.00      1.37     0.00    50396     0.00     0.00  std::allocator_traits<std::allocator<Move> >::allocate(std::allocator<Move>&, unsigned long)
+  0.00      1.37     0.00    50396     0.00     0.00  Move* std::uninitialized_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*)
+  0.00      1.37     0.00    50396     0.00     0.00  Move* std::__uninitialized_copy_a<std::move_iterator<Move*>, Move*, Move>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*, std::allocator<Move>&)
+  0.00      1.37     0.00    50396     0.00     0.00  Move* std::__uninitialized_move_if_noexcept_a<Move*, Move*, std::allocator<Move> >(Move*, Move*, Move*, std::allocator<Move>&)
+  0.00      1.37     0.00    50396     0.00     0.00  unsigned long const& std::max<unsigned long>(unsigned long const&, unsigned long const&)
+  0.00      1.37     0.00    50349     0.00     0.00  void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&)
+  0.00      1.37     0.00    26903     0.00     0.00  Position::red_winner() const
+  0.00      1.37     0.00    14638     0.00     0.00  __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::__normal_iterator(Move* const&)
+  0.00      1.37     0.00     7326     0.00     0.00  __gnu_cxx::new_allocator<Move>::new_allocator()
+  0.00      1.37     0.00     7326     0.00     0.00  __gnu_cxx::new_allocator<Move>::~new_allocator()
+  0.00      1.37     0.00     7326     0.00     0.00  std::allocator<Move>::allocator()
+  0.00      1.37     0.00     7326     0.00     0.00  std::allocator<Move>::~allocator()
+  0.00      1.37     0.00     7326     0.00     0.00  std::_Vector_base<Move, std::allocator<Move> >::_Vector_impl::_Vector_impl()
+  0.00      1.37     0.00     7326     0.00     0.00  std::_Vector_base<Move, std::allocator<Move> >::_Vector_impl::~_Vector_impl()
+  0.00      1.37     0.00     7326     0.00     0.00  std::_Vector_base<Move, std::allocator<Move> >::_Vector_base()
+  0.00      1.37     0.00     7326     0.00     0.00  std::_Vector_base<Move, std::allocator<Move> >::~_Vector_base()
+  0.00      1.37     0.00     7326     0.00     0.00  std::vector<Move, std::allocator<Move> >::vector()
+  0.00      1.37     0.00     7326     0.00     0.00  std::vector<Move, std::allocator<Move> >::~vector()
+  0.00      1.37     0.00     7319     0.00     0.00  Position::GenerateMoves() const
+  0.00      1.37     0.00     7319     0.00     0.00  std::vector<Move, std::allocator<Move> >::end()
+  0.00      1.37     0.00     7319     0.00     0.00  std::vector<Move, std::allocator<Move> >::begin()
+  0.00      1.37     0.00     1488     0.00     0.00  std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::operator[](unsigned long)
+  0.00      1.37     0.00      537     0.00     0.00  Move const& std::forward<Move const&>(std::remove_reference<Move const&>::type&)
+  0.00      1.37     0.00      342     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__addressof<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)
+  0.00      1.37     0.00      246     0.00     0.00  void __gnu_cxx::new_allocator<Move>::construct<Move, Move const&>(Move*, Move const&)
+  0.00      1.37     0.00      246     0.00     0.00  void std::allocator_traits<std::allocator<Move> >::construct<Move, Move const&>(std::allocator<Move>&, Move*, Move const&)
+  0.00      1.37     0.00      246     0.00     0.00  std::vector<Move, std::allocator<Move> >::push_back(Move const&)
+  0.00      1.37     0.00      212     0.00     0.01  NegaMaxSearcher::NegaMax(Position const&, int)
+  0.00      1.37     0.00      171     0.00     0.00  void std::_Construct<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)
+  0.00      1.37     0.00      171     0.00     0.00  void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)
+  0.00      1.37     0.00      126     0.00     0.00  std::remove_reference<bool&>::type&& std::move<bool&>(bool&)
+  0.00      1.37     0.00      114     0.00     0.00  __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::~new_allocator()
+  0.00      1.37     0.00      114     0.00     0.00  std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::~allocator()
+  0.00      1.37     0.00      114     0.00     0.00  std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_get_Tp_allocator()
+  0.00      1.37     0.00       84     0.00     0.00  std::remove_reference<int&>::type&& std::move<int&>(int&)
+  0.00      1.37     0.00       57     0.00     0.00  __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::deallocate(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long)
+  0.00      1.37     0.00       57     0.00     0.00  __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocate(unsigned long, void const*)
+  0.00      1.37     0.00       57     0.00     0.00  __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::new_allocator(__gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&)
+  0.00      1.37     0.00       57     0.00     0.00  __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::new_allocator()
+  0.00      1.37     0.00       57     0.00     0.00  __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::max_size() const
+  0.00      1.37     0.00       57     0.00     0.00  std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocator(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&)
+  0.00      1.37     0.00       57     0.00     0.00  std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocator()
+  0.00      1.37     0.00       57     0.00     0.00  void std::_Destroy_aux<false>::__destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)
+  0.00      1.37     0.00       57     0.00     0.00  std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_allocate(unsigned long)
+  0.00      1.37     0.00       57     0.00     0.00  std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_impl::_Vector_impl(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&)
+  0.00      1.37     0.00       57     0.00     0.00  std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_impl::~_Vector_impl()
+  0.00      1.37     0.00       57     0.00     0.00  std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_deallocate(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long)
+  0.00      1.37     0.00       57     0.00     0.00  std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_create_storage(unsigned long)
+  0.00      1.37     0.00       57     0.00     0.00  std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&)
+  0.00      1.37     0.00       57     0.00     0.00  std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~_Vector_base()
+  0.00      1.37     0.00       57     0.00     0.00  std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::deallocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long)
+  0.00      1.37     0.00       57     0.00     0.00  std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::allocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, unsigned long)
+  0.00      1.37     0.00       57     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_1<false>::__uninit_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long)
+  0.00      1.37     0.00       57     0.00     0.00  std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_default_initialize(unsigned long)
+  0.00      1.37     0.00       57     0.00     0.00  std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::vector(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&)
+  0.00      1.37     0.00       57     0.00     0.00  std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~vector()
+  0.00      1.37     0.00       57     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long)
+  0.00      1.37     0.00       57     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_a<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&)
+  0.00      1.37     0.00       57     0.00     0.00  void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)
+  0.00      1.37     0.00       57     0.00     0.00  void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&)
+  0.00      1.37     0.00       45     0.00     0.00  void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&)
+  0.00      1.37     0.00       42     0.00     0.00  std::enable_if<std::__and_<std::is_move_constructible<bool>, std::is_move_assignable<bool> >::value, void>::type std::swap<bool>(bool&, bool&)
+  0.00      1.37     0.00       28     0.00     0.00  std::enable_if<std::__and_<std::is_move_constructible<int>, std::is_move_assignable<int> >::value, void>::type std::swap<int>(int&, int&)
+  0.00      1.37     0.00       21     0.00     0.00  Move::Move()
+  0.00      1.37     0.00       14     0.00     0.00  Position::Swap(Position*)
+  0.00      1.37     0.00       14     0.00     0.00  Position::LargeDump() const
+  0.00      1.37     0.00       14     0.00     0.00  std::enable_if<std::__and_<std::is_move_constructible<Piece*>, std::is_move_assignable<Piece*> >::value, void>::type std::swap<Piece*>(Piece*&, Piece*&)
+  0.00      1.37     0.00        8     0.00     0.00  char const (&std::forward<char const (&) [4]>(std::remove_reference<char const (&) [4]>::type&)) [4]
+  0.00      1.37     0.00        8     0.00     0.00  Position const& std::forward<Position const&>(std::remove_reference<Position const&>::type&)
+  0.00      1.37     0.00        7     0.00     0.00  Random()
+  0.00      1.37     0.00        7     0.00     0.00  RandomSearcher::SearchBestMove(Position const&)
+  0.00      1.37     0.00        7     0.00     0.19  NegaMaxSearcher::SearchBestMove(Position const&)
+  0.00      1.37     0.00        7     0.00     0.00  std::vector<Move, std::allocator<Move> >::operator[](unsigned long)
+  0.00      1.37     0.00        2     0.00     0.00  Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&)
+  0.00      1.37     0.00        2     0.00     0.00  Searcher::~Searcher()
+  0.00      1.37     0.00        2     0.00     0.00  void __gnu_cxx::new_allocator<Move>::construct<Move, char const (&) [4], Position const&>(Move*, char const (&) [4], Position const&)
+  0.00      1.37     0.00        2     0.00     0.00  Position::max_x() const
+  0.00      1.37     0.00        2     0.00     0.00  Position::max_y() const
+  0.00      1.37     0.00        2     0.00     0.00  void std::allocator_traits<std::allocator<Move> >::construct<Move, char const (&) [4], Position const&>(std::allocator<Move>&, Move*, char const (&) [4], Position const&)
+  0.00      1.37     0.00        1     0.00     0.00  _GLOBAL__sub_I_kPlayerId
+  0.00      1.37     0.00        1     0.00     1.35  StartSelfGame(Searcher*, Searcher*, bool)
+  0.00      1.37     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      1.37     0.00        1     0.00     0.00  RandomSearcher::~RandomSearcher()
+  0.00      1.37     0.00        1     0.00     0.00  NegaMaxSearcher::NegaMaxSearcher(int)
+  0.00      1.37     0.00        1     0.00     0.00  NegaMaxSearcher::~NegaMaxSearcher()
+  0.00      1.37     0.00        1     0.00     0.00  Searcher::Searcher()
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.73% of 1.37 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     98.5    0.00    1.35                 main [1]
+                0.00    1.35       1/1           StartSelfGame(Searcher*, Searcher*, bool) [2]
+                0.00    0.00       1/1           NegaMaxSearcher::NegaMaxSearcher(int) [161]
+                0.00    0.00       1/1           RandomSearcher::~RandomSearcher() [160]
+                0.00    0.00       1/1           NegaMaxSearcher::~NegaMaxSearcher() [162]
+-----------------------------------------------
+                0.00    1.35       1/1           main [1]
+[2]     98.5    0.00    1.35       1         StartSelfGame(Searcher*, Searcher*, bool) [2]
+                0.00    1.34       7/7           NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.01      14/14          Position::Swap(Position*) [42]
+                0.00    0.00       7/7           RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00      14/332164      Position::DoMove(Move, Position*) const [5]
+                0.00    0.00      14/14          Position::LargeDump() const [51]
+                0.00    0.00      15/332165      Position::Position() [78]
+                0.00    0.00      15/331919      Position::finished() const [82]
+                0.00    0.00      15/332165      Position::~Position() [79]
+                0.00    0.00      14/21          Move::Move() [149]
+                0.00    0.00      14/53637       Position::red_to_move() const [96]
+                0.00    0.00       2/26903       Position::red_winner() const [104]
+-----------------------------------------------
+                0.00    1.34       7/7           StartSelfGame(Searcher*, Searcher*, bool) [2]
+[3]     98.1    0.00    1.34       7         NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    1.34     212/212         NegaMaxSearcher::NegaMax(Position const&, int) [4]
+                0.00    0.00     212/332164      Position::DoMove(Move, Position*) const [5]
+                0.00    0.00       7/7319        Position::GenerateMoves() const [11]
+                0.00    0.00     212/332150      __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator*() const [40]
+                0.00    0.00     219/339469      bool __gnu_cxx::operator!=<Move*, std::vector<Move, std::allocator<Move> > >(__gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&, __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&) [77]
+                0.00    0.00     212/332165      Position::Position() [78]
+                0.00    0.00     212/332165      Position::~Position() [79]
+                0.00    0.00     212/332150      __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator++() [80]
+                0.00    0.00       7/21          Move::Move() [149]
+                0.00    0.00       7/7319        std::vector<Move, std::allocator<Move> >::begin() [117]
+                0.00    0.00       7/7319        std::vector<Move, std::allocator<Move> >::end() [116]
+                0.00    0.00       7/7326        std::vector<Move, std::allocator<Move> >::~vector() [115]
+-----------------------------------------------
+                              331692             NegaMaxSearcher::NegaMax(Position const&, int) [4]
+                0.00    1.34     212/212         NegaMaxSearcher::SearchBestMove(Position const&) [3]
+[4]     98.0    0.00    1.34     212+331692  NegaMaxSearcher::NegaMax(Position const&, int) [4]
+                0.03    1.19  331692/332164      Position::DoMove(Move, Position*) const [5]
+                0.00    0.11    7305/7319        Position::GenerateMoves() const [11]
+                0.01    0.00  331692/332150      __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator*() const [40]
+                0.00    0.00  338997/339469      bool __gnu_cxx::operator!=<Move*, std::vector<Move, std::allocator<Move> > >(__gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&, __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&) [77]
+                0.00    0.00  331904/331919      Position::finished() const [82]
+                0.00    0.00  331692/332165      Position::Position() [78]
+                0.00    0.00  331692/331692      int const& std::max<int>(int const&, int const&) [83]
+                0.00    0.00  331692/332165      Position::~Position() [79]
+                0.00    0.00  331692/332150      __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator++() [80]
+                0.00    0.00   53623/53637       Position::red_to_move() const [96]
+                0.00    0.00   26901/26903       Position::red_winner() const [104]
+                0.00    0.00    7305/7319        std::vector<Move, std::allocator<Move> >::begin() [117]
+                0.00    0.00    7305/7319        std::vector<Move, std::allocator<Move> >::end() [116]
+                0.00    0.00    7305/7326        std::vector<Move, std::allocator<Move> >::~vector() [115]
+                              331692             NegaMaxSearcher::NegaMax(Position const&, int) [4]
+-----------------------------------------------
+                0.00    0.00      14/332164      StartSelfGame(Searcher*, Searcher*, bool) [2]
+                0.00    0.00     212/332164      NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00     246/332164      RandomSearcher::SearchBestMove(Position const&) [46]
+                0.03    1.19  331692/332164      NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[5]     89.5    0.03    1.20  332164         Position::DoMove(Move, Position*) const [5]
+                0.09    0.97  332164/332164      Position::FillForcedPieces(int, int) [6]
+                0.04    0.07  332164/332164      void std::fill<Piece*, Piece>(Piece*, Piece*, Piece const&) [10]
+                0.02    0.00 8205247/39702564     Position::at(int, int) [12]
+                0.01    0.00 7873083/58482184     Position::at(int, int) const [15]
+-----------------------------------------------
+                0.09    0.97  332164/332164      Position::DoMove(Move, Position*) const [5]
+[6]     77.0    0.09    0.97  332164         Position::FillForcedPieces(int, int) [6]
+                0.41    0.36 6043828/6284178     Position::GetPossiblePieces(int, int) const [7]
+                0.00    0.09  532426/532426      Position::FillWinnerFlags(int, int) [14]
+                0.04    0.00 14735416/39702564     Position::at(int, int) [12]
+                0.01    0.01 12087656/18371834     std::bitset<7ul>::count() const [22]
+                0.00    0.02 6043828/6284178     std::bitset<7ul>::reset(unsigned long) [30]
+                0.00    0.01  788870/3992566     std::bitset<7ul>::test(unsigned long) const [17]
+-----------------------------------------------
+                0.02    0.01  240350/6284178     Position::GenerateMoves() const [11]
+                0.41    0.36 6043828/6284178     Position::FillForcedPieces(int, int) [6]
+[7]     59.0    0.43    0.38 6284178         Position::GetPossiblePieces(int, int) const [7]
+                0.04    0.23 43304754/43304754     std::bitset<7ul>::set(unsigned long, bool) [8]
+                0.07    0.00 50273424/58482184     Position::at(int, int) const [15]
+                0.00    0.02 1521246/3992566     std::bitset<7ul>::test(unsigned long) const [17]
+                0.01    0.01 6284178/18371834     std::bitset<7ul>::count() const [22]
+-----------------------------------------------
+                0.04    0.23 43304754/43304754     Position::GetPossiblePieces(int, int) const [7]
+[8]     20.0    0.04    0.23 43304754         std::bitset<7ul>::set(unsigned long, bool) [8]
+                0.11    0.08 43304754/43304754     std::bitset<7ul>::_Unchecked_set(unsigned long, int) [9]
+                0.04    0.00 43304754/53581498     std::bitset<7ul>::_M_check(unsigned long, char const*) const [20]
+-----------------------------------------------
+                0.11    0.08 43304754/43304754     std::bitset<7ul>::set(unsigned long, bool) [8]
+[9]     14.1    0.11    0.08 43304754         std::bitset<7ul>::_Unchecked_set(unsigned long, int) [9]
+                0.03    0.02 43304754/53581498     std::_Base_bitset<1ul>::_S_maskbit(unsigned long) [18]
+                0.03    0.00 43304754/49588932     std::_Base_bitset<1ul>::_M_getword(unsigned long) [21]
+-----------------------------------------------
+                0.04    0.07  332164/332164      Position::DoMove(Move, Position*) const [5]
+[10]     8.0    0.04    0.07  332164         void std::fill<Piece*, Piece>(Piece*, Piece*, Piece const&) [10]
+                0.07    0.00  332164/332164      __gnu_cxx::__enable_if<!std::__is_scalar<Piece>::__value, void>::__type std::__fill_a<Piece*, Piece>(Piece*, Piece*, Piece const&) [16]
+                0.00    0.00  664328/664328      Piece* std::__niter_base<Piece*>(Piece*) [70]
+-----------------------------------------------
+                0.00    0.00       7/7319        NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00       7/7319        RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.11    7305/7319        NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[11]     7.9    0.00    0.11    7319         Position::GenerateMoves() const [11]
+                0.02    0.01  240350/6284178     Position::GetPossiblePieces(int, int) const [7]
+                0.00    0.03  332148/332148      void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&) [23]
+                0.00    0.02 1682450/3992566     std::bitset<7ul>::test(unsigned long) const [17]
+                0.01    0.01       2/2           void std::vector<Move, std::allocator<Move> >::emplace_back<char const (&) [4], Position const&>(char const (&) [4], Position const&) [31]
+                0.00    0.00  240350/6284178     std::bitset<7ul>::reset(unsigned long) [30]
+                0.00    0.00  335238/58482184     Position::at(int, int) const [15]
+                0.00    0.00    7319/7326        std::vector<Move, std::allocator<Move> >::vector() [114]
+-----------------------------------------------
+                0.02    0.00 8205247/39702564     Position::DoMove(Move, Position*) const [5]
+                0.04    0.00 14735416/39702564     Position::FillForcedPieces(int, int) [6]
+                0.04    0.00 16761901/39702564     Position::TraceVictoryLineOrLoop(int, int, bool) [13]
+[12]     7.3    0.10    0.00 39702564         Position::at(int, int) [12]
+-----------------------------------------------
+                0.04    0.05 1037655/1037655     Position::FillWinnerFlags(int, int) [14]
+[13]     6.7    0.04    0.05 1037655         Position::TraceVictoryLineOrLoop(int, int, bool) [13]
+                0.04    0.00 16761901/39702564     Position::at(int, int) [12]
+                0.01    0.00 8483776/8483776     int const& std::min<int>(int const&, int const&) [38]
+-----------------------------------------------
+                0.00    0.09  532426/532426      Position::FillForcedPieces(int, int) [6]
+[14]     6.7    0.00    0.09  532426         Position::FillWinnerFlags(int, int) [14]
+                0.04    0.05 1037655/1037655     Position::TraceVictoryLineOrLoop(int, int, bool) [13]
+-----------------------------------------------
+                0.00    0.00     439/58482184     Position::LargeDump() const [51]
+                0.00    0.00  335238/58482184     Position::GenerateMoves() const [11]
+                0.01    0.00 7873083/58482184     Position::DoMove(Move, Position*) const [5]
+                0.07    0.00 50273424/58482184     Position::GetPossiblePieces(int, int) const [7]
+[15]     5.8    0.08    0.00 58482184         Position::at(int, int) const [15]
+-----------------------------------------------
+                0.07    0.00  332164/332164      void std::fill<Piece*, Piece>(Piece*, Piece*, Piece const&) [10]
+[16]     5.1    0.07    0.00  332164         __gnu_cxx::__enable_if<!std::__is_scalar<Piece>::__value, void>::__type std::__fill_a<Piece*, Piece>(Piece*, Piece*, Piece const&) [16]
+-----------------------------------------------
+                0.00    0.01  788870/3992566     Position::FillForcedPieces(int, int) [6]
+                0.00    0.02 1521246/3992566     Position::GetPossiblePieces(int, int) const [7]
+                0.00    0.02 1682450/3992566     Position::GenerateMoves() const [11]
+[17]     4.6    0.01    0.06 3992566         std::bitset<7ul>::test(unsigned long) const [17]
+                0.03    0.02 3992566/3992566     std::bitset<7ul>::_Unchecked_test(unsigned long) const [19]
+                0.00    0.00 3992566/53581498     std::bitset<7ul>::_M_check(unsigned long, char const*) const [20]
+-----------------------------------------------
+                0.00    0.00 3992566/53581498     std::bitset<7ul>::_Unchecked_test(unsigned long) const [19]
+                0.00    0.00 6284178/53581498     std::bitset<7ul>::_Unchecked_reset(unsigned long) [36]
+                0.03    0.02 43304754/53581498     std::bitset<7ul>::_Unchecked_set(unsigned long, int) [9]
+[18]     4.4    0.04    0.03 53581498         std::_Base_bitset<1ul>::_S_maskbit(unsigned long) [18]
+                0.03    0.00 53581498/53581498     std::_Base_bitset<1ul>::_S_whichbit(unsigned long) [29]
+-----------------------------------------------
+                0.03    0.02 3992566/3992566     std::bitset<7ul>::test(unsigned long) const [17]
+[19]     4.0    0.03    0.02 3992566         std::bitset<7ul>::_Unchecked_test(unsigned long) const [19]
+                0.02    0.00 3992566/3992566     std::_Base_bitset<1ul>::_M_getword(unsigned long) const [33]
+                0.00    0.00 3992566/53581498     std::_Base_bitset<1ul>::_S_maskbit(unsigned long) [18]
+-----------------------------------------------
+                0.00    0.00 3992566/53581498     std::bitset<7ul>::test(unsigned long) const [17]
+                0.01    0.00 6284178/53581498     std::bitset<7ul>::reset(unsigned long) [30]
+                0.04    0.00 43304754/53581498     std::bitset<7ul>::set(unsigned long, bool) [8]
+[20]     3.6    0.05    0.00 53581498         std::bitset<7ul>::_M_check(unsigned long, char const*) const [20]
+-----------------------------------------------
+                0.01    0.00 6284178/49588932     std::bitset<7ul>::_Unchecked_reset(unsigned long) [36]
+                0.03    0.00 43304754/49588932     std::bitset<7ul>::_Unchecked_set(unsigned long, int) [9]
+[21]     2.9    0.04    0.00 49588932         std::_Base_bitset<1ul>::_M_getword(unsigned long) [21]
+-----------------------------------------------
+                0.01    0.01 6284178/18371834     Position::GetPossiblePieces(int, int) const [7]
+                0.01    0.01 12087656/18371834     Position::FillForcedPieces(int, int) [6]
+[22]     2.6    0.02    0.02 18371834         std::bitset<7ul>::count() const [22]
+                0.02    0.00 18371834/18371834     std::_Base_bitset<1ul>::_M_do_count() const [32]
+-----------------------------------------------
+                0.00    0.03  332148/332148      Position::GenerateMoves() const [11]
+[23]     2.2    0.00    0.03  332148         void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&) [23]
+                0.00    0.03   50349/50349       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+                0.00    0.00  281799/332148      void std::allocator_traits<std::allocator<Move> >::construct<Move, int&, int&, Piece>(std::allocator<Move>&, Move*, int&, int&, Piece&&) [45]
+                0.00    0.00  664296/2093586     int& std::forward<int&>(std::remove_reference<int&>::type&) [66]
+                0.00    0.00  332148/1046793     Piece&& std::forward<Piece>(std::remove_reference<Piece>::type&) [67]
+-----------------------------------------------
+                0.00    0.03   50349/50349       void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&) [23]
+[24]     1.9    0.00    0.03   50349         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+                0.00    0.03   50349/50396       Move* std::__uninitialized_move_if_noexcept_a<Move*, Move*, std::allocator<Move> >(Move*, Move*, Move*, std::allocator<Move>&) [28]
+                0.00    0.00   50349/332148      void std::allocator_traits<std::allocator<Move> >::construct<Move, int&, int&, Piece>(std::allocator<Move>&, Move*, int&, int&, Piece&&) [45]
+                0.00    0.00  100698/2093586     int& std::forward<int&>(std::remove_reference<int&>::type&) [66]
+                0.00    0.00  100698/108118      std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator() [86]
+                0.00    0.00   50349/50396       std::vector<Move, std::allocator<Move> >::_M_check_len(unsigned long, char const*) const [99]
+                0.00    0.00   50349/50396       std::_Vector_base<Move, std::allocator<Move> >::_M_allocate(unsigned long) [100]
+                0.00    0.00   50349/1046793     Piece&& std::forward<Piece>(std::remove_reference<Piece>::type&) [67]
+                0.00    0.00   50349/251987      std::vector<Move, std::allocator<Move> >::size() const [84]
+                0.00    0.00   50349/57722       void std::_Destroy<Move*, Move>(Move*, Move*, std::allocator<Move>&) [95]
+                0.00    0.00   50349/57722       std::_Vector_base<Move, std::allocator<Move> >::_M_deallocate(Move*, unsigned long) [93]
+-----------------------------------------------
+                0.01    0.02   50396/50396       Move* std::uninitialized_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [26]
+[25]     1.9    0.01    0.02   50396         Move* std::__uninitialized_copy<false>::__uninit_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [25]
+                0.01    0.01  433348/433348      void std::_Construct<Move, Move>(Move*, Move&&) [35]
+                0.00    0.00  483744/483744      bool std::operator!=<Move*>(std::move_iterator<Move*> const&, std::move_iterator<Move*> const&) [72]
+                0.00    0.00  433348/433348      std::move_iterator<Move*>::operator*() const [73]
+                0.00    0.00  433348/433348      Move* std::__addressof<Move>(Move&) [75]
+                0.00    0.00  433348/433348      std::move_iterator<Move*>::operator++() [74]
+-----------------------------------------------
+                0.00    0.03   50396/50396       Move* std::__uninitialized_copy_a<std::move_iterator<Move*>, Move*, Move>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*, std::allocator<Move>&) [27]
+[26]     1.9    0.00    0.03   50396         Move* std::uninitialized_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [26]
+                0.01    0.02   50396/50396       Move* std::__uninitialized_copy<false>::__uninit_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [25]
+-----------------------------------------------
+                0.00    0.03   50396/50396       Move* std::__uninitialized_move_if_noexcept_a<Move*, Move*, std::allocator<Move> >(Move*, Move*, Move*, std::allocator<Move>&) [28]
+[27]     1.9    0.00    0.03   50396         Move* std::__uninitialized_copy_a<std::move_iterator<Move*>, Move*, Move>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*, std::allocator<Move>&) [27]
+                0.00    0.03   50396/50396       Move* std::uninitialized_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [26]
+-----------------------------------------------
+                0.00    0.00       2/50396       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00      45/50396       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.03   50349/50396       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+[28]     1.9    0.00    0.03   50396         Move* std::__uninitialized_move_if_noexcept_a<Move*, Move*, std::allocator<Move> >(Move*, Move*, Move*, std::allocator<Move>&) [28]
+                0.00    0.03   50396/50396       Move* std::__uninitialized_copy_a<std::move_iterator<Move*>, Move*, Move>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*, std::allocator<Move>&) [27]
+                0.00    0.00  100792/100792      std::move_iterator<Move*> std::__make_move_if_noexcept_iterator<Move, std::move_iterator<Move*> >(Move*) [91]
+-----------------------------------------------
+                0.03    0.00 53581498/53581498     std::_Base_bitset<1ul>::_S_maskbit(unsigned long) [18]
+[29]     1.8    0.03    0.00 53581498         std::_Base_bitset<1ul>::_S_whichbit(unsigned long) [29]
+-----------------------------------------------
+                0.00    0.00  240350/6284178     Position::GenerateMoves() const [11]
+                0.00    0.02 6043828/6284178     Position::FillForcedPieces(int, int) [6]
+[30]     1.7    0.01    0.02 6284178         std::bitset<7ul>::reset(unsigned long) [30]
+                0.00    0.01 6284178/6284178     std::bitset<7ul>::_Unchecked_reset(unsigned long) [36]
+                0.01    0.00 6284178/53581498     std::bitset<7ul>::_M_check(unsigned long, char const*) const [20]
+-----------------------------------------------
+                0.01    0.01       2/2           Position::GenerateMoves() const [11]
+[31]     1.5    0.01    0.01       2         void std::vector<Move, std::allocator<Move> >::emplace_back<char const (&) [4], Position const&>(char const (&) [4], Position const&) [31]
+                0.01    0.00       2/2           void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00       2/8           Position const& std::forward<Position const&>(std::remove_reference<Position const&>::type&) [151]
+                0.00    0.00       2/8           char const (&std::forward<char const (&) [4]>(std::remove_reference<char const (&) [4]>::type&)) [4] [150]
+-----------------------------------------------
+                0.02    0.00 18371834/18371834     std::bitset<7ul>::count() const [22]
+[32]     1.5    0.02    0.00 18371834         std::_Base_bitset<1ul>::_M_do_count() const [32]
+-----------------------------------------------
+                0.02    0.00 3992566/3992566     std::bitset<7ul>::_Unchecked_test(unsigned long) const [19]
+[33]     1.5    0.02    0.00 3992566         std::_Base_bitset<1ul>::_M_getword(unsigned long) const [33]
+-----------------------------------------------
+                                                 <spontaneous>
+[34]     1.5    0.02    0.00                 operator delete(void*, void*) [34]
+-----------------------------------------------
+                0.01    0.01  433348/433348      Move* std::__uninitialized_copy<false>::__uninit_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [25]
+[35]     1.1    0.01    0.01  433348         void std::_Construct<Move, Move>(Move*, Move&&) [35]
+                0.01    0.00  433348/765915      operator new(unsigned long, void*) [39]
+                0.00    0.00  433348/433348      Move&& std::forward<Move>(std::remove_reference<Move>::type&) [76]
+-----------------------------------------------
+                0.00    0.01 6284178/6284178     std::bitset<7ul>::reset(unsigned long) [30]
+[36]     0.9    0.00    0.01 6284178         std::bitset<7ul>::_Unchecked_reset(unsigned long) [36]
+                0.00    0.00 6284178/53581498     std::_Base_bitset<1ul>::_S_maskbit(unsigned long) [18]
+                0.01    0.00 6284178/49588932     std::_Base_bitset<1ul>::_M_getword(unsigned long) [21]
+-----------------------------------------------
+                0.01    0.00       2/2           void std::vector<Move, std::allocator<Move> >::emplace_back<char const (&) [4], Position const&>(char const (&) [4], Position const&) [31]
+[37]     0.7    0.01    0.00       2         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00       2/50396       Move* std::__uninitialized_move_if_noexcept_a<Move*, Move*, std::allocator<Move> >(Move*, Move*, Move*, std::allocator<Move>&) [28]
+                0.00    0.00       2/2           void std::allocator_traits<std::allocator<Move> >::construct<Move, char const (&) [4], Position const&>(std::allocator<Move>&, Move*, char const (&) [4], Position const&) [59]
+                0.00    0.00       4/108118      std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator() [86]
+                0.00    0.00       2/50396       std::vector<Move, std::allocator<Move> >::_M_check_len(unsigned long, char const*) const [99]
+                0.00    0.00       2/50396       std::_Vector_base<Move, std::allocator<Move> >::_M_allocate(unsigned long) [100]
+                0.00    0.00       2/8           Position const& std::forward<Position const&>(std::remove_reference<Position const&>::type&) [151]
+                0.00    0.00       2/8           char const (&std::forward<char const (&) [4]>(std::remove_reference<char const (&) [4]>::type&)) [4] [150]
+                0.00    0.00       2/251987      std::vector<Move, std::allocator<Move> >::size() const [84]
+                0.00    0.00       2/57722       void std::_Destroy<Move*, Move>(Move*, Move*, std::allocator<Move>&) [95]
+                0.00    0.00       2/57722       std::_Vector_base<Move, std::allocator<Move> >::_M_deallocate(Move*, unsigned long) [93]
+-----------------------------------------------
+                0.01    0.00 8483776/8483776     Position::TraceVictoryLineOrLoop(int, int, bool) [13]
+[38]     0.7    0.01    0.00 8483776         int const& std::min<int>(int const&, int const&) [38]
+-----------------------------------------------
+                0.00    0.00       2/765915      void __gnu_cxx::new_allocator<Move>::construct<Move, char const (&) [4], Position const&>(Move*, char const (&) [4], Position const&) [58]
+                0.00    0.00     171/765915      void std::_Construct<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [52]
+                0.00    0.00     246/765915      void __gnu_cxx::new_allocator<Move>::construct<Move, Move const&>(Move*, Move const&) [49]
+                0.00    0.00  332148/765915      void __gnu_cxx::new_allocator<Move>::construct<Move, int&, int&, Piece>(Move*, int&, int&, Piece&&) [44]
+                0.01    0.00  433348/765915      void std::_Construct<Move, Move>(Move*, Move&&) [35]
+[39]     0.7    0.01    0.00  765915         operator new(unsigned long, void*) [39]
+-----------------------------------------------
+                0.00    0.00     212/332150      NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00     246/332150      RandomSearcher::SearchBestMove(Position const&) [46]
+                0.01    0.00  331692/332150      NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[40]     0.7    0.01    0.00  332150         __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator*() const [40]
+-----------------------------------------------
+                0.01    0.00      42/42          std::enable_if<std::__and_<std::is_move_constructible<Piece*>, std::is_move_assignable<Piece*> >::value, void>::type std::swap<Piece*>(Piece*&, Piece*&) [43]
+[41]     0.4    0.01    0.00      42         std::remove_reference<Piece*&>::type&& std::move<Piece*&>(Piece*&) [41]
+-----------------------------------------------
+                0.00    0.01      14/14          StartSelfGame(Searcher*, Searcher*, bool) [2]
+[42]     0.4    0.00    0.01      14         Position::Swap(Position*) [42]
+                0.00    0.01      14/14          std::enable_if<std::__and_<std::is_move_constructible<Piece*>, std::is_move_assignable<Piece*> >::value, void>::type std::swap<Piece*>(Piece*&, Piece*&) [43]
+                0.00    0.00      42/42          std::enable_if<std::__and_<std::is_move_constructible<bool>, std::is_move_assignable<bool> >::value, void>::type std::swap<bool>(bool&, bool&) [147]
+                0.00    0.00      28/28          std::enable_if<std::__and_<std::is_move_constructible<int>, std::is_move_assignable<int> >::value, void>::type std::swap<int>(int&, int&) [148]
+-----------------------------------------------
+                0.00    0.01      14/14          Position::Swap(Position*) [42]
+[43]     0.4    0.00    0.01      14         std::enable_if<std::__and_<std::is_move_constructible<Piece*>, std::is_move_assignable<Piece*> >::value, void>::type std::swap<Piece*>(Piece*&, Piece*&) [43]
+                0.01    0.00      42/42          std::remove_reference<Piece*&>::type&& std::move<Piece*&>(Piece*&) [41]
+-----------------------------------------------
+                0.00    0.00  332148/332148      void std::allocator_traits<std::allocator<Move> >::construct<Move, int&, int&, Piece>(std::allocator<Move>&, Move*, int&, int&, Piece&&) [45]
+[44]     0.3    0.00    0.00  332148         void __gnu_cxx::new_allocator<Move>::construct<Move, int&, int&, Piece>(Move*, int&, int&, Piece&&) [44]
+                0.00    0.00  332148/765915      operator new(unsigned long, void*) [39]
+                0.00    0.00  664296/2093586     int& std::forward<int&>(std::remove_reference<int&>::type&) [66]
+                0.00    0.00  332148/1046793     Piece&& std::forward<Piece>(std::remove_reference<Piece>::type&) [67]
+                0.00    0.00  332148/332148      Move::Move(int, int, Piece) [81]
+-----------------------------------------------
+                0.00    0.00   50349/332148      void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+                0.00    0.00  281799/332148      void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&) [23]
+[45]     0.3    0.00    0.00  332148         void std::allocator_traits<std::allocator<Move> >::construct<Move, int&, int&, Piece>(std::allocator<Move>&, Move*, int&, int&, Piece&&) [45]
+                0.00    0.00  332148/332148      void __gnu_cxx::new_allocator<Move>::construct<Move, int&, int&, Piece>(Move*, int&, int&, Piece&&) [44]
+                0.00    0.00  664296/2093586     int& std::forward<int&>(std::remove_reference<int&>::type&) [66]
+                0.00    0.00  332148/1046793     Piece&& std::forward<Piece>(std::remove_reference<Piece>::type&) [67]
+-----------------------------------------------
+                0.00    0.00       7/7           StartSelfGame(Searcher*, Searcher*, bool) [2]
+[46]     0.1    0.00    0.00       7         RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00     246/332164      Position::DoMove(Move, Position*) const [5]
+                0.00    0.00       7/7319        Position::GenerateMoves() const [11]
+                0.00    0.00     246/246         std::vector<Move, std::allocator<Move> >::push_back(Move const&) [47]
+                0.00    0.00     246/332150      __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator*() const [40]
+                0.00    0.00     253/339469      bool __gnu_cxx::operator!=<Move*, std::vector<Move, std::allocator<Move> > >(__gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&, __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&) [77]
+                0.00    0.00     246/332165      Position::Position() [78]
+                0.00    0.00     246/332150      __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator++() [80]
+                0.00    0.00     246/332165      Position::~Position() [79]
+                0.00    0.00      14/7326        std::vector<Move, std::allocator<Move> >::~vector() [115]
+                0.00    0.00       7/7326        std::vector<Move, std::allocator<Move> >::vector() [114]
+                0.00    0.00       7/7319        std::vector<Move, std::allocator<Move> >::begin() [117]
+                0.00    0.00       7/7319        std::vector<Move, std::allocator<Move> >::end() [116]
+                0.00    0.00       7/7           Random() [152]
+                0.00    0.00       7/251987      std::vector<Move, std::allocator<Move> >::size() const [84]
+                0.00    0.00       7/7           std::vector<Move, std::allocator<Move> >::operator[](unsigned long) [153]
+-----------------------------------------------
+                0.00    0.00     246/246         RandomSearcher::SearchBestMove(Position const&) [46]
+[47]     0.0    0.00    0.00     246         std::vector<Move, std::allocator<Move> >::push_back(Move const&) [47]
+                0.00    0.00      45/45          void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.00     201/246         void std::allocator_traits<std::allocator<Move> >::construct<Move, Move const&>(std::allocator<Move>&, Move*, Move const&) [50]
+-----------------------------------------------
+                0.00    0.00      45/45          std::vector<Move, std::allocator<Move> >::push_back(Move const&) [47]
+[48]     0.0    0.00    0.00      45         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.00      45/50396       Move* std::__uninitialized_move_if_noexcept_a<Move*, Move*, std::allocator<Move> >(Move*, Move*, Move*, std::allocator<Move>&) [28]
+                0.00    0.00      45/246         void std::allocator_traits<std::allocator<Move> >::construct<Move, Move const&>(std::allocator<Move>&, Move*, Move const&) [50]
+                0.00    0.00      90/108118      std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator() [86]
+                0.00    0.00      45/50396       std::vector<Move, std::allocator<Move> >::_M_check_len(unsigned long, char const*) const [99]
+                0.00    0.00      45/50396       std::_Vector_base<Move, std::allocator<Move> >::_M_allocate(unsigned long) [100]
+                0.00    0.00      45/537         Move const& std::forward<Move const&>(std::remove_reference<Move const&>::type&) [119]
+                0.00    0.00      45/251987      std::vector<Move, std::allocator<Move> >::size() const [84]
+                0.00    0.00      45/57722       void std::_Destroy<Move*, Move>(Move*, Move*, std::allocator<Move>&) [95]
+                0.00    0.00      45/57722       std::_Vector_base<Move, std::allocator<Move> >::_M_deallocate(Move*, unsigned long) [93]
+-----------------------------------------------
+                0.00    0.00     246/246         void std::allocator_traits<std::allocator<Move> >::construct<Move, Move const&>(std::allocator<Move>&, Move*, Move const&) [50]
+[49]     0.0    0.00    0.00     246         void __gnu_cxx::new_allocator<Move>::construct<Move, Move const&>(Move*, Move const&) [49]
+                0.00    0.00     246/765915      operator new(unsigned long, void*) [39]
+                0.00    0.00     246/537         Move const& std::forward<Move const&>(std::remove_reference<Move const&>::type&) [119]
+-----------------------------------------------
+                0.00    0.00      45/246         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.00     201/246         std::vector<Move, std::allocator<Move> >::push_back(Move const&) [47]
+[50]     0.0    0.00    0.00     246         void std::allocator_traits<std::allocator<Move> >::construct<Move, Move const&>(std::allocator<Move>&, Move*, Move const&) [50]
+                0.00    0.00     246/246         void __gnu_cxx::new_allocator<Move>::construct<Move, Move const&>(Move*, Move const&) [49]
+                0.00    0.00     246/537         Move const& std::forward<Move const&>(std::remove_reference<Move const&>::type&) [119]
+-----------------------------------------------
+                0.00    0.00      14/14          StartSelfGame(Searcher*, Searcher*, bool) [2]
+[51]     0.0    0.00    0.00      14         Position::LargeDump() const [51]
+                0.00    0.00      57/57          std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::vector(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [55]
+                0.00    0.00     439/58482184     Position::at(int, int) const [15]
+                0.00    0.00    1488/1488        std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::operator[](unsigned long) [118]
+                0.00    0.00      57/57          std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocator() [133]
+                0.00    0.00      57/114         std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::~allocator() [124]
+                0.00    0.00      57/57          std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~vector() [144]
+-----------------------------------------------
+                0.00    0.00     171/171         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_1<false>::__uninit_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [53]
+[52]     0.0    0.00    0.00     171         void std::_Construct<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [52]
+                0.00    0.00     171/765915      operator new(unsigned long, void*) [39]
+-----------------------------------------------
+                0.00    0.00      57/57          std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [56]
+[53]     0.0    0.00    0.00      57         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_1<false>::__uninit_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [53]
+                0.00    0.00     171/171         void std::_Construct<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [52]
+                0.00    0.00     171/342         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__addressof<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [120]
+-----------------------------------------------
+                0.00    0.00      57/57          std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::vector(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [55]
+[54]     0.0    0.00    0.00      57         std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_default_initialize(unsigned long) [54]
+                0.00    0.00      57/57          std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_a<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&) [57]
+                0.00    0.00      57/114         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_get_Tp_allocator() [125]
+-----------------------------------------------
+                0.00    0.00      57/57          Position::LargeDump() const [51]
+[55]     0.0    0.00    0.00      57         std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::vector(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [55]
+                0.00    0.00      57/57          std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_default_initialize(unsigned long) [54]
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [140]
+-----------------------------------------------
+                0.00    0.00      57/57          std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_a<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&) [57]
+[56]     0.0    0.00    0.00      57         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [56]
+                0.00    0.00      57/57          std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_1<false>::__uninit_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [53]
+-----------------------------------------------
+                0.00    0.00      57/57          std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_default_initialize(unsigned long) [54]
+[57]     0.0    0.00    0.00      57         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_a<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&) [57]
+                0.00    0.00      57/57          std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [56]
+-----------------------------------------------
+                0.00    0.00       2/2           void std::allocator_traits<std::allocator<Move> >::construct<Move, char const (&) [4], Position const&>(std::allocator<Move>&, Move*, char const (&) [4], Position const&) [59]
+[58]     0.0    0.00    0.00       2         void __gnu_cxx::new_allocator<Move>::construct<Move, char const (&) [4], Position const&>(Move*, char const (&) [4], Position const&) [58]
+                0.00    0.00       2/765915      operator new(unsigned long, void*) [39]
+                0.00    0.00       2/8           char const (&std::forward<char const (&) [4]>(std::remove_reference<char const (&) [4]>::type&)) [4] [150]
+                0.00    0.00       2/8           Position const& std::forward<Position const&>(std::remove_reference<Position const&>::type&) [151]
+                0.00    0.00       2/2           Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [154]
+-----------------------------------------------
+                0.00    0.00       2/2           void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+[59]     0.0    0.00    0.00       2         void std::allocator_traits<std::allocator<Move> >::construct<Move, char const (&) [4], Position const&>(std::allocator<Move>&, Move*, char const (&) [4], Position const&) [59]
+                0.00    0.00       2/2           void __gnu_cxx::new_allocator<Move>::construct<Move, char const (&) [4], Position const&>(Move*, char const (&) [4], Position const&) [58]
+                0.00    0.00       2/8           Position const& std::forward<Position const&>(std::remove_reference<Position const&>::type&) [151]
+                0.00    0.00       2/8           char const (&std::forward<char const (&) [4]>(std::remove_reference<char const (&) [4]>::type&)) [4] [150]
+-----------------------------------------------
+                0.00    0.00  100698/2093586     void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+                0.00    0.00  664296/2093586     void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&) [23]
+                0.00    0.00  664296/2093586     void std::allocator_traits<std::allocator<Move> >::construct<Move, int&, int&, Piece>(std::allocator<Move>&, Move*, int&, int&, Piece&&) [45]
+                0.00    0.00  664296/2093586     void __gnu_cxx::new_allocator<Move>::construct<Move, int&, int&, Piece>(Move*, int&, int&, Piece&&) [44]
+[66]     0.0    0.00    0.00 2093586         int& std::forward<int&>(std::remove_reference<int&>::type&) [66]
+-----------------------------------------------
+                0.00    0.00   50349/1046793     void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+                0.00    0.00  332148/1046793     void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&) [23]
+                0.00    0.00  332148/1046793     void std::allocator_traits<std::allocator<Move> >::construct<Move, int&, int&, Piece>(std::allocator<Move>&, Move*, int&, int&, Piece&&) [45]
+                0.00    0.00  332148/1046793     void __gnu_cxx::new_allocator<Move>::construct<Move, int&, int&, Piece>(Move*, int&, int&, Piece&&) [44]
+[67]     0.0    0.00    0.00 1046793         Piece&& std::forward<Piece>(std::remove_reference<Piece>::type&) [67]
+-----------------------------------------------
+                0.00    0.00  967488/967488      bool std::operator==<Move*>(std::move_iterator<Move*> const&, std::move_iterator<Move*> const&) [71]
+[68]     0.0    0.00    0.00  967488         std::move_iterator<Move*>::base() const [68]
+-----------------------------------------------
+                0.00    0.00  678938/678938      bool __gnu_cxx::operator!=<Move*, std::vector<Move, std::allocator<Move> > >(__gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&, __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&) [77]
+[69]     0.0    0.00    0.00  678938         __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::base() const [69]
+-----------------------------------------------
+                0.00    0.00  664328/664328      void std::fill<Piece*, Piece>(Piece*, Piece*, Piece const&) [10]
+[70]     0.0    0.00    0.00  664328         Piece* std::__niter_base<Piece*>(Piece*) [70]
+-----------------------------------------------
+                0.00    0.00  483744/483744      bool std::operator!=<Move*>(std::move_iterator<Move*> const&, std::move_iterator<Move*> const&) [72]
+[71]     0.0    0.00    0.00  483744         bool std::operator==<Move*>(std::move_iterator<Move*> const&, std::move_iterator<Move*> const&) [71]
+                0.00    0.00  967488/967488      std::move_iterator<Move*>::base() const [68]
+-----------------------------------------------
+                0.00    0.00  483744/483744      Move* std::__uninitialized_copy<false>::__uninit_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [25]
+[72]     0.0    0.00    0.00  483744         bool std::operator!=<Move*>(std::move_iterator<Move*> const&, std::move_iterator<Move*> const&) [72]
+                0.00    0.00  483744/483744      bool std::operator==<Move*>(std::move_iterator<Move*> const&, std::move_iterator<Move*> const&) [71]
+-----------------------------------------------
+                0.00    0.00  433348/433348      Move* std::__uninitialized_copy<false>::__uninit_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [25]
+[73]     0.0    0.00    0.00  433348         std::move_iterator<Move*>::operator*() const [73]
+-----------------------------------------------
+                0.00    0.00  433348/433348      Move* std::__uninitialized_copy<false>::__uninit_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [25]
+[74]     0.0    0.00    0.00  433348         std::move_iterator<Move*>::operator++() [74]
+-----------------------------------------------
+                0.00    0.00  433348/433348      Move* std::__uninitialized_copy<false>::__uninit_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [25]
+[75]     0.0    0.00    0.00  433348         Move* std::__addressof<Move>(Move&) [75]
+-----------------------------------------------
+                0.00    0.00  433348/433348      void std::_Construct<Move, Move>(Move*, Move&&) [35]
+[76]     0.0    0.00    0.00  433348         Move&& std::forward<Move>(std::remove_reference<Move>::type&) [76]
+-----------------------------------------------
+                0.00    0.00     219/339469      NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00     253/339469      RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00  338997/339469      NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[77]     0.0    0.00    0.00  339469         bool __gnu_cxx::operator!=<Move*, std::vector<Move, std::allocator<Move> > >(__gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&, __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&) [77]
+                0.00    0.00  678938/678938      __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::base() const [69]
+-----------------------------------------------
+                0.00    0.00      15/332165      StartSelfGame(Searcher*, Searcher*, bool) [2]
+                0.00    0.00     212/332165      NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00     246/332165      RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00  331692/332165      NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[78]     0.0    0.00    0.00  332165         Position::Position() [78]
+-----------------------------------------------
+                0.00    0.00      15/332165      StartSelfGame(Searcher*, Searcher*, bool) [2]
+                0.00    0.00     212/332165      NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00     246/332165      RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00  331692/332165      NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[79]     0.0    0.00    0.00  332165         Position::~Position() [79]
+-----------------------------------------------
+                0.00    0.00     212/332150      NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00     246/332150      RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00  331692/332150      NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[80]     0.0    0.00    0.00  332150         __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator++() [80]
+-----------------------------------------------
+                0.00    0.00  332148/332148      void __gnu_cxx::new_allocator<Move>::construct<Move, int&, int&, Piece>(Move*, int&, int&, Piece&&) [44]
+[81]     0.0    0.00    0.00  332148         Move::Move(int, int, Piece) [81]
+-----------------------------------------------
+                0.00    0.00      15/331919      StartSelfGame(Searcher*, Searcher*, bool) [2]
+                0.00    0.00  331904/331919      NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[82]     0.0    0.00    0.00  331919         Position::finished() const [82]
+-----------------------------------------------
+                0.00    0.00  331692/331692      NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[83]     0.0    0.00    0.00  331692         int const& std::max<int>(int const&, int const&) [83]
+-----------------------------------------------
+                0.00    0.00       2/251987      void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00       7/251987      RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00      45/251987      void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.00   50349/251987      void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+                0.00    0.00  201584/251987      std::vector<Move, std::allocator<Move> >::_M_check_len(unsigned long, char const*) const [99]
+[84]     0.0    0.00    0.00  251987         std::vector<Move, std::allocator<Move> >::size() const [84]
+-----------------------------------------------
+                0.00    0.00   50396/151188      __gnu_cxx::new_allocator<Move>::allocate(unsigned long, void const*) [98]
+                0.00    0.00  100792/151188      std::allocator_traits<std::allocator<Move> >::max_size(std::allocator<Move> const&) [90]
+[85]     0.0    0.00    0.00  151188         __gnu_cxx::new_allocator<Move>::max_size() const [85]
+-----------------------------------------------
+                0.00    0.00       4/108118      void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00      90/108118      void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.00    7326/108118      std::vector<Move, std::allocator<Move> >::~vector() [115]
+                0.00    0.00  100698/108118      void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+[86]     0.0    0.00    0.00  108118         std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator() [86]
+-----------------------------------------------
+                0.00    0.00  100792/100792      std::vector<Move, std::allocator<Move> >::max_size() const [88]
+[87]     0.0    0.00    0.00  100792         std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator() const [87]
+-----------------------------------------------
+                0.00    0.00  100792/100792      std::vector<Move, std::allocator<Move> >::_M_check_len(unsigned long, char const*) const [99]
+[88]     0.0    0.00    0.00  100792         std::vector<Move, std::allocator<Move> >::max_size() const [88]
+                0.00    0.00  100792/100792      std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator() const [87]
+                0.00    0.00  100792/100792      std::allocator_traits<std::allocator<Move> >::max_size(std::allocator<Move> const&) [90]
+-----------------------------------------------
+                0.00    0.00  100792/100792      std::move_iterator<Move*> std::__make_move_if_noexcept_iterator<Move, std::move_iterator<Move*> >(Move*) [91]
+[89]     0.0    0.00    0.00  100792         std::move_iterator<Move*>::move_iterator(Move*) [89]
+-----------------------------------------------
+                0.00    0.00  100792/100792      std::vector<Move, std::allocator<Move> >::max_size() const [88]
+[90]     0.0    0.00    0.00  100792         std::allocator_traits<std::allocator<Move> >::max_size(std::allocator<Move> const&) [90]
+                0.00    0.00  100792/151188      __gnu_cxx::new_allocator<Move>::max_size() const [85]
+-----------------------------------------------
+                0.00    0.00  100792/100792      Move* std::__uninitialized_move_if_noexcept_a<Move*, Move*, std::allocator<Move> >(Move*, Move*, Move*, std::allocator<Move>&) [28]
+[91]     0.0    0.00    0.00  100792         std::move_iterator<Move*> std::__make_move_if_noexcept_iterator<Move, std::move_iterator<Move*> >(Move*) [91]
+                0.00    0.00  100792/100792      std::move_iterator<Move*>::move_iterator(Move*) [89]
+-----------------------------------------------
+                0.00    0.00   57722/57722       void std::_Destroy<Move*>(Move*, Move*) [94]
+[92]     0.0    0.00    0.00   57722         void std::_Destroy_aux<true>::__destroy<Move*>(Move*, Move*) [92]
+-----------------------------------------------
+                0.00    0.00       2/57722       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00      45/57722       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.00    7326/57722       std::_Vector_base<Move, std::allocator<Move> >::~_Vector_base() [113]
+                0.00    0.00   50349/57722       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+[93]     0.0    0.00    0.00   57722         std::_Vector_base<Move, std::allocator<Move> >::_M_deallocate(Move*, unsigned long) [93]
+                0.00    0.00   50396/50396       std::allocator_traits<std::allocator<Move> >::deallocate(std::allocator<Move>&, Move*, unsigned long) [101]
+-----------------------------------------------
+                0.00    0.00   57722/57722       void std::_Destroy<Move*, Move>(Move*, Move*, std::allocator<Move>&) [95]
+[94]     0.0    0.00    0.00   57722         void std::_Destroy<Move*>(Move*, Move*) [94]
+                0.00    0.00   57722/57722       void std::_Destroy_aux<true>::__destroy<Move*>(Move*, Move*) [92]
+-----------------------------------------------
+                0.00    0.00       2/57722       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00      45/57722       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.00    7326/57722       std::vector<Move, std::allocator<Move> >::~vector() [115]
+                0.00    0.00   50349/57722       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+[95]     0.0    0.00    0.00   57722         void std::_Destroy<Move*, Move>(Move*, Move*, std::allocator<Move>&) [95]
+                0.00    0.00   57722/57722       void std::_Destroy<Move*>(Move*, Move*) [94]
+-----------------------------------------------
+                0.00    0.00      14/53637       StartSelfGame(Searcher*, Searcher*, bool) [2]
+                0.00    0.00   53623/53637       NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[96]     0.0    0.00    0.00   53637         Position::red_to_move() const [96]
+-----------------------------------------------
+                0.00    0.00   50396/50396       std::allocator_traits<std::allocator<Move> >::deallocate(std::allocator<Move>&, Move*, unsigned long) [101]
+[97]     0.0    0.00    0.00   50396         __gnu_cxx::new_allocator<Move>::deallocate(Move*, unsigned long) [97]
+-----------------------------------------------
+                0.00    0.00   50396/50396       std::allocator_traits<std::allocator<Move> >::allocate(std::allocator<Move>&, unsigned long) [102]
+[98]     0.0    0.00    0.00   50396         __gnu_cxx::new_allocator<Move>::allocate(unsigned long, void const*) [98]
+                0.00    0.00   50396/151188      __gnu_cxx::new_allocator<Move>::max_size() const [85]
+-----------------------------------------------
+                0.00    0.00       2/50396       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00      45/50396       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.00   50349/50396       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+[99]     0.0    0.00    0.00   50396         std::vector<Move, std::allocator<Move> >::_M_check_len(unsigned long, char const*) const [99]
+                0.00    0.00  201584/251987      std::vector<Move, std::allocator<Move> >::size() const [84]
+                0.00    0.00  100792/100792      std::vector<Move, std::allocator<Move> >::max_size() const [88]
+                0.00    0.00   50396/50396       unsigned long const& std::max<unsigned long>(unsigned long const&, unsigned long const&) [103]
+-----------------------------------------------
+                0.00    0.00       2/50396       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00      45/50396       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.00   50349/50396       void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&) [24]
+[100]    0.0    0.00    0.00   50396         std::_Vector_base<Move, std::allocator<Move> >::_M_allocate(unsigned long) [100]
+                0.00    0.00   50396/50396       std::allocator_traits<std::allocator<Move> >::allocate(std::allocator<Move>&, unsigned long) [102]
+-----------------------------------------------
+                0.00    0.00   50396/50396       std::_Vector_base<Move, std::allocator<Move> >::_M_deallocate(Move*, unsigned long) [93]
+[101]    0.0    0.00    0.00   50396         std::allocator_traits<std::allocator<Move> >::deallocate(std::allocator<Move>&, Move*, unsigned long) [101]
+                0.00    0.00   50396/50396       __gnu_cxx::new_allocator<Move>::deallocate(Move*, unsigned long) [97]
+-----------------------------------------------
+                0.00    0.00   50396/50396       std::_Vector_base<Move, std::allocator<Move> >::_M_allocate(unsigned long) [100]
+[102]    0.0    0.00    0.00   50396         std::allocator_traits<std::allocator<Move> >::allocate(std::allocator<Move>&, unsigned long) [102]
+                0.00    0.00   50396/50396       __gnu_cxx::new_allocator<Move>::allocate(unsigned long, void const*) [98]
+-----------------------------------------------
+                0.00    0.00   50396/50396       std::vector<Move, std::allocator<Move> >::_M_check_len(unsigned long, char const*) const [99]
+[103]    0.0    0.00    0.00   50396         unsigned long const& std::max<unsigned long>(unsigned long const&, unsigned long const&) [103]
+-----------------------------------------------
+                0.00    0.00       2/26903       StartSelfGame(Searcher*, Searcher*, bool) [2]
+                0.00    0.00   26901/26903       NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[104]    0.0    0.00    0.00   26903         Position::red_winner() const [104]
+-----------------------------------------------
+                0.00    0.00    7319/14638       std::vector<Move, std::allocator<Move> >::begin() [117]
+                0.00    0.00    7319/14638       std::vector<Move, std::allocator<Move> >::end() [116]
+[105]    0.0    0.00    0.00   14638         __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::__normal_iterator(Move* const&) [105]
+-----------------------------------------------
+                0.00    0.00    7326/7326        std::allocator<Move>::allocator() [108]
+[106]    0.0    0.00    0.00    7326         __gnu_cxx::new_allocator<Move>::new_allocator() [106]
+-----------------------------------------------
+                0.00    0.00    7326/7326        std::allocator<Move>::~allocator() [109]
+[107]    0.0    0.00    0.00    7326         __gnu_cxx::new_allocator<Move>::~new_allocator() [107]
+-----------------------------------------------
+                0.00    0.00    7326/7326        std::_Vector_base<Move, std::allocator<Move> >::_Vector_impl::_Vector_impl() [110]
+[108]    0.0    0.00    0.00    7326         std::allocator<Move>::allocator() [108]
+                0.00    0.00    7326/7326        __gnu_cxx::new_allocator<Move>::new_allocator() [106]
+-----------------------------------------------
+                0.00    0.00    7326/7326        std::_Vector_base<Move, std::allocator<Move> >::_Vector_impl::~_Vector_impl() [111]
+[109]    0.0    0.00    0.00    7326         std::allocator<Move>::~allocator() [109]
+                0.00    0.00    7326/7326        __gnu_cxx::new_allocator<Move>::~new_allocator() [107]
+-----------------------------------------------
+                0.00    0.00    7326/7326        std::_Vector_base<Move, std::allocator<Move> >::_Vector_base() [112]
+[110]    0.0    0.00    0.00    7326         std::_Vector_base<Move, std::allocator<Move> >::_Vector_impl::_Vector_impl() [110]
+                0.00    0.00    7326/7326        std::allocator<Move>::allocator() [108]
+-----------------------------------------------
+                0.00    0.00    7326/7326        std::_Vector_base<Move, std::allocator<Move> >::~_Vector_base() [113]
+[111]    0.0    0.00    0.00    7326         std::_Vector_base<Move, std::allocator<Move> >::_Vector_impl::~_Vector_impl() [111]
+                0.00    0.00    7326/7326        std::allocator<Move>::~allocator() [109]
+-----------------------------------------------
+                0.00    0.00    7326/7326        std::vector<Move, std::allocator<Move> >::vector() [114]
+[112]    0.0    0.00    0.00    7326         std::_Vector_base<Move, std::allocator<Move> >::_Vector_base() [112]
+                0.00    0.00    7326/7326        std::_Vector_base<Move, std::allocator<Move> >::_Vector_impl::_Vector_impl() [110]
+-----------------------------------------------
+                0.00    0.00    7326/7326        std::vector<Move, std::allocator<Move> >::~vector() [115]
+[113]    0.0    0.00    0.00    7326         std::_Vector_base<Move, std::allocator<Move> >::~_Vector_base() [113]
+                0.00    0.00    7326/57722       std::_Vector_base<Move, std::allocator<Move> >::_M_deallocate(Move*, unsigned long) [93]
+                0.00    0.00    7326/7326        std::_Vector_base<Move, std::allocator<Move> >::_Vector_impl::~_Vector_impl() [111]
+-----------------------------------------------
+                0.00    0.00       7/7326        RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00    7319/7326        Position::GenerateMoves() const [11]
+[114]    0.0    0.00    0.00    7326         std::vector<Move, std::allocator<Move> >::vector() [114]
+                0.00    0.00    7326/7326        std::_Vector_base<Move, std::allocator<Move> >::_Vector_base() [112]
+-----------------------------------------------
+                0.00    0.00       7/7326        NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00      14/7326        RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00    7305/7326        NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[115]    0.0    0.00    0.00    7326         std::vector<Move, std::allocator<Move> >::~vector() [115]
+                0.00    0.00    7326/108118      std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator() [86]
+                0.00    0.00    7326/57722       void std::_Destroy<Move*, Move>(Move*, Move*, std::allocator<Move>&) [95]
+                0.00    0.00    7326/7326        std::_Vector_base<Move, std::allocator<Move> >::~_Vector_base() [113]
+-----------------------------------------------
+                0.00    0.00       7/7319        NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00       7/7319        RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00    7305/7319        NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[116]    0.0    0.00    0.00    7319         std::vector<Move, std::allocator<Move> >::end() [116]
+                0.00    0.00    7319/14638       __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::__normal_iterator(Move* const&) [105]
+-----------------------------------------------
+                0.00    0.00       7/7319        NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00       7/7319        RandomSearcher::SearchBestMove(Position const&) [46]
+                0.00    0.00    7305/7319        NegaMaxSearcher::NegaMax(Position const&, int) [4]
+[117]    0.0    0.00    0.00    7319         std::vector<Move, std::allocator<Move> >::begin() [117]
+                0.00    0.00    7319/14638       __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::__normal_iterator(Move* const&) [105]
+-----------------------------------------------
+                0.00    0.00    1488/1488        Position::LargeDump() const [51]
+[118]    0.0    0.00    0.00    1488         std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::operator[](unsigned long) [118]
+-----------------------------------------------
+                0.00    0.00      45/537         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&) [48]
+                0.00    0.00     246/537         void std::allocator_traits<std::allocator<Move> >::construct<Move, Move const&>(std::allocator<Move>&, Move*, Move const&) [50]
+                0.00    0.00     246/537         void __gnu_cxx::new_allocator<Move>::construct<Move, Move const&>(Move*, Move const&) [49]
+[119]    0.0    0.00    0.00     537         Move const& std::forward<Move const&>(std::remove_reference<Move const&>::type&) [119]
+-----------------------------------------------
+                0.00    0.00     171/342         void std::_Destroy_aux<false>::__destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [134]
+                0.00    0.00     171/342         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_1<false>::__uninit_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [53]
+[120]    0.0    0.00    0.00     342         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__addressof<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [120]
+-----------------------------------------------
+                0.00    0.00     171/171         void std::_Destroy_aux<false>::__destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [134]
+[121]    0.0    0.00    0.00     171         void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [121]
+-----------------------------------------------
+                0.00    0.00     126/126         std::enable_if<std::__and_<std::is_move_constructible<bool>, std::is_move_assignable<bool> >::value, void>::type std::swap<bool>(bool&, bool&) [147]
+[122]    0.0    0.00    0.00     126         std::remove_reference<bool&>::type&& std::move<bool&>(bool&) [122]
+-----------------------------------------------
+                0.00    0.00     114/114         std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::~allocator() [124]
+[123]    0.0    0.00    0.00     114         __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::~new_allocator() [123]
+-----------------------------------------------
+                0.00    0.00      57/114         Position::LargeDump() const [51]
+                0.00    0.00      57/114         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_impl::~_Vector_impl() [137]
+[124]    0.0    0.00    0.00     114         std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::~allocator() [124]
+                0.00    0.00     114/114         __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::~new_allocator() [123]
+-----------------------------------------------
+                0.00    0.00      57/114         std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~vector() [144]
+                0.00    0.00      57/114         std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_default_initialize(unsigned long) [54]
+[125]    0.0    0.00    0.00     114         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_get_Tp_allocator() [125]
+-----------------------------------------------
+                0.00    0.00      84/84          std::enable_if<std::__and_<std::is_move_constructible<int>, std::is_move_assignable<int> >::value, void>::type std::swap<int>(int&, int&) [148]
+[126]    0.0    0.00    0.00      84         std::remove_reference<int&>::type&& std::move<int&>(int&) [126]
+-----------------------------------------------
+                0.00    0.00      57/57          std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::deallocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [142]
+[127]    0.0    0.00    0.00      57         __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::deallocate(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [127]
+-----------------------------------------------
+                0.00    0.00      57/57          std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::allocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, unsigned long) [143]
+[128]    0.0    0.00    0.00      57         __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocate(unsigned long, void const*) [128]
+                0.00    0.00      57/57          __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::max_size() const [131]
+-----------------------------------------------
+                0.00    0.00      57/57          std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocator(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [132]
+[129]    0.0    0.00    0.00      57         __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::new_allocator(__gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [129]
+-----------------------------------------------
+                0.00    0.00      57/57          std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocator() [133]
+[130]    0.0    0.00    0.00      57         __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::new_allocator() [130]
+-----------------------------------------------
+                0.00    0.00      57/57          __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocate(unsigned long, void const*) [128]
+[131]    0.0    0.00    0.00      57         __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::max_size() const [131]
+-----------------------------------------------
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_impl::_Vector_impl(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [136]
+[132]    0.0    0.00    0.00      57         std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocator(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [132]
+                0.00    0.00      57/57          __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::new_allocator(__gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [129]
+-----------------------------------------------
+                0.00    0.00      57/57          Position::LargeDump() const [51]
+[133]    0.0    0.00    0.00      57         std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocator() [133]
+                0.00    0.00      57/57          __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::new_allocator() [130]
+-----------------------------------------------
+                0.00    0.00      57/57          void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [145]
+[134]    0.0    0.00    0.00      57         void std::_Destroy_aux<false>::__destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [134]
+                0.00    0.00     171/171         void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [121]
+                0.00    0.00     171/342         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__addressof<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&) [120]
+-----------------------------------------------
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_create_storage(unsigned long) [139]
+[135]    0.0    0.00    0.00      57         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_allocate(unsigned long) [135]
+                0.00    0.00      57/57          std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::allocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, unsigned long) [143]
+-----------------------------------------------
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [140]
+[136]    0.0    0.00    0.00      57         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_impl::_Vector_impl(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [136]
+                0.00    0.00      57/57          std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocator(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [132]
+-----------------------------------------------
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~_Vector_base() [141]
+[137]    0.0    0.00    0.00      57         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_impl::~_Vector_impl() [137]
+                0.00    0.00      57/114         std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::~allocator() [124]
+-----------------------------------------------
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~_Vector_base() [141]
+[138]    0.0    0.00    0.00      57         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_deallocate(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [138]
+                0.00    0.00      57/57          std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::deallocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [142]
+-----------------------------------------------
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [140]
+[139]    0.0    0.00    0.00      57         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_create_storage(unsigned long) [139]
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_allocate(unsigned long) [135]
+-----------------------------------------------
+                0.00    0.00      57/57          std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::vector(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [55]
+[140]    0.0    0.00    0.00      57         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [140]
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_impl::_Vector_impl(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [136]
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_create_storage(unsigned long) [139]
+-----------------------------------------------
+                0.00    0.00      57/57          std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~vector() [144]
+[141]    0.0    0.00    0.00      57         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~_Vector_base() [141]
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_deallocate(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [138]
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_impl::~_Vector_impl() [137]
+-----------------------------------------------
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_deallocate(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [138]
+[142]    0.0    0.00    0.00      57         std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::deallocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [142]
+                0.00    0.00      57/57          __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::deallocate(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [127]
+-----------------------------------------------
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_allocate(unsigned long) [135]
+[143]    0.0    0.00    0.00      57         std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::allocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, unsigned long) [143]
+                0.00    0.00      57/57          __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocate(unsigned long, void const*) [128]
+-----------------------------------------------
+                0.00    0.00      57/57          Position::LargeDump() const [51]
+[144]    0.0    0.00    0.00      57         std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~vector() [144]
+                0.00    0.00      57/114         std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_get_Tp_allocator() [125]
+                0.00    0.00      57/57          void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&) [146]
+                0.00    0.00      57/57          std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~_Vector_base() [141]
+-----------------------------------------------
+                0.00    0.00      57/57          void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&) [146]
+[145]    0.0    0.00    0.00      57         void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [145]
+                0.00    0.00      57/57          void std::_Destroy_aux<false>::__destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [134]
+-----------------------------------------------
+                0.00    0.00      57/57          std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~vector() [144]
+[146]    0.0    0.00    0.00      57         void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&) [146]
+                0.00    0.00      57/57          void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [145]
+-----------------------------------------------
+                0.00    0.00      42/42          Position::Swap(Position*) [42]
+[147]    0.0    0.00    0.00      42         std::enable_if<std::__and_<std::is_move_constructible<bool>, std::is_move_assignable<bool> >::value, void>::type std::swap<bool>(bool&, bool&) [147]
+                0.00    0.00     126/126         std::remove_reference<bool&>::type&& std::move<bool&>(bool&) [122]
+-----------------------------------------------
+                0.00    0.00      28/28          Position::Swap(Position*) [42]
+[148]    0.0    0.00    0.00      28         std::enable_if<std::__and_<std::is_move_constructible<int>, std::is_move_assignable<int> >::value, void>::type std::swap<int>(int&, int&) [148]
+                0.00    0.00      84/84          std::remove_reference<int&>::type&& std::move<int&>(int&) [126]
+-----------------------------------------------
+                0.00    0.00       7/21          NegaMaxSearcher::SearchBestMove(Position const&) [3]
+                0.00    0.00      14/21          StartSelfGame(Searcher*, Searcher*, bool) [2]
+[149]    0.0    0.00    0.00      21         Move::Move() [149]
+-----------------------------------------------
+                0.00    0.00       2/8           void std::vector<Move, std::allocator<Move> >::emplace_back<char const (&) [4], Position const&>(char const (&) [4], Position const&) [31]
+                0.00    0.00       2/8           void std::allocator_traits<std::allocator<Move> >::construct<Move, char const (&) [4], Position const&>(std::allocator<Move>&, Move*, char const (&) [4], Position const&) [59]
+                0.00    0.00       2/8           void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00       2/8           void __gnu_cxx::new_allocator<Move>::construct<Move, char const (&) [4], Position const&>(Move*, char const (&) [4], Position const&) [58]
+[150]    0.0    0.00    0.00       8         char const (&std::forward<char const (&) [4]>(std::remove_reference<char const (&) [4]>::type&)) [4] [150]
+-----------------------------------------------
+                0.00    0.00       2/8           void std::vector<Move, std::allocator<Move> >::emplace_back<char const (&) [4], Position const&>(char const (&) [4], Position const&) [31]
+                0.00    0.00       2/8           void std::allocator_traits<std::allocator<Move> >::construct<Move, char const (&) [4], Position const&>(std::allocator<Move>&, Move*, char const (&) [4], Position const&) [59]
+                0.00    0.00       2/8           void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [37]
+                0.00    0.00       2/8           void __gnu_cxx::new_allocator<Move>::construct<Move, char const (&) [4], Position const&>(Move*, char const (&) [4], Position const&) [58]
+[151]    0.0    0.00    0.00       8         Position const& std::forward<Position const&>(std::remove_reference<Position const&>::type&) [151]
+-----------------------------------------------
+                0.00    0.00       7/7           RandomSearcher::SearchBestMove(Position const&) [46]
+[152]    0.0    0.00    0.00       7         Random() [152]
+-----------------------------------------------
+                0.00    0.00       7/7           RandomSearcher::SearchBestMove(Position const&) [46]
+[153]    0.0    0.00    0.00       7         std::vector<Move, std::allocator<Move> >::operator[](unsigned long) [153]
+-----------------------------------------------
+                0.00    0.00       2/2           void __gnu_cxx::new_allocator<Move>::construct<Move, char const (&) [4], Position const&>(Move*, char const (&) [4], Position const&) [58]
+[154]    0.0    0.00    0.00       2         Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [154]
+                0.00    0.00       2/2           Position::max_x() const [156]
+                0.00    0.00       2/2           Position::max_y() const [157]
+-----------------------------------------------
+                0.00    0.00       1/2           RandomSearcher::~RandomSearcher() [160]
+                0.00    0.00       1/2           NegaMaxSearcher::~NegaMaxSearcher() [162]
+[155]    0.0    0.00    0.00       2         Searcher::~Searcher() [155]
+-----------------------------------------------
+                0.00    0.00       2/2           Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [154]
+[156]    0.0    0.00    0.00       2         Position::max_x() const [156]
+-----------------------------------------------
+                0.00    0.00       2/2           Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [154]
+[157]    0.0    0.00    0.00       2         Position::max_y() const [157]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [180]
+[158]    0.0    0.00    0.00       1         _GLOBAL__sub_I_kPlayerId [158]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [159]
+-----------------------------------------------
+                0.00    0.00       1/1           _GLOBAL__sub_I_kPlayerId [158]
+[159]    0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [159]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[160]    0.0    0.00    0.00       1         RandomSearcher::~RandomSearcher() [160]
+                0.00    0.00       1/2           Searcher::~Searcher() [155]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[161]    0.0    0.00    0.00       1         NegaMaxSearcher::NegaMaxSearcher(int) [161]
+                0.00    0.00       1/1           Searcher::Searcher() [163]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[162]    0.0    0.00    0.00       1         NegaMaxSearcher::~NegaMaxSearcher() [162]
+                0.00    0.00       1/2           Searcher::~Searcher() [155]
+-----------------------------------------------
+                0.00    0.00       1/1           NegaMaxSearcher::NegaMaxSearcher(int) [161]
+[163]    0.0    0.00    0.00       1         Searcher::Searcher() [163]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+ [158] _GLOBAL__sub_I_kPlayerId (trax.cc) [32] std::_Base_bitset<1ul>::_M_do_count() const [31] void std::vector<Move, std::allocator<Move> >::emplace_back<char const (&) [4], Position const&>(char const (&) [4], Position const&)
+   [2] StartSelfGame(Searcher*, Searcher*, bool) [87] std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator() const [23] void std::vector<Move, std::allocator<Move> >::emplace_back<int&, int&, Piece>(int&, int&, Piece&&)
+ [159] __static_initialization_and_destruction_0(int, int) (trax.cc) [68] std::move_iterator<Move*>::base() const [37] void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&)
+ [152] Random()               [73] std::move_iterator<Move*>::operator*() const [48] void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move const&>(Move const&)
+  [46] RandomSearcher::SearchBestMove(Position const&) [19] std::bitset<7ul>::_Unchecked_test(unsigned long) const [24] void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<int&, int&, Piece>(int&, int&, Piece&&)
+ [160] RandomSearcher::~RandomSearcher() [17] std::bitset<7ul>::test(unsigned long) const [116] std::vector<Move, std::allocator<Move> >::end()
+   [3] NegaMaxSearcher::SearchBestMove(Position const&) [22] std::bitset<7ul>::count() const [117] std::vector<Move, std::allocator<Move> >::begin()
+   [4] NegaMaxSearcher::NegaMax(Position const&, int) [20] std::bitset<7ul>::_M_check(unsigned long, char const*) const [47] std::vector<Move, std::allocator<Move> >::push_back(Move const&)
+ [161] NegaMaxSearcher::NegaMaxSearcher(int) [99] std::vector<Move, std::allocator<Move> >::_M_check_len(unsigned long, char const*) const [114] std::vector<Move, std::allocator<Move> >::vector()
+ [162] NegaMaxSearcher::~NegaMaxSearcher() [84] std::vector<Move, std::allocator<Move> >::size() const [115] std::vector<Move, std::allocator<Move> >::~vector()
+  [81] Move::Move(int, int, Piece) [88] std::vector<Move, std::allocator<Move> >::max_size() const [153] std::vector<Move, std::allocator<Move> >::operator[](unsigned long)
+ [154] Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [108] std::allocator<Move>::allocator() [54] std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_default_initialize(unsigned long)
+ [149] Move::Move()          [109] std::allocator<Move>::~allocator() [55] std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::vector(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&)
+  [14] Position::FillWinnerFlags(int, int) [132] std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocator(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [144] std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~vector()
+   [6] Position::FillForcedPieces(int, int) [133] std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocator() [118] std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::operator[](unsigned long)
+  [13] Position::TraceVictoryLineOrLoop(int, int, bool) [124] std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::~allocator() [35] void std::_Construct<Move, Move>(Move*, Move&&)
+  [12] Position::at(int, int) [21] std::_Base_bitset<1ul>::_M_getword(unsigned long) [52] void std::_Construct<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)
+  [42] Position::Swap(Position*) [18] std::_Base_bitset<1ul>::_S_maskbit(unsigned long) [75] Move* std::__addressof<Move>(Move&)
+  [78] Position::Position()   [29] std::_Base_bitset<1ul>::_S_whichbit(unsigned long) [120] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__addressof<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&)
+  [79] Position::~Position() [134] void std::_Destroy_aux<false>::__destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [70] Piece* std::__niter_base<Piece*>(Piece*)
+ [163] Searcher::Searcher()   [92] void std::_Destroy_aux<true>::__destroy<Move*>(Move*, Move*) [26] Move* std::uninitialized_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*)
+ [155] Searcher::~Searcher() [100] std::_Vector_base<Move, std::allocator<Move> >::_M_allocate(unsigned long) [27] Move* std::__uninitialized_copy_a<std::move_iterator<Move*>, Move*, Move>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*, std::allocator<Move>&)
+  [97] __gnu_cxx::new_allocator<Move>::deallocate(Move*, unsigned long) [110] std::_Vector_base<Move, std::allocator<Move> >::_Vector_impl::_Vector_impl() [56] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long)
+  [98] __gnu_cxx::new_allocator<Move>::allocate(unsigned long, void const*) [111] std::_Vector_base<Move, std::allocator<Move> >::_Vector_impl::~_Vector_impl() [57] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_a<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&)
+  [58] void __gnu_cxx::new_allocator<Move>::construct<Move, char const (&) [4], Position const&>(Move*, char const (&) [4], Position const&) [93] std::_Vector_base<Move, std::allocator<Move> >::_M_deallocate(Move*, unsigned long) [91] std::move_iterator<Move*> std::__make_move_if_noexcept_iterator<Move, std::move_iterator<Move*> >(Move*)
+  [49] void __gnu_cxx::new_allocator<Move>::construct<Move, Move const&>(Move*, Move const&) [86] std::_Vector_base<Move, std::allocator<Move> >::_M_get_Tp_allocator() [28] Move* std::__uninitialized_move_if_noexcept_a<Move*, Move*, std::allocator<Move> >(Move*, Move*, Move*, std::allocator<Move>&)
+  [44] void __gnu_cxx::new_allocator<Move>::construct<Move, int&, int&, Piece>(Move*, int&, int&, Piece&&) [112] std::_Vector_base<Move, std::allocator<Move> >::_Vector_base() [83] int const& std::max<int>(int const&, int const&)
+ [106] __gnu_cxx::new_allocator<Move>::new_allocator() [113] std::_Vector_base<Move, std::allocator<Move> >::~_Vector_base() [103] unsigned long const& std::max<unsigned long>(unsigned long const&, unsigned long const&)
+ [107] __gnu_cxx::new_allocator<Move>::~new_allocator() [135] std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_allocate(unsigned long) [38] int const& std::min<int>(int const&, int const&)
+ [127] __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::deallocate(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [136] std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_impl::_Vector_impl(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [10] void std::fill<Piece*, Piece>(Piece*, Piece*, Piece const&)
+ [128] __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocate(unsigned long, void const*) [137] std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_impl::~_Vector_impl() [41] std::remove_reference<Piece*&>::type&& std::move<Piece*&>(Piece*&)
+ [129] __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::new_allocator(__gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [138] std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_deallocate(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [122] std::remove_reference<bool&>::type&& std::move<bool&>(bool&)
+ [130] __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::new_allocator() [139] std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_create_storage(unsigned long) [126] std::remove_reference<int&>::type&& std::move<int&>(int&)
+ [123] __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::~new_allocator() [125] std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_get_Tp_allocator() [43] std::enable_if<std::__and_<std::is_move_constructible<Piece*>, std::is_move_assignable<Piece*> >::value, void>::type std::swap<Piece*>(Piece*&, Piece*&)
+ [105] __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::__normal_iterator(Move* const&) [140] std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [147] std::enable_if<std::__and_<std::is_move_constructible<bool>, std::is_move_assignable<bool> >::value, void>::type std::swap<bool>(bool&, bool&)
+  [80] __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator++() [141] std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~_Vector_base() [148] std::enable_if<std::__and_<std::is_move_constructible<int>, std::is_move_assignable<int> >::value, void>::type std::swap<int>(int&, int&)
+  [77] bool __gnu_cxx::operator!=<Move*, std::vector<Move, std::allocator<Move> > >(__gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&, __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > > const&) [89] std::move_iterator<Move*>::move_iterator(Move*) [76] Move&& std::forward<Move>(std::remove_reference<Move>::type&)
+ [104] Position::red_winner() const [74] std::move_iterator<Move*>::operator++() [67] Piece&& std::forward<Piece>(std::remove_reference<Piece>::type&)
+  [96] Position::red_to_move() const [101] std::allocator_traits<std::allocator<Move> >::deallocate(std::allocator<Move>&, Move*, unsigned long) [150] char const (&std::forward<char const (&) [4]>(std::remove_reference<char const (&) [4]>::type&)) [4]
+  [11] Position::GenerateMoves() const [102] std::allocator_traits<std::allocator<Move> >::allocate(std::allocator<Move>&, unsigned long) [119] Move const& std::forward<Move const&>(std::remove_reference<Move const&>::type&)
+   [7] Position::GetPossiblePieces(int, int) const [90] std::allocator_traits<std::allocator<Move> >::max_size(std::allocator<Move> const&) [151] Position const& std::forward<Position const&>(std::remove_reference<Position const&>::type&)
+  [15] Position::at(int, int) const [59] void std::allocator_traits<std::allocator<Move> >::construct<Move, char const (&) [4], Position const&>(std::allocator<Move>&, Move*, char const (&) [4], Position const&) [66] int& std::forward<int&>(std::remove_reference<int&>::type&)
+ [156] Position::max_x() const [50] void std::allocator_traits<std::allocator<Move> >::construct<Move, Move const&>(std::allocator<Move>&, Move*, Move const&) [121] void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)
+ [157] Position::max_y() const [45] void std::allocator_traits<std::allocator<Move> >::construct<Move, int&, int&, Piece>(std::allocator<Move>&, Move*, int&, int&, Piece&&) [94] void std::_Destroy<Move*>(Move*, Move*)
+   [5] Position::DoMove(Move, Position*) const [142] std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::deallocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [95] void std::_Destroy<Move*, Move>(Move*, Move*, std::allocator<Move>&)
+  [82] Position::finished() const [143] std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::allocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, unsigned long) [145] void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)
+  [51] Position::LargeDump() const [25] Move* std::__uninitialized_copy<false>::__uninit_copy<std::move_iterator<Move*>, Move*>(std::move_iterator<Move*>, std::move_iterator<Move*>, Move*) [146] void std::_Destroy<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&)
+  [85] __gnu_cxx::new_allocator<Move>::max_size() const [53] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >* std::__uninitialized_default_n_1<false>::__uninit_default_n<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, unsigned long) [16] __gnu_cxx::__enable_if<!std::__is_scalar<Piece>::__value, void>::__type std::__fill_a<Piece*, Piece>(Piece*, Piece*, Piece const&)
+ [131] __gnu_cxx::new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::max_size() const [9] std::bitset<7ul>::_Unchecked_set(unsigned long, int) [71] bool std::operator==<Move*>(std::move_iterator<Move*> const&, std::move_iterator<Move*> const&)
+  [69] __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::base() const [36] std::bitset<7ul>::_Unchecked_reset(unsigned long) [72] bool std::operator!=<Move*>(std::move_iterator<Move*> const&, std::move_iterator<Move*> const&)
+  [40] __gnu_cxx::__normal_iterator<Move*, std::vector<Move, std::allocator<Move> > >::operator*() const [8] std::bitset<7ul>::set(unsigned long, bool) [34] operator delete(void*, void*)
+  [33] std::_Base_bitset<1ul>::_M_getword(unsigned long) const [30] std::bitset<7ul>::reset(unsigned long) [39] operator new(unsigned long, void*)
