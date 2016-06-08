@@ -8,21 +8,21 @@
 #include <sstream>
 #include <string>
 
-// Configurations:
+#include "gflags/gflags.h"
 
-// Position::Dump() will return pretty colored boards.
-static const bool kEnablePrettyDump = true;
+DEFINE_bool(enable_pretty_dump, true,
+            "Position::Dump() will return pretty colored boards.");
 
-// Exit immediately if Trax::notation() fail.
-static const bool kEnableStrictNotation = false;
+DEFINE_bool(enable_strict_notation, true,
+            "Exit immediately if Trax::notation() fail.");
 
-// Enable Transposition Table.
 // For NegaMax(depth=2), it has impact of 40secs -> 20secs
 // for 200 times NegaMax-Random self play.
-static const bool kEnableTranspositionTable = true;
+DEFINE_bool(enable_transposition_table, true,
+            "Enable Transposition Table.");
 
-// Contest issued player ID.
-static const char *kPlayerId = "PR";
+DEFINE_string(player_id, "PR",
+            "Contest issued player ID.");
 
 
 uint32_t Random() { 
@@ -209,7 +209,7 @@ std::string Move::notation() const {
     trax_notation << '@';
   } else {
     if (static_cast<char>(x + 'A') >= 'Z') {
-      if (kEnableStrictNotation) {
+      if (FLAGS_enable_strict_notation) {
         std::cerr << "cannot encode trax notation" << std::endl;
         exit(EXIT_FAILURE);
       } else {
@@ -343,7 +343,7 @@ PieceSet Position::GetPossiblePieces(int x, int y) const {
 
 void Position::Dump() const {
   if (board_ != nullptr) {
-    if (kEnablePrettyDump) {
+    if (FLAGS_enable_pretty_dump) {
       {
         std::vector<std::string> line(3, "   ");
         for (int i_x = -1; i_x <= max_x_; ++i_x) {
@@ -647,7 +647,7 @@ Move NegaMaxSearcher::SearchBestMove(const Position& position) {
 int NegaMaxSearcher::NegaMax(const Position& position,
                              int depth, int alpha, int beta) {
   PositionHash hash;
-  if (kEnableTranspositionTable) {
+  if (FLAGS_enable_transposition_table) {
     hash = position.Hash();
 
     // Conflict could happen but we don't care.
@@ -702,7 +702,7 @@ int NegaMaxSearcher::NegaMax(const Position& position,
     }
   }
 
-  if (kEnableTranspositionTable) {
+  if (FLAGS_enable_transposition_table) {
     return transposition_table_[hash] = max_score;
   } else {
     return max_score;
@@ -793,7 +793,7 @@ void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
 void StartTraxClient(Searcher* searcher) {
   assert(searcher != nullptr);
 
-  if (!kEnableStrictNotation) {
+  if (!FLAGS_enable_strict_notation) {
   }
 
   bool success = false;
@@ -807,7 +807,7 @@ void StartTraxClient(Searcher* searcher) {
     std::cin >> command;
 
     if (command == "-T") {
-      std::cout << kPlayerId << " ";
+      std::cout << FLAGS_player_id << " ";
       std::cout << std::flush;
       continue;
     }

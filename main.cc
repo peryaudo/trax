@@ -2,7 +2,11 @@
 
 #include <cstdlib>
 
+#include "gflags/gflags.h"
+
 int main(int argc, char *argv[]) {
+  google::ParseCommandLineFlags(&argc, &argv, true);
+
   // Otherwise Position::GetPossiblePieces() doesn't work.
   GeneratePossiblePiecesTable();
   // Otherwise Position::TraceVictoryLineOrLoop() doesn't work.
