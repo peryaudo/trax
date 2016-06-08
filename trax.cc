@@ -805,8 +805,11 @@ void StartTraxClient(Searcher* searcher) {
 
   std::string command;
 
+  bool i_am_red = false;
+
   while (std::cin >> command) {
     if (command == "-T") {
+      // Announce specified client ID.
       std::cout << FLAGS_player_id << "\n";
       std::cout << std::flush;
       continue;
@@ -814,11 +817,15 @@ void StartTraxClient(Searcher* searcher) {
 
     if (command == "-B") {
       // Nothing to do for now.
+      // Black == Red for Trax.
+      i_am_red = true;
       continue;
     }
 
     // Skip Trax notation read if you put the move first.
     if (command != "-W") {
+      i_am_red = false;
+
       // Otherwise command is raw Trax notation. Apply the received trax move.
       success = position.DoMove(Move(command, position), &next_position);
       if (!success) {
@@ -856,5 +863,18 @@ void StartTraxClient(Searcher* searcher) {
     if (position.finished()) {
       break;
     }
+  }
+
+  if (position.finished()) {
+    const int winner = i_am_red ? position.winner() : -position.winner();
+    if (winner > 0) {
+      std::cerr << "I won the game!" << std::endl;
+    } else if (winner < 0) {
+      std::cerr << "The opponent won..." << std::endl;
+    } else {
+      std::cerr << "The game was tie." << std::endl;
+    }
+  } else {
+    std::cerr << "The game is unfinished." << std::endl;
   }
 }
