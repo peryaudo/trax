@@ -1,17 +1,12 @@
 // Copyright (C) 2016 Tetsui Ohkubo.
 
-
-#define NDEBUG
-
+#include "trax.h"
 
 #include <algorithm>
 #include <bitset>
 #include <cassert>
-#include <cstdint>
-#include <cstdlib>
 #include <iostream>
 #include <queue>
-#include <unordered_map>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -32,9 +27,6 @@ const bool kEnableTranspositionTable = true;
 // Contest issued player ID.
 const char *kPlayerId = "PR";
 
-
-// Infinite.
-const int kInf = 1000000000;
 
 // Xorshift 128.
 uint32_t Random() { 
@@ -226,8 +218,6 @@ void GenerateTrackDirectionTable() {
   }
 }
 
-class Position;
-
 // Hold a move.
 struct Move {
   Move() : x(0), y(0), piece(PIECE_EMPTY) {
@@ -271,10 +261,6 @@ struct Move {
   int y;
   Piece piece;
 };
-
-// Integer hash of position. Can be used for transposition table, etc.
-// Needless to say, user must care about conflicts.
-using PositionHash = uint64_t;
 
 // Hold a board configuration, or Position.
 class Position {
@@ -833,23 +819,64 @@ void Perft() {
   }
 }
 
-class Searcher {
- public:
-  virtual Move SearchBestMove(const Position& position) = 0;
-  virtual ~Searcher() {
-  };
-};
+Move NegaMaxSearcher::SearchBestMove(const Position& position) {
+  int best_score = -kInf;
+  std::vector<std::pair<int, Move>> moves;
 
-class NegaMaxSearcher : public Searcher {
- public:
-  // depth=2: white: 146 red: 54 73%
-  // depth=3: white: 153 red: 47 76.5%
-  NegaMaxSearcher(int max_depth) : max_depth_(max_depth) {
+  for (auto&& move : position.GenerateMoves()) {
+    Position next_position;
+    if (!position.DoMove(move, &next_position)) {
+      // This is illegal move.
+      continue;
+    }
+
+    const int score = NegaMax(next_position, max_depth_);
+    best_score = std::max(best_score, score);
+    moves.emplace_back(score, move);
   }
 
-  virtual Move SearchBestMove(const Position& position) {
-    int best_score = -kInf;
-    std::vector<std::pair<int, Move>> moves;
+  std::vector<Move> best_moves;
+  for (auto&& move : moves) {
+    if (move.first == best_score) {
+      best_moves.push_back(move.second);
+    }
+  }
+
+  assert(best_moves.size() > 0);
+  return best_moves[Random() % best_moves.size()];
+}
+
+int NegaMaxSearcher::NegaMax(const Position& position,
+                             int depth, int alpha, int beta) {
+  PositionHash hash;
+  if (kEnableTranspositionTable) {
+    hash = position.Hash();
+
+    // Conflict could happen but we don't care.
+    if (transposition_table_.count(hash)) {
+      return transposition_table_[hash];
+    }
+  }
+
+  int max_score = -kInf;
+
+  if (position.finished()) {
+    // Think the case where position.red_to_move() == true in SearchBestMove.
+    // red_to_move() == false in NegaMax.
+    // NegaMax should return positive score for winner() == 1.
+    if (position.red_to_move()) {
+      max_score = kInf * -position.winner();
+    } else {
+      max_score = kInf * position.winner();
+    }
+  } else {
+    assert(depth >= 0);
+    if (depth == 0) {
+      return 0;
+    }
+
+    int64_t average_score = 0;
+    int64_t num_moves = 0;
 
     for (auto&& move : position.GenerateMoves()) {
       Position next_position;
@@ -858,107 +885,44 @@ class NegaMaxSearcher : public Searcher {
         continue;
       }
 
-      const int score = NegaMax(next_position, max_depth_);
-      best_score = std::max(best_score, score);
-      moves.emplace_back(score, move);
-    }
-
-    std::vector<Move> best_moves;
-    for (auto&& move : moves) {
-      if (move.first == best_score) {
-        best_moves.push_back(move.second);
-      }
-    }
-
-    assert(best_moves.size() > 0);
-    return best_moves[Random() % best_moves.size()];
-  }
-
- private:
-  int NegaMax(const Position& position,
-              int depth, int alpha=-kInf, int beta=kInf) {
-    PositionHash hash;
-    if (kEnableTranspositionTable) {
-      hash = position.Hash();
-
-      // Conflict could happen but we don't care.
-      if (transposition_table_.count(hash)) {
-        return transposition_table_[hash];
-      }
-    }
-
-    int max_score = -kInf;
-
-    if (position.finished()) {
-      // Think the case where position.red_to_move() == true in SearchBestMove.
-      // red_to_move() == false in NegaMax.
-      // NegaMax should return positive score for winner() == 1.
-      if (position.red_to_move()) {
-        max_score = kInf * -position.winner();
+      const int score = -NegaMax(next_position, depth - 1, -beta, -alpha);
+      if (depth == 1) {
+        average_score += score;
+        ++num_moves;
       } else {
-        max_score = kInf * position.winner();
-      }
-    } else {
-      assert(depth >= 0);
-      if (depth == 0) {
-        return 0;
-      }
-
-      int64_t average_score = 0;
-      int64_t num_moves = 0;
-
-      for (auto&& move : position.GenerateMoves()) {
-        Position next_position;
-        if (!position.DoMove(move, &next_position)) {
-          // This is illegal move.
-          continue;
+        max_score = std::max(max_score, score);
+        alpha = std::max(alpha, score);
+        if (alpha >= beta) {
+          break;
         }
-
-        const int score = -NegaMax(next_position, depth - 1, -beta, -alpha);
-        if (depth == 1) {
-          average_score += score;
-          ++num_moves;
-        } else {
-          max_score = std::max(max_score, score);
-          alpha = std::max(alpha, score);
-          if (alpha >= beta) {
-            break;
-          }
-        }
-      }
-
-      if (depth == 1 && num_moves > 0) {
-        average_score /= num_moves;
-        max_score = average_score;
       }
     }
 
-    if (kEnableTranspositionTable) {
-      return transposition_table_[hash] = max_score;
-    } else {
-      return max_score;
+    if (depth == 1 && num_moves > 0) {
+      average_score /= num_moves;
+      max_score = average_score;
     }
   }
 
-  int max_depth_;
-  std::unordered_map<PositionHash, int> transposition_table_;
-};
-
-class RandomSearcher : public Searcher {
- public:
-  virtual Move SearchBestMove(const Position& position) {
-    std::vector<Move> legal_moves;
-    for (auto&& move : position.GenerateMoves()) {
-      Position next_position;
-      if (position.DoMove(move, &next_position)) {
-        // The move is proved to be legal.
-        legal_moves.push_back(move);
-      }
-    }
-    assert(legal_moves.size() > 0);
-    return legal_moves[Random() % legal_moves.size()];
+  if (kEnableTranspositionTable) {
+    return transposition_table_[hash] = max_score;
+  } else {
+    return max_score;
   }
-};
+}
+
+Move RandomSearcher::SearchBestMove(const Position& position) {
+  std::vector<Move> legal_moves;
+  for (auto&& move : position.GenerateMoves()) {
+    Position next_position;
+    if (position.DoMove(move, &next_position)) {
+      // The move is proved to be legal.
+      legal_moves.push_back(move);
+    }
+  }
+  assert(legal_moves.size() > 0);
+  return legal_moves[Random() % legal_moves.size()];
+}
 
 // Return true if red is the winner.
 int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
@@ -1006,7 +970,7 @@ int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
 }
 
 void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
-                            int num_games, bool verbose=false) {
+                            int num_games, bool verbose) {
   int white = 0, red = 0;
   for (int i = 0; i < num_games; ++i) {
     const int result = StartSelfGame(white_searcher, red_searcher, verbose);
@@ -1083,126 +1047,4 @@ void StartTraxClient(Searcher* searcher) {
       break;
     }
   }
-}
-
-void SupplyNotations(const std::vector<std::string>& notations,
-                     Position *position) {
-  for (auto&& notation : notations) {
-    Position next_position;
-    bool success = position->DoMove(Move(notation, *position), &next_position);
-    assert(success);
-    position->Swap(&next_position);
-    position->Dump();
-  }
-}
-
-int main(int argc, char *argv[]) {
-  // Otherwise Position::GetPossiblePieces() doesn't work.
-  GeneratePossiblePiecesTable();
-  // Otherwise Position::TraceVictoryLineOrLoop() doesn't work.
-  GenerateTrackDirectionTable();
-
-  NegaMaxSearcher negamax_searcher(3);
-  RandomSearcher random_searcher;
-
-  if (argc > 1) {
-    for (int i = 0; i < atoi(argv[1]); ++i) {
-      Random();
-    }
-  }
-
-#if 0
-  StartSelfGame(&negamax_searcher, &random_searcher, /* verbose = */ true);
-#endif
-
-#if 1
-  StartMultipleSelfGames(&negamax_searcher, &random_searcher,
-                         /* num_games = */ 100, /* verbose = */ true);
-  // StartMultipleSelfGames(&negamax_searcher, &negamax_searcher,
-  //                        /* num_games = */ 200, /* verbose = */ true);
-#endif
-#if 0
-  StartMultipleSelfGames(&random_searcher, &random_searcher,
-                         /* num_games = */ 10000, /* verbose = */ false);
-#endif
-
-  // Perft();
-
-#if 0
-  if (1) {
-    Position position;
-    Move move("@0+", position);
-    assert(move.x == -1 && move.y == -1);
-  }
-
-  // Testing Forced plays.
-
-  if (1) {
-    Position position;
-    SupplyNotations({"@0+", "B1+", "A2\\"}, &position);
-    assert(static_cast<const Position&>(position).at(1, 1) == PIECE_RWWR);
-  }
-
-  if (1) {
-    Position position;
-    SupplyNotations({"@0/", "B1\\", "A2\\"}, &position);
-    assert(position.finished() && position.winner() == 1);
-  }
-
-  // Testing victory line detections.
-
-  if (1) {
-    Position position;
-    SupplyNotations({"@0+", "B1+", "C1+", "D1+", "E1+", "F1+", "G1+", "H1+"},
-                    &position);
-    assert(position.finished() && position.winner() == 1);
-  }
-
-  if (1) {
-    Position position;
-    SupplyNotations({"@0+", "B1+", "C1+", "D1+", "E1+", "F1+", "G1+", "H1\\"},
-                    &position);
-    assert(!position.finished());
-  }
-
-  if (1) {
-    Position position;
-    SupplyNotations({"@0+", "B1+", "C1+", "D1+", "E1+", "F1+", "G1+", "H1\\",
-                     "H2\\"},
-                    &position);
-    assert(position.finished() && position.winner() == 1);
-  }
-
-  if (1) {
-    Position position;
-    SupplyNotations({"@0+", "B1+", "C1+", "D1+", "E1\\",
-                     "E2\\", "@1/", "A2/", "@2+", "@2+"},
-                    &position);
-    assert(position.finished() && position.winner() == 1);
-  }
-
-  if (1) {
-    Position position;
-    SupplyNotations({"@0+", "B1+", "C1+", "D1+", "E1\\",
-                     "E2\\", "@1/", "A2/", "@2+", "@2\\"},
-                    &position);
-    assert(!position.finished());
-  }
-
-  if (1) {
-    Position position;
-    SupplyNotations({"@0+", "A2+", "A3+", "A4+", "A5+", "A6+", "A7+", "A8+"},
-                    &position);
-    assert(position.finished() && position.winner() == -1);
-  }
-
-  if (1) {
-    Position position;
-    SupplyNotations({"@0+", "A2+", "A3+", "A4+", "A5+", "A6+", "A7+", "A8/"},
-                    &position);
-    assert(!position.finished());
-  }
-#endif
-
-  return 0;
 }
