@@ -1,8 +1,10 @@
 #include "trax.h"
 
 #include <cstdlib>
+#include <iostream>
 
 #include "gflags/gflags.h"
+#include "search.h"
 
 DEFINE_bool(client, false, "Run as contest client.");
 
@@ -18,6 +20,13 @@ DEFINE_int32(num_games, 100, "How many times to self play.");
 
 DEFINE_bool(random_random, false,
             "Self play with random players on both side.");
+
+DEFINE_bool(negamax_negamax, false,
+            "Self play with negamax players on both side.");
+
+DEFINE_bool(negamax1_negamax3, false,
+            "Self play with negamax players on both side. "
+            "(depth=1 and depth=3 depth flag is ignored)");
 
 DEFINE_bool(silent, false, "Self play silently.");
 
@@ -36,16 +45,15 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < FLAGS_seed; ++i) {
     Random();
   }
-#if 0
-  {
+
+  if (FLAGS_negamax1_negamax3) {
     NegaMaxSearcher negamax1(1);
     NegaMaxSearcher negamax2(3);
     StartMultipleSelfGames(&negamax1, &negamax2,
-                           FLAGS_num_games, /* verbose = */ true);
+                           FLAGS_num_games, !FLAGS_silent);
 
     return 0;
   }
-#endif
 
   NegaMaxSearcher negamax_searcher(FLAGS_depth);
   RandomSearcher random_searcher;
@@ -58,6 +66,10 @@ int main(int argc, char *argv[]) {
     // Perform self play.
     if (FLAGS_random_random) {
       StartMultipleSelfGames(&random_searcher, &random_searcher,
+                             FLAGS_num_games, !FLAGS_silent);
+    } else if (FLAGS_negamax_negamax) {
+      std::cerr << "negamax-negamax" << std::endl;
+      StartMultipleSelfGames(&negamax_searcher, &negamax_searcher,
                              FLAGS_num_games, !FLAGS_silent);
     } else {
       StartMultipleSelfGames(&negamax_searcher, &random_searcher,
