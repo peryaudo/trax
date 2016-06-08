@@ -82,9 +82,9 @@ static const char* kPieceColors[] = {
 static const char kPieceNotations[] = ".++/\\/\\";
 
 static const char kLargePieceNotations[][3][32] = {
-  {"...",
-   "...",
-   "..."},
+  {". .",
+   " . ",
+   ". ."},
   {" \33[37m|\33[0m ",
    "\33[31m---\33[0m",
    " \33[37m|\33[0m "},

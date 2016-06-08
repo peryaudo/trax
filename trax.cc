@@ -3,6 +3,7 @@
 #include "trax.h"
 
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -343,8 +344,35 @@ PieceSet Position::GetPossiblePieces(int x, int y) const {
 void Position::Dump() const {
   if (board_ != nullptr) {
     if (kEnablePrettyDump) {
+      {
+        std::vector<std::string> line(3, "   ");
+        for (int i_x = -1; i_x <= max_x_; ++i_x) {
+          line[0] += "   ";
+          line[1] += "   ";
+          line[2] += " ";
+          if (i_x == -1) {
+            line[2] += "@";
+          } else {
+            if (i_x + 'A' > 'Z') {
+              line[2] += " ";
+            } else {
+              line[2] += i_x + 'A';
+            }
+          }
+          line[2] += " ";
+        }
+
+        for (int i = 0; i < 3; ++i) {
+          std::cerr << line[i] << std::endl;
+        }
+      }
       for (int i_y = -1; i_y <= max_y_; ++i_y) {
         std::vector<std::string> line(3);
+        line[0] += "   ";
+        std::stringstream num;
+        num << std::setw(3) << std::right << i_y + 1;
+        line[1] += num.str();
+        line[2] += "   ";
 
         for (int j_x = -1; j_x <= max_x_; ++j_x) {
           Piece piece = at(j_x, i_y);
@@ -703,7 +731,7 @@ int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
   int step = 0;
   while (!position.finished()) {
     if (verbose) {
-      std::cerr << "Step " << step << ":" << std::endl;
+      std::cerr << "Step " << step << ": ";
     }
     Move best_move;
     Position next_position;
@@ -719,7 +747,9 @@ int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
     position.Swap(&next_position);
 
     if (verbose) {
+      std::cerr << best_move.notation() << std::endl;
       position.Dump();
+      std::cerr << std::endl;
     }
     ++step;
   }
