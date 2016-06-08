@@ -633,6 +633,19 @@ Move NegaMaxSearcher::SearchBestMove(const Position& position) {
     moves.emplace_back(score, move);
   }
 
+  /*
+  std::sort(moves.begin(), moves.end(),
+            [](const std::pair<int, Move>& lhs,
+               const std::pair<int, Move>& rhs) {
+              return lhs.first < rhs.first;
+            });
+  */
+#if 0
+  for (auto&& move : moves) {
+    std::cerr << move.first << " " << move.second.notation() << std::endl;
+  }
+#endif
+
   std::vector<Move> best_moves;
   for (auto&& move : moves) {
     if (move.first == best_score) {

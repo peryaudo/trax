@@ -12,12 +12,14 @@ DEFINE_bool(perft, false, "Do perft.");
 
 DEFINE_int32(seed, 0, "Random seed.");
 
-DEFINE_int32(depth, 3, "Search depth.");
+DEFINE_int32(depth, 1, "Search depth.");
 
 DEFINE_int32(num_games, 100, "How many times to self play.");
 
 DEFINE_bool(random_random, false,
             "Self play with random players on both side.");
+
+DEFINE_bool(silent, false, "Self play silently.");
 
 int main(int argc, char *argv[]) {
   google::SetUsageMessage(
@@ -34,6 +36,16 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < FLAGS_seed; ++i) {
     Random();
   }
+#if 0
+  {
+    NegaMaxSearcher negamax1(1);
+    NegaMaxSearcher negamax2(3);
+    StartMultipleSelfGames(&negamax1, &negamax2,
+                           FLAGS_num_games, /* verbose = */ true);
+
+    return 0;
+  }
+#endif
 
   NegaMaxSearcher negamax_searcher(FLAGS_depth);
   RandomSearcher random_searcher;
@@ -46,10 +58,10 @@ int main(int argc, char *argv[]) {
     // Perform self play.
     if (FLAGS_random_random) {
       StartMultipleSelfGames(&random_searcher, &random_searcher,
-                             FLAGS_num_games, /* verbose = */ true);
+                             FLAGS_num_games, !FLAGS_silent);
     } else {
       StartMultipleSelfGames(&negamax_searcher, &random_searcher,
-                             FLAGS_num_games, /* verbose = */ true);
+                             FLAGS_num_games, !FLAGS_silent);
     }
   } else if (FLAGS_perft) {
     // Do perft (performance testing by counting all the possible moves
