@@ -14,7 +14,7 @@ DEFINE_bool(perft, false, "Run perft.");
 
 DEFINE_int32(seed, 0, "Random seed.");
 
-DEFINE_int32(depth, 2, "Search depth.");
+DEFINE_int32(depth, 1, "Search depth.");
 
 DEFINE_int32(num_games, 100, "How many times to self play.");
 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     Random();
   }
 
-  NegaMaxSearcher negamax_searcher(FLAGS_depth);
+  NegaMaxSearcher<LeafAverageEvaluator> negamax_searcher(FLAGS_depth);
   SimpleSearcher<LeafAverageEvaluator> simple_searcher;
   RandomSearcher random_searcher;
 

@@ -74,10 +74,9 @@ class SimpleSearcher : public Searcher {
 
 // Searcher that selects the best move by using the given evaluator and NegaMax
 // search with Alpha-Beta pruning.
+template <typename Evaluator>
 class NegaMaxSearcher : public Searcher {
  public:
-  // depth=2: white: 146 red: 54 73%
-  // depth=3: white: 153 red: 47 76.5%
   NegaMaxSearcher(int max_depth) : max_depth_(max_depth) {
   }
 

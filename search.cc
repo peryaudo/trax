@@ -54,11 +54,8 @@ Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
   return best_moves[Random() % best_moves.size()];
 }
 
-// Instantiation.
-template Move SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(
-    const Position& position);
-
-Move NegaMaxSearcher::SearchBestMove(const Position& position) {
+template<typename Evaluator>
+Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
   assert(!position.finished());
 
   int best_score = -kInf;
@@ -91,8 +88,9 @@ Move NegaMaxSearcher::SearchBestMove(const Position& position) {
   return best_moves[Random() % best_moves.size()];
 }
 
-int NegaMaxSearcher::NegaMax(const Position& position,
-                             int depth, int alpha, int beta) {
+template<typename Evaluator>
+int NegaMaxSearcher<Evaluator>::NegaMax(
+    const Position& position, int depth, int alpha, int beta) {
   PositionHash hash;
   if (FLAGS_enable_transposition_table) {
     hash = position.Hash();
@@ -103,19 +101,13 @@ int NegaMaxSearcher::NegaMax(const Position& position,
     }
   }
 
+  assert(depth >= 0);
+
   int max_score = -kInf;
 
-  if (position.finished()) {
-    max_score = ScoreFinishedPosition(position);
+  if (position.finished() || depth == 0) {
+    max_score = Evaluator::Evaluate(position);
   } else {
-    assert(depth >= 0);
-    if (depth == 0) {
-      return 0;
-    }
-
-    int64_t average_score = 0;
-    int64_t num_moves = 0;
-
     for (auto&& move : position.GenerateMoves()) {
       Position next_position;
       if (!position.DoMove(move, &next_position)) {
@@ -124,21 +116,11 @@ int NegaMaxSearcher::NegaMax(const Position& position,
       }
 
       const int score = -NegaMax(next_position, depth - 1, -beta, -alpha);
-      if (depth == 1) {
-        average_score += score;
-        ++num_moves;
-      } else {
-        max_score = std::max(max_score, score);
-        alpha = std::max(alpha, score);
-        if (alpha >= beta) {
-          break;
-        }
+      max_score = std::max(max_score, score);
+      alpha = std::max(alpha, score);
+      if (alpha >= beta) {
+        break;
       }
-    }
-
-    if (depth == 1 && num_moves > 0) {
-      average_score /= num_moves;
-      max_score = average_score;
     }
   }
 
@@ -149,3 +131,12 @@ int NegaMaxSearcher::NegaMax(const Position& position,
   }
 }
 
+// Instantiation.
+template Move SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(
+    const Position& position);
+
+template Move NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(
+    const Position& position);
+
+template int NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(
+    const Position& position, int depth, int alpha, int beta);
