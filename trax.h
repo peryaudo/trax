@@ -132,6 +132,23 @@ struct Move {
   Piece piece;
 };
 
+// Move with score.
+// For sorting possible moves with their scores through search.
+// Named ExtMove in Stockfish (and YaneuraOu.)
+struct ScoredMove {
+  int score;
+  Move move;
+  ScoredMove(int score, Move move) : score(score), move(move) {
+  }
+
+  const bool operator<(const ScoredMove& rhs) const {
+    return score < rhs.score;
+  }
+
+  // Implicit type conversion to Move is allowed.
+  operator Move() const { return move; }
+};
+
 // Integer hash of position. Can be used for transposition table, etc.
 // Needless to say, user must care about conflicts.
 using PositionHash = uint64_t;

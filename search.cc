@@ -10,7 +10,7 @@ DEFINE_bool(enable_transposition_table, true,
 
 Move NegaMaxSearcher::SearchBestMove(const Position& position) {
   int best_score = -kInf;
-  std::vector<std::pair<int, Move>> moves;
+  std::vector<ScoredMove> moves;
 
   for (auto&& move : position.GenerateMoves()) {
     Position next_position;
@@ -24,13 +24,7 @@ Move NegaMaxSearcher::SearchBestMove(const Position& position) {
     moves.emplace_back(score, move);
   }
 
-  /*
-  std::sort(moves.begin(), moves.end(),
-            [](const std::pair<int, Move>& lhs,
-               const std::pair<int, Move>& rhs) {
-              return lhs.first < rhs.first;
-            });
-  */
+  // std::sort(moves.begin(), moves.end());
 #if 0
   for (auto&& move : moves) {
     std::cerr << move.first << " " << move.second.notation() << std::endl;
@@ -39,8 +33,8 @@ Move NegaMaxSearcher::SearchBestMove(const Position& position) {
 
   std::vector<Move> best_moves;
   for (auto&& move : moves) {
-    if (move.first == best_score) {
-      best_moves.push_back(move.second);
+    if (move.score == best_score) {
+      best_moves.push_back(move);
     }
   }
 
