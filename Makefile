@@ -1,11 +1,11 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -O3 -Ivendor/googletest -DNDEBUG
+CXXFLAGS = -std=c++11 -Wall -Ivendor/googletest -O3 -DNDEBUG
 LDFLAGS =
 
-trax: trax.o main.o
+trax: main.o trax.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-trax_test: trax_test.o
+trax_test: trax_test.o trax.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 clean:

@@ -3,32 +3,27 @@
 #include "trax.h"
 
 #include <algorithm>
-#include <bitset>
-#include <cassert>
 #include <iostream>
-#include <queue>
 #include <sstream>
 #include <string>
-#include <vector>
 
 // Configurations:
 
 // Position::Dump() will return pretty colored boards.
-const bool kEnablePrettyDump = true;
+static const bool kEnablePrettyDump = true;
 
 // Exit immediately if Trax::notation() fail.
-const bool kEnableStrictNotation = false;
+static const bool kEnableStrictNotation = false;
 
 // Enable Transposition Table.
 // For NegaMax(depth=2), it has impact of 40secs -> 20secs
 // for 200 times NegaMax-Random self play.
-const bool kEnableTranspositionTable = true;
+static const bool kEnableTranspositionTable = true;
 
 // Contest issued player ID.
-const char *kPlayerId = "PR";
+static const char *kPlayerId = "PR";
 
 
-// Xorshift 128.
 uint32_t Random() { 
   // TODO(tetsui): Make it thread safe and remove static.
   static uint32_t x = 123456789;
@@ -41,91 +36,6 @@ uint32_t Random() {
   x = y; y = z; z = w;
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8)); 
 }
-
-// Be aware that pieces are defined in terms of anti-clockwise edge colors,
-// while y-axis of board index is flipped against mathematical definition.
-const int kDx[] = {1, 0, -1, 0};
-const int kDy[] = {0, -1, 0, 1};
-
-// Piece kinds. It includes color information so it is more specific than
-// Trax notation. The alphabets after the prefix specifies colors on the edges
-// in anti-clockwise order from the rightmost one.
-enum Piece {
-	PIECE_EMPTY = 0,
-
-  // W
-  //R R
-  // W
-	PIECE_RWRW,
-
-  // R
-  //W W
-  // R
-	PIECE_WRWR,
-
-  // W
-  //W R
-  // R
-	PIECE_RWWR,
-
-  // R
-  //W R
-  // W
-	PIECE_RRWW,
-
-  // R
-  //R W
-  // W
-	PIECE_WRRW,
-
-  // W
-  //R W
-  // R
-	PIECE_WWRR,
-
-  NUM_PIECES
-};
-
-// Edge colors of the pieces as explained above.
-const char* kPieceColors[] = {
-  "____",
-  "RWRW",
-  "WRWR",
-  "RWWR",
-  "RRWW",
-  "WRRW",
-  "WWRR"
-};
-
-// Trax notations of the pieces.
-const char kPieceNotations[] = ".++/\\/\\";
-
-const char kLargePieceNotations[][3][32] = {
-  {"...",
-   "...",
-   "..."},
-  {" \33[37m|\33[0m ",
-   "\33[31m---\33[0m",
-   " \33[37m|\33[0m "},
-  {" \33[31m|\33[0m ",
-   "\33[37m-\33[31m|\33[37m-\33[0m",
-   " \33[31m|\33[0m "},
-  {" \33[37m/\33[0m ",
-   "\33[37m/\33[0m \33[31m/\33[0m",
-   " \33[31m/\33[0m "},
-  {" \33[31m\\\33[0m ",
-   "\33[37m\\\33[0m \33[31m\\\33[0m",
-   " \33[37m\\\33[0m "},
-  {" \33[31m/\33[0m ",
-   "\33[31m/\33[0m \33[37m/\33[0m",
-   " \33[37m/\33[0m "},
-  {" \33[37m\\\33[0m ",
-   "\33[31m\\\33[0m \33[37m\\\33[0m",
-   " \33[31m\\\33[0m "},
-};
-
-// bitset for set of different kind of pieces.
-using PieceSet = std::bitset<NUM_PIECES>;
 
 using NeighborKey = uint32_t;
 
@@ -218,504 +128,6 @@ void GenerateTrackDirectionTable() {
   }
 }
 
-// Hold a move.
-struct Move {
-  Move() : x(0), y(0), piece(PIECE_EMPTY) {
-  }
-
-  // Constructor to create a move from Trax notation.
-  // Board position is required because Trax notation is not enough to
-  // determine the piece's color.
-  Move(const std::string& trax_notation, const Position& previous_position);
-
-  // Constructor to create a move from coordinate and the piece kind.
-  // x and y are 0-indexed i.e. if you want to place a piece to the leftmost,
-  // you have to set x to -1.
-  Move(int x, int y, Piece piece) : x(x), y(y), piece(piece) {
-    // Nothing to do.
-    assert(-1 <= x && -1 <= y);
-  }
-
-  std::string notation() const {
-    std::stringstream trax_notation;
-    if (x == -1) {
-      trax_notation << '@';
-    } else {
-      if (static_cast<char>(x + 'A') >= 'Z') {
-        if (kEnableStrictNotation) {
-          std::cerr << "cannot encode trax notation" << std::endl;
-          exit(EXIT_FAILURE);
-        } else {
-          return "(N/A)";
-        }
-      }
-      trax_notation << static_cast<char>(x + 'A');
-    }
-
-    trax_notation << y + 1;
-    trax_notation << kPieceNotations[piece];
-    return trax_notation.str();
-  }
-
-  int x;
-  int y;
-  Piece piece;
-};
-
-// Hold a board configuration, or Position.
-class Position {
- public:
-  // Constructor to create empty Trax board.
-  Position()
-      : board_(nullptr)
-      , max_x_(0)
-      , max_y_(0)
-      , red_to_move_(false)  // White places first.
-      , finished_(false)
-      , winner_(0) {
-  }
-
-  // Disable copy and assign.
-  Position(Position&) = delete;
-  void operator=(Position) = delete;
-
-  // Destructor.
-  ~Position() {
-    delete board_;
-  }
-
-  // Return possible moves. They may include illegal moves.
-  // Only illegal moves that may be included in the list come from
-  // forced plays. See FillForcedPieces().
-  std::vector<Move> GenerateMoves() const {
-    std::vector<Move> moves;
-
-    if (finished_) {
-      // This is a finished game.
-      return moves;
-    }
-
-    // If this is the first step then they are only valid moves.
-    if (max_x_ == 0 && max_y_ == 0) {
-      moves.emplace_back("@0/", *this);
-      moves.emplace_back("@0+", *this);
-      return moves;
-    }
-
-    // This is very naive implementation but maybe we can progressively
-    // update the possible move list (such as using UnionFind tree?)
-    for (int i_x = -1; i_x <= max_x_; ++i_x) {
-      for (int j_y = -1; j_y <= max_y_; ++j_y) {
-        if (at(i_x, j_y) != PIECE_EMPTY) {
-          continue;
-        }
-
-        PieceSet pieces = GetPossiblePieces(i_x, j_y);
-        // Exclude EMPTY piece for added piece candidates.
-        pieces.reset(PIECE_EMPTY);
-
-        for (int k = 0; k < NUM_PIECES; ++k) {
-          if (pieces.test(k)) {
-            moves.emplace_back(i_x, j_y, static_cast<Piece>(k));
-          }
-        }
-      }
-    }
-
-    return moves;
-  }
-
-  // Return true if the move is legal.
-  bool DoMove(Move move, Position *next_position) const {
-    assert(next_position != nullptr);
-    assert(next_position != this);
-    assert(move.piece != PIECE_EMPTY);
-
-    // Be aware of the memory leak!
-    // TODO(tetsui): this is no good
-    delete next_position->board_;
-
-    // Flip the side to move.
-    next_position->red_to_move_ = !red_to_move_;
-
-    // Extend the field width and height if it is required by the move.
-    next_position->max_x_ = max_x_;
-    next_position->max_y_ = max_y_;
-
-    int offset_x = 0, offset_y = 0;
-
-    if (move.x < 0) {
-      ++offset_x;
-      ++next_position->max_x_;
-    } else if (move.x >= max_x_) {
-      ++next_position->max_x_;
-    }
-
-    if (move.y < 0) {
-      ++offset_y;
-      ++next_position->max_y_;
-    } else if (move.y >= max_y_) {
-      ++next_position->max_y_;
-    }
-
-    // Sentinels with its depth 2 is used here.
-    next_position->board_ =
-        new Piece[(next_position->max_x_ + 4) * (next_position->max_y_ + 4)];
-
-    // Fill the board with empty pieces.
-    std::fill(next_position->board_,
-              next_position->board_ +
-              (next_position->max_x_ + 4) * (next_position->max_y_ + 4),
-              PIECE_EMPTY);
-
-    // Copy the board (if exists).
-    if (board_ != nullptr) {
-      for (int i_x = 0; i_x < max_x_; ++i_x) {
-        for (int j_y = 0; j_y < max_y_; ++j_y) {
-          next_position->at(i_x + offset_x, j_y + offset_y) = at(i_x, j_y);
-        }
-      }
-    }
-
-    // Don't forget to add the new piece!
-    next_position->at(move.x + offset_x, move.y + offset_y) = move.piece;
-
-    // The move is illegal when forced play is applied.
-    if (!next_position->FillForcedPieces(move.x + offset_x,
-                                         move.y + offset_y)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  // Return set of pieces that are possible to be put on the given coordinate
-  // based on neighboring edge colors.
-  // It may still return true for illegal moves, because forced play is
-  // not considered here.
-
-  PieceSet GetPossiblePieces(int x, int y) const {
-    assert(at(x, y) == PIECE_EMPTY);
-
-    NeighborKey key = EncodeNeighborKey(
-        at(x + kDx[0], y + kDy[0]),
-        at(x + kDx[1], y + kDy[1]),
-        at(x + kDx[2], y + kDy[2]),
-        at(x + kDx[3], y + kDy[3]));
-    auto it = g_possible_pieces_table.find(key);
-    if (it == g_possible_pieces_table.end()) {
-      return PieceSet();
-    } else {
-      return it->second;
-    }
-  }
-
-  // Hash current board configuration.
-  // Current implementation uses simple rolling hash.
-  PositionHash Hash() const {
-    const PositionHash kPrime = 100000007;
-    PositionHash result = red_to_move_;
-    for (int i_x = 0; i_x < max_x_; ++i_x) {
-      for (int j_y = 0; j_y < max_y_; ++j_y) {
-        result *= kPrime;
-        result += at(i_x, j_y);
-      }
-    }
-    return result;
-  }
-
-  // Swap
-  void Swap(Position* to) {
-    std::swap(board_, to->board_);
-    std::swap(max_x_, to->max_x_);
-    std::swap(max_y_, to->max_y_);
-    std::swap(red_to_move_, to->red_to_move_);
-    std::swap(finished_, to->finished_);
-    std::swap(winner_, to->winner_);
-  }
-
-  // Debug output.
-  void Dump() const {
-    if (board_ != nullptr) {
-      if (kEnablePrettyDump) {
-        for (int i_y = -1; i_y <= max_y_; ++i_y) {
-          std::vector<std::string> line(3);
-
-          for (int j_x = -1; j_x <= max_x_; ++j_x) {
-            Piece piece = at(j_x, i_y);
-            for (int k = 0; k < 3; ++k) {
-              line[k] += kLargePieceNotations[piece][k];
-            }
-          }
-
-          for (int k = 0; k < 3; ++k) {
-            std::cerr << line[k] << std::endl;
-          }
-        }
-      } else {
-        for (int i_y = -1; i_y <= max_y_; ++i_y) {
-          for (int j_x = -1; j_x <= max_x_; ++j_x) {
-            std::cerr << kPieceNotations[at(j_x, i_y)];
-          }
-          std::cerr << std::endl;
-        }
-      }
-    }
-    std::cerr << "red_to_move = " << (red_to_move_ ? "true" : "false");
-    if (finished_) {
-      std::cerr << ", finished = true, winner = ";
-      if (winner_ > 0) {
-        std::cerr << "red";
-      } else if (winner_ < 0) {
-        std::cerr << "white";
-      } else {
-        std::cerr << "tie";
-      }
-      std::cerr << std::endl;
-    } else {
-      std::cerr << ", finished = false";
-    }
-    std::cerr << std::endl;
-  }
-
-  // Return piece kind at the given coordinate.
-  // [0, max_x) and [0, max_y) holds, but sentinels are used,
-  // so additional bounary access is also allowed.
-  const Piece at(int x, int y) const {
-    assert(-2 <= x && x < max_x_ + 2 && -2 <= y && y < max_y_ + 2);
-    assert((x + 2) * (max_y_ + 4) + (y + 2) >= 0);
-    assert((x + 2) * (max_y_ + 4) + (y + 2) < (max_y_ + 4) * (max_x_ + 4));
-    assert(board_ != nullptr);
-    return board_[(x + 2) * (max_y_ + 4) + (y + 2)];
-  }
-
-  int max_x() const { return max_x_; }
-  int max_y() const { return max_y_; }
-
-  // Return true if red is the side to move for the next turn.
-  bool red_to_move() const { return red_to_move_; }
-
-  // Return true if the game is finished in this position.
-  bool finished() const { return finished_; } 
-
-  // Return 1 if red is the winner.
-  // Return -1 if white is the winner.
-  // Return 0 if the game is tie.
-  // It does not return any meaningful value if finished is not yet true.
-  int winner() const {
-    assert(finished_);
-    return winner_;
-  }
-
- private:
-  // Fill forced play pieces. Return true if placements are successful,
-  // i.e. the position is still legal after forced plays.
-  // This also fills winner flags internally.
-  // This is only called from DoMove().
-  bool FillForcedPieces(int move_x, int move_y) {
-    // Fill winner flags based on the position state.
-    FillWinnerFlags(move_x, move_y);
-
-    std::queue<std::pair<int, int>> possible_queue;
-
-    // Add neighboring cells to the queue as forced play candidates.
-    for (int j = 0; j < 4; ++j) {
-      const int nx = move_x + kDx[j];
-      const int ny = move_y + kDy[j];
-
-      // Forced plays should not happen outside the current board region.
-      // Therefore checking inside [0, max_x) [0, max_y) is enough.
-      if (nx < 0 || ny < 0 || nx >= max_x_ || ny >= max_y_) {
-        continue;
-      }
-
-      if (at(nx, ny) == PIECE_EMPTY) {
-        possible_queue.push(std::make_pair(nx, ny));
-      }
-    }
-
-    // Loop while chain of forced plays is happening.
-    while (!possible_queue.empty()) {
-      const int x = possible_queue.front().first;
-      const int y = possible_queue.front().second;
-      possible_queue.pop();
-
-      // A place may be filled after the coordinate is pushed to the queue,
-      // before the coordinate is popped.
-      if (at(x, y) != PIECE_EMPTY) {
-        continue;
-      }
-
-      PieceSet pieces = GetPossiblePieces(x, y);
-      // No possible piece including empty one for the location.
-      // The position is invalid.
-      if (pieces.count() == 0) {
-        return false;
-      }
-
-      // Exclude empty piece.
-      pieces.reset(PIECE_EMPTY);
-
-      if (pieces.count() != 1) {
-        // If more than one piece kind is possible, forced play
-        // does not happen.
-        continue;
-      }
-
-      // But not all place with only one possible piece is forced play.
-
-      // TODO(tetsui): This can also be implemented as a table like
-      // GetPossiblePieces().
-      int red_count = 0;
-      int white_count = 0;
-
-      for (int i = 0; i < 4; ++i) {
-        const int nx = x + kDx[i];
-        const int ny = y + kDy[i];
-        Piece neighbor = at(nx, ny);
-        if (neighbor == PIECE_EMPTY) {
-          continue;
-        }
-
-        if (kPieceColors[neighbor][(i + 2) % 4] == 'R') {
-          ++red_count;
-        } else if (kPieceColors[neighbor][(i + 2) % 4] == 'W') {
-          ++white_count;
-        }
-      }
-
-      // This is forced play.
-      if (red_count >= 2 || white_count >= 2) {
-        for (int i = 1; i < NUM_PIECES; ++i) {
-          if (!pieces.test(i)) {
-            continue;
-          }
-
-          at(x, y) = static_cast<Piece>(i);
-
-          // Fill winner flags based on the position state.
-          FillWinnerFlags(x, y);
-
-          // Add neighboring cells to the queue as new forced play candidates.
-          for (int j = 0; j < 4; ++j) {
-            const int nx = x + kDx[j];
-            const int ny = y + kDy[j];
-
-            // Forced plays should not happen outside the current board region.
-            // Therefore checking inside [0, max_x) [0, max_y) is enough.
-            if (nx < 0 || ny < 0 || nx >= max_x_ || ny >= max_y_) {
-              continue;
-            }
-
-            if (at(nx, ny) == PIECE_EMPTY) {
-              possible_queue.push(std::make_pair(nx, ny));
-            }
-          }
-          break;
-        }
-      }
-    }
-
-    return true;
-  }
-
-  // Fill winner flags based on the previously updated piece.
-  // Updated variables are finished_ and winner_.
-  // This is only called from FillForcedPieces().
-  void FillWinnerFlags(int x, int y) {
-    if (finished_) {
-      return;
-    }
-
-    // FYI: 1: red wins. 0: tie. -1: white wins.
-    winner_ = 0;
-
-    if (TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) {
-      finished_ = true;
-      ++winner_;
-    }
-
-    if (TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) {
-      finished_ = true;
-      --winner_;
-    }
-  }
-
-  // Return true if the line of the given color starts from (x, y)
-  // constitutes victory line or loop, i.e. the given color wins.
-  bool TraceVictoryLineOrLoop(int start_x, int start_y, bool red_line) {
-    assert(at(start_x, start_y) != PIECE_EMPTY);
-
-    const char traced_color = red_line ? 'R' : 'W';
-
-    int finish_xs[4] = {0};
-    int finish_ys[4] = {0};
-    bool hits[4] = {false};
-
-    // Traces line to two directions with the edges of the given color.
-    for (int i = 0; i < 4; ++i) {
-      if (kPieceColors[at(start_x, start_y)][i] != traced_color) {
-        continue;
-      }
-
-      finish_xs[i] = start_x;
-      finish_ys[i] = start_y;
-      hits[i] = true;
-
-      int x = start_x + kDx[i];
-      int y = start_y + kDy[i];
-      int previous_direction = (i + 2) % 4;
-
-      while (at(x, y) != PIECE_EMPTY) {
-        if (x == start_x && y == start_y) {
-          // This is loop.
-          return true;
-        }
-
-        // Continue tracing the line.
-        const int next_direction =
-          g_track_direction_table[at(x, y)][previous_direction];
-
-        finish_xs[next_direction] = x;
-        finish_ys[next_direction] = y;
-        hits[next_direction] = true;
-
-        x += kDx[next_direction];
-        y += kDy[next_direction];
-        previous_direction = (next_direction + 2) % 4;
-      }
-    }
-
-    // Check if it constitutes vertical or horizontal victory line.
-    return (hits[0] && hits[2] && finish_xs[2] == 0 &&
-            finish_xs[0] == max_x_ - 1 && finish_xs[0] - finish_xs[2] >= 7) ||
-           (hits[3] && hits[1] && finish_xs[1] == 0 &&
-            finish_ys[3] == max_y_ - 1 && finish_ys[3] - finish_xs[1] >= 7);
-  }
-
-  // Reference access to board is only allowed from other instances of the
-  // class.
-  Piece& at(int x, int y) {
-    assert(-2 <= x && x < max_x_ + 2 && -2 <= y && y < max_y_ + 2);
-    assert((x + 2) * (max_y_ + 4) + (y + 2) >= 0);
-    assert((x + 2) * (max_y_ + 4) + (y + 2) < (max_y_ + 4) * (max_x_ + 4));
-    assert(board_ != nullptr);
-    return board_[(x + 2) * (max_y_ + 4) + (y + 2)];
-  }
-
-  Piece* board_;
-
-  // (max_x_ + 4) * (max_y_ + 4) is the size of board_.
-  int max_x_;
-  int max_y_;
-
-  bool red_to_move_;
-
-  bool finished_;
-
-  int winner_;
-};
-
 Move::Move(const std::string& trax_notation, const Position& previous_position)
     : x(0)
     , y(0)
@@ -788,6 +200,364 @@ fail:
   std::cerr << '"' << trax_notation << '"'
     << " position: " << (it - trax_notation.begin()) << std::endl;
   exit(EXIT_FAILURE);
+}
+
+std::string Move::notation() const {
+  std::stringstream trax_notation;
+  if (x == -1) {
+    trax_notation << '@';
+  } else {
+    if (static_cast<char>(x + 'A') >= 'Z') {
+      if (kEnableStrictNotation) {
+        std::cerr << "cannot encode trax notation" << std::endl;
+        exit(EXIT_FAILURE);
+      } else {
+        return "(N/A)";
+      }
+    }
+    trax_notation << static_cast<char>(x + 'A');
+  }
+
+  trax_notation << y + 1;
+  trax_notation << kPieceNotations[piece];
+  return trax_notation.str();
+}
+
+std::vector<Move> Position::GenerateMoves() const {
+  std::vector<Move> moves;
+
+  if (finished_) {
+    // This is a finished game.
+    return moves;
+  }
+
+  // If this is the first step then they are only valid moves.
+  if (max_x_ == 0 && max_y_ == 0) {
+    moves.emplace_back("@0/", *this);
+    moves.emplace_back("@0+", *this);
+    return moves;
+  }
+
+  // This is very naive implementation but maybe we can progressively
+  // update the possible move list (such as using UnionFind tree?)
+  for (int i_x = -1; i_x <= max_x_; ++i_x) {
+    for (int j_y = -1; j_y <= max_y_; ++j_y) {
+      if (at(i_x, j_y) != PIECE_EMPTY) {
+        continue;
+      }
+
+      PieceSet pieces = GetPossiblePieces(i_x, j_y);
+      // Exclude EMPTY piece for added piece candidates.
+      pieces.reset(PIECE_EMPTY);
+
+      for (int k = 0; k < NUM_PIECES; ++k) {
+        if (pieces.test(k)) {
+          moves.emplace_back(i_x, j_y, static_cast<Piece>(k));
+        }
+      }
+    }
+  }
+
+  return moves;
+}
+
+bool Position::DoMove(Move move, Position *next_position) const {
+  assert(next_position != nullptr);
+  assert(next_position != this);
+  assert(move.piece != PIECE_EMPTY);
+
+  // Be aware of the memory leak!
+  // TODO(tetsui): this is no good
+  delete next_position->board_;
+
+  // Flip the side to move.
+  next_position->red_to_move_ = !red_to_move_;
+
+  // Extend the field width and height if it is required by the move.
+  next_position->max_x_ = max_x_;
+  next_position->max_y_ = max_y_;
+
+  int offset_x = 0, offset_y = 0;
+
+  if (move.x < 0) {
+    ++offset_x;
+    ++next_position->max_x_;
+  } else if (move.x >= max_x_) {
+    ++next_position->max_x_;
+  }
+
+  if (move.y < 0) {
+    ++offset_y;
+    ++next_position->max_y_;
+  } else if (move.y >= max_y_) {
+    ++next_position->max_y_;
+  }
+
+  // Sentinels with its depth 2 is used here.
+  next_position->board_ =
+      new Piece[(next_position->max_x_ + 4) * (next_position->max_y_ + 4)];
+
+  // Fill the board with empty pieces.
+  std::fill(next_position->board_,
+            next_position->board_ +
+            (next_position->max_x_ + 4) * (next_position->max_y_ + 4),
+            PIECE_EMPTY);
+
+  // Copy the board (if exists).
+  if (board_ != nullptr) {
+    for (int i_x = 0; i_x < max_x_; ++i_x) {
+      for (int j_y = 0; j_y < max_y_; ++j_y) {
+        next_position->at(i_x + offset_x, j_y + offset_y) = at(i_x, j_y);
+      }
+    }
+  }
+
+  // Don't forget to add the new piece!
+  next_position->at(move.x + offset_x, move.y + offset_y) = move.piece;
+
+  // The move is illegal when forced play is applied.
+  if (!next_position->FillForcedPieces(move.x + offset_x,
+                                       move.y + offset_y)) {
+    return false;
+  }
+
+  return true;
+}
+
+PieceSet Position::GetPossiblePieces(int x, int y) const {
+  assert(at(x, y) == PIECE_EMPTY);
+
+  NeighborKey key = EncodeNeighborKey(
+      at(x + kDx[0], y + kDy[0]),
+      at(x + kDx[1], y + kDy[1]),
+      at(x + kDx[2], y + kDy[2]),
+      at(x + kDx[3], y + kDy[3]));
+  auto it = g_possible_pieces_table.find(key);
+  if (it == g_possible_pieces_table.end()) {
+    return PieceSet();
+  } else {
+    return it->second;
+  }
+}
+
+void Position::Dump() const {
+  if (board_ != nullptr) {
+    if (kEnablePrettyDump) {
+      for (int i_y = -1; i_y <= max_y_; ++i_y) {
+        std::vector<std::string> line(3);
+
+        for (int j_x = -1; j_x <= max_x_; ++j_x) {
+          Piece piece = at(j_x, i_y);
+          for (int k = 0; k < 3; ++k) {
+            line[k] += kLargePieceNotations[piece][k];
+          }
+        }
+
+        for (int k = 0; k < 3; ++k) {
+          std::cerr << line[k] << std::endl;
+        }
+      }
+    } else {
+      for (int i_y = -1; i_y <= max_y_; ++i_y) {
+        for (int j_x = -1; j_x <= max_x_; ++j_x) {
+          std::cerr << kPieceNotations[at(j_x, i_y)];
+        }
+        std::cerr << std::endl;
+      }
+    }
+  }
+  std::cerr << "red_to_move = " << (red_to_move_ ? "true" : "false");
+  if (finished_) {
+    std::cerr << ", finished = true, winner = ";
+    if (winner_ > 0) {
+      std::cerr << "red";
+    } else if (winner_ < 0) {
+      std::cerr << "white";
+    } else {
+      std::cerr << "tie";
+    }
+    std::cerr << std::endl;
+  } else {
+    std::cerr << ", finished = false";
+  }
+  std::cerr << std::endl;
+}
+
+bool Position::FillForcedPieces(int move_x, int move_y) {
+  // Fill winner flags based on the position state.
+  FillWinnerFlags(move_x, move_y);
+
+  std::queue<std::pair<int, int>> possible_queue;
+
+  // Add neighboring cells to the queue as forced play candidates.
+  for (int j = 0; j < 4; ++j) {
+    const int nx = move_x + kDx[j];
+    const int ny = move_y + kDy[j];
+
+    // Forced plays should not happen outside the current board region.
+    // Therefore checking inside [0, max_x) [0, max_y) is enough.
+    if (nx < 0 || ny < 0 || nx >= max_x_ || ny >= max_y_) {
+      continue;
+    }
+
+    if (at(nx, ny) == PIECE_EMPTY) {
+      possible_queue.push(std::make_pair(nx, ny));
+    }
+  }
+
+  // Loop while chain of forced plays is happening.
+  while (!possible_queue.empty()) {
+    const int x = possible_queue.front().first;
+    const int y = possible_queue.front().second;
+    possible_queue.pop();
+
+    // A place may be filled after the coordinate is pushed to the queue,
+    // before the coordinate is popped.
+    if (at(x, y) != PIECE_EMPTY) {
+      continue;
+    }
+
+    PieceSet pieces = GetPossiblePieces(x, y);
+    // No possible piece including empty one for the location.
+    // The position is invalid.
+    if (pieces.count() == 0) {
+      return false;
+    }
+
+    // Exclude empty piece.
+    pieces.reset(PIECE_EMPTY);
+
+    if (pieces.count() != 1) {
+      // If more than one piece kind is possible, forced play
+      // does not happen.
+      continue;
+    }
+
+    // But not all place with only one possible piece is forced play.
+
+    // TODO(tetsui): This can also be implemented as a table like
+    // GetPossiblePieces().
+    int red_count = 0;
+    int white_count = 0;
+
+    for (int i = 0; i < 4; ++i) {
+      const int nx = x + kDx[i];
+      const int ny = y + kDy[i];
+      Piece neighbor = at(nx, ny);
+      if (neighbor == PIECE_EMPTY) {
+        continue;
+      }
+
+      if (kPieceColors[neighbor][(i + 2) % 4] == 'R') {
+        ++red_count;
+      } else if (kPieceColors[neighbor][(i + 2) % 4] == 'W') {
+        ++white_count;
+      }
+    }
+
+    // This is forced play.
+    if (red_count >= 2 || white_count >= 2) {
+      for (int i = 1; i < NUM_PIECES; ++i) {
+        if (!pieces.test(i)) {
+          continue;
+        }
+
+        at(x, y) = static_cast<Piece>(i);
+
+        // Fill winner flags based on the position state.
+        FillWinnerFlags(x, y);
+
+        // Add neighboring cells to the queue as new forced play candidates.
+        for (int j = 0; j < 4; ++j) {
+          const int nx = x + kDx[j];
+          const int ny = y + kDy[j];
+
+          // Forced plays should not happen outside the current board region.
+          // Therefore checking inside [0, max_x) [0, max_y) is enough.
+          if (nx < 0 || ny < 0 || nx >= max_x_ || ny >= max_y_) {
+            continue;
+          }
+
+          if (at(nx, ny) == PIECE_EMPTY) {
+            possible_queue.push(std::make_pair(nx, ny));
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  return true;
+}
+
+void Position::FillWinnerFlags(int x, int y) {
+  if (finished_) {
+    return;
+  }
+
+  // FYI: 1: red wins. 0: tie. -1: white wins.
+  winner_ = 0;
+
+  if (TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) {
+    finished_ = true;
+    ++winner_;
+  }
+
+  if (TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) {
+    finished_ = true;
+    --winner_;
+  }
+}
+
+bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
+                                      bool red_line) {
+  assert(at(start_x, start_y) != PIECE_EMPTY);
+
+  const char traced_color = red_line ? 'R' : 'W';
+
+  int finish_xs[4] = {0};
+  int finish_ys[4] = {0};
+  bool hits[4] = {false};
+
+  // Traces line to two directions with the edges of the given color.
+  for (int i = 0; i < 4; ++i) {
+    if (kPieceColors[at(start_x, start_y)][i] != traced_color) {
+      continue;
+    }
+
+    finish_xs[i] = start_x;
+    finish_ys[i] = start_y;
+    hits[i] = true;
+
+    int x = start_x + kDx[i];
+    int y = start_y + kDy[i];
+    int previous_direction = (i + 2) % 4;
+
+    while (at(x, y) != PIECE_EMPTY) {
+      if (x == start_x && y == start_y) {
+        // This is loop.
+        return true;
+      }
+
+      // Continue tracing the line.
+      const int next_direction =
+        g_track_direction_table[at(x, y)][previous_direction];
+
+      finish_xs[next_direction] = x;
+      finish_ys[next_direction] = y;
+      hits[next_direction] = true;
+
+      x += kDx[next_direction];
+      y += kDy[next_direction];
+      previous_direction = (next_direction + 2) % 4;
+    }
+  }
+
+  // Check if it constitutes vertical or horizontal victory line.
+  return (hits[0] && hits[2] && finish_xs[2] == 0 &&
+          finish_xs[0] == max_x_ - 1 && finish_xs[0] - finish_xs[2] >= 7) ||
+         (hits[3] && hits[1] && finish_xs[1] == 0 &&
+          finish_ys[3] == max_y_ - 1 && finish_ys[3] - finish_xs[1] >= 7);
 }
 
 // Enumerate all possible positions within the given depth.
