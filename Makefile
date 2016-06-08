@@ -8,7 +8,7 @@ trax: main.o trax.o gflags.o gflags_completions.o gflags_reporting.o
 test: trax_test
 	./trax_test
 
-trax_test: trax_test.o trax.o gtest-all.o
+trax_test: trax_test.o trax.o gtest-all.o gflags.o gflags_completions.o gflags_reporting.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 trax_test.o: trax_test.cc trax.h

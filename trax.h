@@ -284,9 +284,16 @@ class Searcher {
 
 int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
                   bool verbose=false);
+
 void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
                             int num_games, bool verbose=false);
 
+// Start Trax client which connects through stdin / stdout.
+void StartTraxClient(Searcher* searcher);
+
+// Do performance testing by counting all the possible moves
+// within the given depth.
+void Perft(int max_depth);
 
 class RandomSearcher : public Searcher {
  public:

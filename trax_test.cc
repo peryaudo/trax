@@ -11,7 +11,8 @@ void SupplyNotations(const std::vector<std::string>& notations,
     Position next_position;
     ASSERT_TRUE(position->DoMove(Move(notation, *position), &next_position));
     position->Swap(&next_position);
-    position->Dump();
+    // Comment out to use for debug.
+    // position->Dump();
   }
 }
 
@@ -113,6 +114,9 @@ TEST(RandomSearcherTest, MultiTime) {
 
 // TODO(tetsui): Do some kind of performance regression test,
 // because performance of basic operations are pretty important.
+
+// TODO(tetsui): Do StartTraxClient() test? Do we have any stdin / stdout test
+// facility?
 
 int main(int argc, char *argv[]) {
   // Otherwise Position::GetPossiblePieces() doesn't work.

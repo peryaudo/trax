@@ -608,9 +608,9 @@ int DoPerft(const Position& position, int depth) {
   return total_positions;
 }
 
-void Perft() {
+void Perft(int max_depth) {
   Position position;
-  for (int i_depth = 0; i_depth < 10; ++i_depth) {
+  for (int i_depth = 0; i_depth <= max_depth; ++i_depth) {
     std::cerr
       << "depth: " << i_depth
       << " leaves: " << DoPerft(position, i_depth) << std::endl;
@@ -789,11 +789,13 @@ void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
     << (white * 100.0 / (white + red)) << "%" << std::endl;
 }
 
-// Start Trax client which connects through stdin / stdout.
 void StartTraxClient(Searcher* searcher) {
   assert(searcher != nullptr);
 
   if (!FLAGS_enable_strict_notation) {
+    std::cerr
+      << "You must enable strict notation for real game." << std::endl;
+    exit(EXIT_FAILURE);
   }
 
   bool success = false;
@@ -803,11 +805,9 @@ void StartTraxClient(Searcher* searcher) {
 
   std::string command;
 
-  while (true) {
-    std::cin >> command;
-
+  while (std::cin >> command) {
     if (command == "-T") {
-      std::cout << FLAGS_player_id << " ";
+      std::cout << FLAGS_player_id << "\n";
       std::cout << std::flush;
       continue;
     }
@@ -821,8 +821,13 @@ void StartTraxClient(Searcher* searcher) {
     if (command != "-W") {
       // Otherwise command is raw Trax notation. Apply the received trax move.
       success = position.DoMove(Move(command, position), &next_position);
-      assert(success);
+      if (!success) {
+        std::cerr
+          << "Hey the opponent is returning the illegal move!" << std::endl;
+        exit(EXIT_FAILURE);
+      }
       position.Swap(&next_position);
+      position.Dump();
 
       // The game is finished by the opponent's move.
       if (position.finished()) {
@@ -832,14 +837,19 @@ void StartTraxClient(Searcher* searcher) {
 
     // Search the best move.
     Move best_move = searcher->SearchBestMove(position);
-    success = position.DoMove(Move(command, position), &next_position);
-    assert(success);
+    success = position.DoMove(best_move, &next_position);
+    if (!success) {
+      std::cerr
+        << "What the ... the engine returned illegal move. " << std::endl;
+      exit(EXIT_FAILURE);
+    }
 
     // Apply the move.
     position.Swap(&next_position);
+    position.Dump();
 
     // Send the move back to stdout.
-    std::cout << best_move.notation() << " ";
+    std::cout << best_move.notation() << "\n";
     std::cout << std::flush;
 
     // The game is finished by our move.
