@@ -661,6 +661,9 @@ int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
 
 void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
                             int num_games, bool verbose) {
+  std::cerr
+    << "white: " << white_searcher->name()
+    << " red: " << red_searcher->name() << std::endl;
   int white = 0, red = 0;
   for (int i = 0; i < num_games; ++i) {
     const int result = StartSelfGame(white_searcher, red_searcher, verbose);
@@ -687,6 +690,8 @@ void StartTraxClient(Searcher* searcher) {
       << "You must enable strict notation for real game." << std::endl;
     exit(EXIT_FAILURE);
   }
+
+  std::cerr << "Searcher: " << searcher->name() << std::endl;
 
   bool success = false;
 

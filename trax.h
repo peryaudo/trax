@@ -297,6 +297,8 @@ class Searcher {
   virtual Move SearchBestMove(const Position& position) = 0;
   virtual ~Searcher() {
   };
+
+  virtual std::string name() = 0;
 };
 
 int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,

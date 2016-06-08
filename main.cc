@@ -8,25 +8,27 @@
 
 DEFINE_bool(client, false, "Run as contest client.");
 
-DEFINE_bool(self, false, "Do self play.");
+DEFINE_bool(self, false, "Run self play.");
 
-DEFINE_bool(perft, false, "Do perft.");
+DEFINE_bool(perft, false, "Run perft.");
 
 DEFINE_int32(seed, 0, "Random seed.");
 
-DEFINE_int32(depth, 1, "Search depth.");
+DEFINE_int32(depth, 2, "Search depth.");
 
 DEFINE_int32(num_games, 100, "How many times to self play.");
 
 DEFINE_bool(random_random, false,
-            "Self play with random players on both side.");
+            "Self play between random-random");
 
-DEFINE_bool(negamax_negamax, false,
-            "Self play with negamax players on both side.");
+DEFINE_bool(simple_simple, false,
+            "Self play between simple-simple");
 
-DEFINE_bool(negamax1_negamax3, false,
-            "Self play with negamax players on both side. "
-            "(depth=1 and depth=3 depth flag is ignored)");
+DEFINE_bool(simple_negmax, false,
+            "Self play between simple-negmax");
+
+DEFINE_bool(negamax_random, false,
+            "Self play between negamax-random");
 
 DEFINE_bool(silent, false, "Self play silently.");
 
@@ -46,33 +48,30 @@ int main(int argc, char *argv[]) {
     Random();
   }
 
-  if (FLAGS_negamax1_negamax3) {
-    NegaMaxSearcher negamax1(1);
-    NegaMaxSearcher negamax2(3);
-    StartMultipleSelfGames(&negamax1, &negamax2,
-                           FLAGS_num_games, !FLAGS_silent);
-
-    return 0;
-  }
-
   NegaMaxSearcher negamax_searcher(FLAGS_depth);
+  SimpleSearcher<LeafAverageEvaluator> simple_searcher;
   RandomSearcher random_searcher;
 
   if (FLAGS_client) {
     // Contest client.
-    StartTraxClient(&negamax_searcher);
+    StartTraxClient(&simple_searcher);
 
   } else if (FLAGS_self) {
     // Perform self play.
     if (FLAGS_random_random) {
       StartMultipleSelfGames(&random_searcher, &random_searcher,
                              FLAGS_num_games, !FLAGS_silent);
-    } else if (FLAGS_negamax_negamax) {
-      std::cerr << "negamax-negamax" << std::endl;
-      StartMultipleSelfGames(&negamax_searcher, &negamax_searcher,
+    } else if (FLAGS_simple_simple) {
+      StartMultipleSelfGames(&simple_searcher, &simple_searcher,
+                             FLAGS_num_games, !FLAGS_silent);
+    } else if (FLAGS_simple_negmax) {
+      StartMultipleSelfGames(&simple_searcher, &negamax_searcher,
+                             FLAGS_num_games, !FLAGS_silent);
+    } else if (FLAGS_negamax_random) {
+      StartMultipleSelfGames(&negamax_searcher, &random_searcher,
                              FLAGS_num_games, !FLAGS_silent);
     } else {
-      StartMultipleSelfGames(&negamax_searcher, &random_searcher,
+      StartMultipleSelfGames(&simple_searcher, &random_searcher,
                              FLAGS_num_games, !FLAGS_silent);
     }
   } else if (FLAGS_perft) {

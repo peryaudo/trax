@@ -118,6 +118,9 @@ TEST(RandomSearcherTest, MultiTime) {
 // TODO(tetsui): Do StartTraxClient() test? Do we have any stdin / stdout test
 // facility?
 
+
+// TODO(tetsui): Write test for ScoreFinishedPosition()
+
 int main(int argc, char *argv[]) {
   // Otherwise Position::GetPossiblePieces() doesn't work.
   GeneratePossiblePiecesTable();

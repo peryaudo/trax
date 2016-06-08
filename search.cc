@@ -1,14 +1,66 @@
 #include "search.h"
 
+#include <iostream>
+#include <cstdlib>
+
 #include "gflags/gflags.h"
+
 
 // For NegaMax(depth=2), it has impact of 40secs -> 20secs
 // for 200 times NegaMax-Random self play.
-DEFINE_bool(enable_transposition_table, true,
-            "Enable Transposition Table.");
+DEFINE_bool(enable_transposition_table, false, "Enable Transposition Table.");
 
+
+Move RandomSearcher::SearchBestMove(const Position& position) {
+  std::vector<Move> legal_moves;
+  for (auto&& move : position.GenerateMoves()) {
+    Position next_position;
+    if (position.DoMove(move, &next_position)) {
+      // The move is proved to be legal.
+      legal_moves.push_back(move);
+    }
+  }
+  assert(legal_moves.size() > 0);
+  return legal_moves[Random() % legal_moves.size()];
+}
+
+template<typename Evaluator>
+Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
+  assert(!position.finished());
+
+  int best_score = -kInf;
+  std::vector<ScoredMove> moves;
+
+  for (auto&& move : position.GenerateMoves()) {
+    Position next_position;
+    if (!position.DoMove(move, &next_position)) {
+      // This is illegal move.
+      continue;
+    }
+
+    const int score = Evaluator::Evaluate(next_position);
+    best_score = std::max(best_score, score);
+    moves.emplace_back(score, move);
+  }
+
+  std::vector<Move> best_moves;
+  for (auto&& move : moves) {
+    if (move.score == best_score) {
+      best_moves.push_back(move);
+    }
+  }
+
+  assert(best_moves.size() > 0);
+  return best_moves[Random() % best_moves.size()];
+}
+
+// Instantiation.
+template Move SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(
+    const Position& position);
 
 Move NegaMaxSearcher::SearchBestMove(const Position& position) {
+  assert(!position.finished());
+
   int best_score = -kInf;
   std::vector<ScoredMove> moves;
 
@@ -20,16 +72,13 @@ Move NegaMaxSearcher::SearchBestMove(const Position& position) {
     }
 
     const int score = NegaMax(next_position, max_depth_);
+    // This assert should always hold, but actually transposition table
+    // conflict can lead this condition to fail.
+    assert(score == LeafAverageEvaluator::Evaluate(next_position));
+
     best_score = std::max(best_score, score);
     moves.emplace_back(score, move);
   }
-
-  // std::sort(moves.begin(), moves.end());
-#if 0
-  for (auto&& move : moves) {
-    std::cerr << move.first << " " << move.second.notation() << std::endl;
-  }
-#endif
 
   std::vector<Move> best_moves;
   for (auto&& move : moves) {
@@ -57,14 +106,7 @@ int NegaMaxSearcher::NegaMax(const Position& position,
   int max_score = -kInf;
 
   if (position.finished()) {
-    // Think the case where position.red_to_move() == true in SearchBestMove.
-    // red_to_move() == false in NegaMax.
-    // NegaMax should return positive score for winner() == 1.
-    if (position.red_to_move()) {
-      max_score = kInf * -position.winner();
-    } else {
-      max_score = kInf * position.winner();
-    }
+    max_score = ScoreFinishedPosition(position);
   } else {
     assert(depth >= 0);
     if (depth == 0) {
@@ -107,15 +149,3 @@ int NegaMaxSearcher::NegaMax(const Position& position,
   }
 }
 
-Move RandomSearcher::SearchBestMove(const Position& position) {
-  std::vector<Move> legal_moves;
-  for (auto&& move : position.GenerateMoves()) {
-    Position next_position;
-    if (position.DoMove(move, &next_position)) {
-      // The move is proved to be legal.
-      legal_moves.push_back(move);
-    }
-  }
-  assert(legal_moves.size() > 0);
-  return legal_moves[Random() % legal_moves.size()];
-}
