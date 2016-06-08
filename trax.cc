@@ -696,7 +696,7 @@ Move RandomSearcher::SearchBestMove(const Position& position) {
 
 // Return true if red is the winner.
 int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
-                  bool verbose=false) {
+                  bool verbose) {
   assert(white_searcher != nullptr && red_searcher != nullptr);
   Position position;
 

@@ -186,6 +186,14 @@ class Position {
     return result;
   }
 
+  // Return all the hashes of isomorphic positions.
+  // For example, rotated positions are isomorphic.
+  // If flip is true, it returns isomorphic hashes with flipped turn to move.
+  std::vector<PositionHash> Hashes(bool flip) const {
+    // TODO(tetsui): implement
+    return std::vector<PositionHash>();
+  }
+
   // Swap
   void Swap(Position* to) {
     std::swap(board_, to->board_);
@@ -274,6 +282,8 @@ class Searcher {
   };
 };
 
+int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
+                  bool verbose=false);
 void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
                             int num_games, bool verbose=false);
 

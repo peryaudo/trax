@@ -5,10 +5,16 @@ LDFLAGS =
 trax: main.o trax.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-trax_test: trax_test.o trax.o
+test: trax_test
+	./trax_test
+
+trax_test: trax_test.o trax.o gtest-all.o
 	$(CXX) $^ $(LDFLAGS) -o $@
+
+gtest-all.o: vendor/googletest/gtest/gtest-all.cc
+	$(CXX) -c $^ $(CXXFLAGS) -o $@
 
 clean:
 	rm -f *.o trax trax_test
 
-.PHONY: test clean
+.PHONY: all test clean
