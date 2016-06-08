@@ -16,6 +16,8 @@ DEFINE_bool(enable_pretty_dump, true,
 DEFINE_bool(enable_strict_notation, true,
             "Exit immediately if Trax::notation() fail.");
 
+DEFINE_bool(trax8x8, false, "Run as 8x8 Trax.");
+
 DEFINE_string(player_id, "PR",
             "Contest issued player ID.");
 
@@ -234,11 +236,19 @@ std::vector<Move> Position::GenerateMoves() const {
     return moves;
   }
 
-  // This is very naive implementation but maybe we can progressively
-  // update the possible move list (such as using UnionFind tree?)
+  // TODO(tetsui): This is very naive implementation but maybe we can
+  // progressively update the possible move list.
+  // (such as using UnionFind tree?)
   for (int i_x = -1; i_x <= max_x_; ++i_x) {
     for (int j_y = -1; j_y <= max_y_; ++j_y) {
       if (at(i_x, j_y) != PIECE_EMPTY) {
+        continue;
+      }
+
+      if (FLAGS_trax8x8 &&
+          ((max_x_ >= 8 && (i_x == -1 || i_x == max_x_)) ||
+           (max_y_ >= 8 && (j_y == -1 || j_y == max_y_)))) {
+        // Invalid move for 8x8 Trax.
         continue;
       }
 
@@ -262,8 +272,14 @@ bool Position::DoMove(Move move, Position *next_position) const {
   assert(next_position != this);
   assert(move.piece != PIECE_EMPTY);
 
+  if (FLAGS_trax8x8 &&
+      ((max_x_ >= 8 && (move.x == -1 || move.x == max_x_)) ||
+       (max_y_ >= 8 && (move.y == -1 || move.y == max_y_)))) {
+    // Invalid move for 8x8 Trax.
+    return false;
+  }
+
   // Be aware of the memory leak!
-  // TODO(tetsui): this is no good
   delete next_position->board_;
 
   // Flip the side to move.
@@ -529,6 +545,29 @@ void Position::FillWinnerFlags(int x, int y) {
   if (TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) {
     finished_ = true;
     --winner_;
+  }
+
+  if (FLAGS_trax8x8 && max_x_ >= 8 && max_y_ >= 8) {
+    // For 8x8 Trax, if region is filled without any victory lines or loops,
+    // the game is considered tie.
+
+    bool all_filled = true;
+    for (int i_x = 0; i_x < max_x_; ++i_x) {
+      for (int j_y = 0; j_y < max_y_; ++j_y) {
+        if (at(i_x, j_y) == PIECE_EMPTY) {
+          all_filled = false;
+          break;
+        }
+      }
+      if (all_filled) {
+        break;
+      }
+    }
+
+    if (all_filled) {
+      finished_ = true;
+      winner_ = 0;
+    }
   }
 }
 
