@@ -167,66 +167,12 @@ class Position {
       , white_winner_(false) {
   }
 
-// #ifdef DISABLE_COPYABLE_POSITION
-#if 1
   // Disable copy and assign.
   Position(Position&) = delete;
   void operator=(Position) = delete;
 
   // Disable comparison.
   const bool operator==(const Position& to) = delete;
-
-#else
-  // Copy constructor.
-  // It is not recommended to copy Position object because it is enough large
-  // but it is unavoidable when implementing transposition table.
-  Position(const Position& position)
-      : board_(nullptr)
-      , max_x_(position.max_x_)
-      , max_y_(position.max_y_)
-      , red_to_move_(position.red_to_move_)
-      , finished_(position.finished_)
-      , winner_(position.winner_) {
-    if (position.board_ != nullptr) {
-      board_ = new Piece[position.board_size()];
-      std::copy(position.board_, position.board_ + position.board_size(),
-                board_);
-    }
-  }
-
-  void operator=(const Position& position) {
-    delete[] board_;
-    board_ = nullptr;
-
-    max_x_ = position.max_x_;
-    max_y_ = position.max_y_;
-    red_to_move_ = position.red_to_move_;
-    finished_ = position.finished_;
-    winner_ = position.winner_;
-    if (position.board_ != nullptr) {
-      board_ = new Piece[position.board_size()];
-      std::copy(position.board_, position.board_ + position.board_size(),
-                board_);
-    }
-  }
-  
-  // Compare two Position objects.
-  const bool operator==(const Position& to) const {
-    if (max_x_ != to.max_x_ ||
-        max_y_ != to.max_y_ ||
-        red_to_move_ != to.red_to_move_) {
-      return false;
-    }
-
-    for (int i = 0; i < to.board_size(); ++i) {
-      if (board_[i] != to.board_[i]) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-#endif
 
   // Destructor.
   ~Position() {
