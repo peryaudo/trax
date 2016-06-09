@@ -163,8 +163,8 @@ class Position {
       , max_x_(0)
       , max_y_(0)
       , red_to_move_(false)  // White places first.
-      , finished_(false)
-      , winner_(0) {
+      , red_winner_(false)
+      , white_winner_(false) {
   }
 
 // #ifdef DISABLE_COPYABLE_POSITION
@@ -282,8 +282,8 @@ class Position {
     std::swap(max_x_, to->max_x_);
     std::swap(max_y_, to->max_y_);
     std::swap(red_to_move_, to->red_to_move_);
-    std::swap(finished_, to->finished_);
-    std::swap(winner_, to->winner_);
+    std::swap(red_winner_, to->red_winner_);
+    std::swap(white_winner_, to->white_winner_);
   }
 
   // Debug output.
@@ -314,7 +314,7 @@ class Position {
   bool red_to_move() const { return red_to_move_; }
 
   // Return true if the game is finished in this position.
-  bool finished() const { return finished_; } 
+  bool finished() const { return red_winner_ || white_winner_; }
 
   // Return 1 if red is the winner.
   // Return -1 if white is the winner.
@@ -323,7 +323,7 @@ class Position {
   // It always return 0 if finished is not yet true, but the method is
   // not supposed to be used for checking if the game is finished.
   int winner() const {
-    return winner_;
+    return static_cast<int>(red_winner_) - static_cast<int>(white_winner_);
   }
 
  private:
@@ -334,7 +334,7 @@ class Position {
   bool FillForcedPieces(int move_x, int move_y);
 
   // Fill winner flags based on the previously updated piece.
-  // Updated variables are finished_ and winner_.
+  // Updated variables are red_winner_ and white_winner_.
   // This is only called from FillForcedPieces().
   void FillWinnerFlags(int x, int y);
 
@@ -364,9 +364,8 @@ class Position {
 
   bool red_to_move_;
 
-  bool finished_;
-
-  int winner_;
+  bool red_winner_;
+  bool white_winner_;
 };
 
 #ifndef DISABLE_COPYABLE_POSITION

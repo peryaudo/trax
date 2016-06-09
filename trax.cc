@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <set>
 
 #include "gflags/gflags.h"
 
@@ -224,7 +225,7 @@ std::string Move::notation() const {
 std::vector<Move> Position::GenerateMoves() const {
   std::vector<Move> moves;
 
-  if (finished_) {
+  if (finished()) {
     // This is a finished game.
     return moves;
   }
@@ -279,7 +280,7 @@ bool Position::DoMove(Move move, Position *next_position) const {
     return false;
   }
 
-  if (finished_) {
+  if (finished()) {
     // Every move after the game finished is illegal.
     return false;
   }
@@ -416,11 +417,11 @@ void Position::Dump() const {
     }
   }
   std::cerr << "red_to_move = " << (red_to_move_ ? "true" : "false");
-  if (finished_) {
+  if (finished()) {
     std::cerr << ", finished = true, winner = ";
-    if (winner_ > 0) {
+    if (winner() > 0) {
       std::cerr << "red";
-    } else if (winner_ < 0) {
+    } else if (winner() < 0) {
       std::cerr << "white";
     } else {
       std::cerr << "tie";
@@ -433,8 +434,17 @@ void Position::Dump() const {
 }
 
 bool Position::FillForcedPieces(int move_x, int move_y) {
-  // Fill winner flags based on the position state.
-  FillWinnerFlags(move_x, move_y);
+  // Winner flags can be filled by performing checking from some checkpoints,
+  // but we have to do them after all the forced plays are done,
+  // due to some corner cases.
+  //
+  // Example: the left side and the right side is connected by victory line,
+  // but suddenly forced play filled the rightmost cells.
+  //
+  // Thus, we have to enumerate all of them first.
+  std::set<std::pair<int, int>> winner_flag_checkpoints;
+
+  winner_flag_checkpoints.insert(std::make_pair(move_x, move_y));
 
   std::queue<std::pair<int, int>> possible_queue;
 
@@ -513,8 +523,7 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
 
         at(x, y) = static_cast<Piece>(i);
 
-        // Fill winner flags based on the position state.
-        FillWinnerFlags(x, y);
+        winner_flag_checkpoints.insert(std::make_pair(x, y));
 
         // Add neighboring cells to the queue as new forced play candidates.
         for (int j = 0; j < 4; ++j) {
@@ -536,28 +545,25 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
     }
   }
 
+  // Fill winner flags based on the position state.
+  
+  for (auto&& coordinate : winner_flag_checkpoints) {
+    FillWinnerFlags(coordinate.first, coordinate.second);
+  }
+
   return true;
 }
 
 void Position::FillWinnerFlags(int x, int y) {
-  if (!finished_) {
-    // FYI: 1: red wins. 0: tie. -1: white wins.
-    winner_ = 0;
+  if (!red_winner_ && TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) {
+    red_winner_ = true;
   }
 
-  if ((!finished_ || winner_ < 0) &&
-      TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) {
-    finished_ = true;
-    ++winner_;
+  if (!white_winner_ && TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) {
+    white_winner_ = true;
   }
 
-  if ((!finished_ || winner_ > 0) &&
-      TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) {
-    finished_ = true;
-    --winner_;
-  }
-
-  if (FLAGS_trax8x8 && !finished_ && max_x_ >= 8 && max_y_ >= 8) {
+  if (FLAGS_trax8x8 && !finished() && max_x_ >= 8 && max_y_ >= 8) {
     // For 8x8 Trax, if region is filled without any victory lines or loops,
     // the game is considered tie.
 
@@ -575,8 +581,8 @@ void Position::FillWinnerFlags(int x, int y) {
     }
 
     if (all_filled) {
-      finished_ = true;
-      winner_ = 0;
+      red_winner_ = true;
+      white_winner_ = true;
     }
   }
 }
@@ -608,6 +614,9 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
     while (at(x, y) != PIECE_EMPTY) {
       if (x == start_x && y == start_y) {
         // This is loop.
+        if (Hash() == 6357593829197971889ULL) {
+          std::cerr << "This is loop." << std::endl;
+        }
         return true;
       }
 
@@ -626,10 +635,30 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
   }
 
   // Check if it constitutes vertical or horizontal victory line.
-  return (hits[0] && hits[2] && finish_xs[2] == 0 &&
-          finish_xs[0] == max_x_ - 1 && finish_xs[0] - finish_xs[2] >= 7) ||
-         (hits[3] && hits[1] && finish_xs[1] == 0 &&
-          finish_ys[3] == max_y_ - 1 && finish_ys[3] - finish_xs[1] >= 7);
+  bool has_victory_line = false;
+
+  has_victory_line = has_victory_line || (
+      hits[0] && hits[2] &&
+      finish_xs[2] == 0 && finish_xs[0] == max_x_ - 1 &&
+      finish_xs[0] - finish_xs[2] >= 7);
+
+  if (Hash() == 6357593829197971889ULL && has_victory_line) {
+    std::cerr << "This is horizontal victory line." << std::endl;
+    std::cerr << finish_xs[2] << " " << finish_xs[0] << std::endl;
+  }
+
+  has_victory_line = has_victory_line || (
+      hits[3] && hits[1] &&
+      finish_ys[1] == 0 && finish_ys[3] == max_y_ - 1 &&
+      finish_ys[3] - finish_ys[1] >= 7);
+
+  if (Hash() == 6357593829197971889ULL && has_victory_line) {
+    std::cerr << "This is vertical victory line." << std::endl;
+    std::cerr << finish_ys[3] << " " << finish_ys[1] << std::endl;
+  }
+
+
+  return has_victory_line;
 }
 
 // Enumerate all possible positions within the given depth.

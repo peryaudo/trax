@@ -104,7 +104,7 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
 template<typename Evaluator>
 int NegaMaxSearcher<Evaluator>::NegaMax(
     const Position& position, int depth, int alpha, int beta) {
-  if (position.Hash() == 12455711137682810522ULL) {
+  if (position.Hash() == 6357593829197971889ULL) {
     std::cerr << " === BEGIN === " << std::endl;
   }
   if (FLAGS_enable_transposition_table && !FLAGS_debug_transposition_table) {
@@ -125,7 +125,7 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
     // Thus, there is no need for sign flip.
     best_score = Evaluator::Evaluate(position);
 
-    if (position.Hash() == 12455711137682810522ULL) {
+    if (position.Hash() == 6357593829197971889ULL) {
       std::cerr << "Evaluate(position) = " << best_score << std::endl;
     }
   } else {
@@ -171,7 +171,7 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
     transposition_table_depth_[position.Hash()] = depth;
   }
 
-  if (position.Hash() == 12455711137682810522ULL) {
+  if (position.Hash() == 6357593829197971889ULL) {
     std::cerr << " === END === " << std::endl;
   }
   return best_score;
