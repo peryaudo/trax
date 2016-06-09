@@ -22,7 +22,13 @@ class LeafAverageEvaluator  {
   // or more simply, you are red inside the method if red_to_move() == true.
   // Larger value is better.
   static int Evaluate(const Position& position) {
+
+    assert(position.Hash() != 12455711137682810522ULL || 
+        position.finished() == true && position.winner() == 1 &&
+        position.red_to_move() == false);
+
     if (position.finished()) {
+
       if (position.red_to_move()) {
         // I'm red.
         // winner() > 0 if red wins.
@@ -54,8 +60,10 @@ class LeafAverageEvaluator  {
         // Flip the sign.
         score = kInf * -next_position.winner();
       }
-#if 0
-      std::cerr << "> " << score << " " << move.notation() << std::endl;
+#if 1
+      if (position.Hash() == 12455711137682810522ULL) {
+        std::cerr << "> " << score << " " << move.notation() << std::endl;
+      }
 #endif
       numerator += score;
       ++denominator;
@@ -103,11 +111,8 @@ class NegaMaxSearcher : public Searcher {
               int depth, int alpha=-kInf, int beta=kInf);
 
   int max_depth_;
-#ifdef DISABLE_COPYABLE_POSITION
   std::unordered_map<PositionHash, int> transposition_table_;
-#else
-  std::unordered_map<Position, int> transposition_table_;
-#endif
+  std::unordered_map<PositionHash, int> transposition_table_depth_;
 };
 
 #endif // TRAX_SEARCH_H_

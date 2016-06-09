@@ -279,8 +279,14 @@ bool Position::DoMove(Move move, Position *next_position) const {
     return false;
   }
 
+  if (finished_) {
+    // Every move after the game finished is illegal.
+    return false;
+  }
+
   // Be aware of the memory leak!
   delete[] next_position->board_;
+  next_position->board_ = nullptr;
 
   // Flip the side to move.
   next_position->red_to_move_ = !red_to_move_;
@@ -385,6 +391,9 @@ void Position::Dump() const {
 
         for (int j_x = -1; j_x <= max_x_; ++j_x) {
           Piece piece = at(j_x, i_y);
+          assert(
+              at(j_x, i_y) <
+              sizeof(kPieceNotations) / sizeof(kPieceNotations[0]));
           for (int k = 0; k < 3; ++k) {
             line[k] += kLargePieceNotations[piece][k];
           }
@@ -397,6 +406,9 @@ void Position::Dump() const {
     } else {
       for (int i_y = -1; i_y <= max_y_; ++i_y) {
         for (int j_x = -1; j_x <= max_x_; ++j_x) {
+          assert(
+              at(j_x, i_y) <
+              sizeof(kPieceNotations) / sizeof(kPieceNotations[0]));
           std::cerr << kPieceNotations[at(j_x, i_y)];
         }
         std::cerr << std::endl;

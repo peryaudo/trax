@@ -9,9 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-// If you comment this out, it becomes too slow.
-#define DISABLE_COPYABLE_POSITION
-
 // Infinite.
 static const int kInf = 1000000000;
 
@@ -170,21 +167,47 @@ class Position {
       , winner_(0) {
   }
 
-#ifdef DISABLE_COPYABLE_POSITION
+// #ifdef DISABLE_COPYABLE_POSITION
+#if 1
   // Disable copy and assign.
   Position(Position&) = delete;
   void operator=(Position) = delete;
+
+  // Disable comparison.
+  const bool operator==(const Position& to) = delete;
+
 #else
   // Copy constructor.
   // It is not recommended to copy Position object because it is enough large
   // but it is unavoidable when implementing transposition table.
   Position(const Position& position)
-      : board_(new Piece[position.board_size()])
+      : board_(nullptr)
       , max_x_(position.max_x_)
       , max_y_(position.max_y_)
       , red_to_move_(position.red_to_move_)
       , finished_(position.finished_)
       , winner_(position.winner_) {
+    if (position.board_ != nullptr) {
+      board_ = new Piece[position.board_size()];
+      std::copy(position.board_, position.board_ + position.board_size(),
+                board_);
+    }
+  }
+
+  void operator=(const Position& position) {
+    delete[] board_;
+    board_ = nullptr;
+
+    max_x_ = position.max_x_;
+    max_y_ = position.max_y_;
+    red_to_move_ = position.red_to_move_;
+    finished_ = position.finished_;
+    winner_ = position.winner_;
+    if (position.board_ != nullptr) {
+      board_ = new Piece[position.board_size()];
+      std::copy(position.board_, position.board_ + position.board_size(),
+                board_);
+    }
   }
   
   // Compare two Position objects.
@@ -227,11 +250,13 @@ class Position {
   // Hash current board configuration.
   // Current implementation uses simple rolling hash.
   PositionHash Hash() const {
-    const PositionHash kPrime = 100000007;
+    const PositionHash kPrime = 100000007ULL;
+
     PositionHash result = 0;
     result += red_to_move_;
     result *= kPrime;
     result += max_x_;
+    result *= kPrime;
     result += max_y_;
 
     for (int i_x = 0; i_x < max_x_; ++i_x) {
@@ -298,7 +323,6 @@ class Position {
   // It always return 0 if finished is not yet true, but the method is
   // not supposed to be used for checking if the game is finished.
   int winner() const {
-    assert(finished_);
     return winner_;
   }
 

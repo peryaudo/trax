@@ -8,6 +8,7 @@
 
 
 DEFINE_bool(enable_transposition_table, false, "Enable Transposition Table.");
+DEFINE_bool(debug_transposition_table, false, "Debug Transposition Table.");
 
 
 Move RandomSearcher::SearchBestMove(const Position& position) {
@@ -81,7 +82,7 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
     // NegaMax() evaluates from the perspective of next_position.
     // Therefore, position that is good for next_position.red_to_move() is
     // bad for position.red_to_move().
-    const int score = -NegaMax(next_position, max_depth_);
+    const int score = -NegaMax(next_position, 0);
 
     best_score = std::max(best_score, score);
     moves.emplace_back(score, move);
@@ -103,28 +104,30 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
 template<typename Evaluator>
 int NegaMaxSearcher<Evaluator>::NegaMax(
     const Position& position, int depth, int alpha, int beta) {
-  if (FLAGS_enable_transposition_table) {
-#ifdef DISABLE_COPYABLE_POSITION
+  if (position.Hash() == 12455711137682810522ULL) {
+    std::cerr << " === BEGIN === " << std::endl;
+  }
+  if (FLAGS_enable_transposition_table && !FLAGS_debug_transposition_table) {
     // Conflict could happen but we don't care.
-    if (transposition_table_.count(position.Hash())) {
+    if (transposition_table_.count(position.Hash()) &&
+        transposition_table_depth_[position.Hash()] >= depth) {
       return transposition_table_[position.Hash()];
     }
-#else
-    if (transposition_table_.count(position)) {
-      return transposition_table_[position];
-    }
-#endif
   }
 
-  assert(depth >= 0);
+  assert(depth <= max_depth_);
 
   int best_score = -kInf;
 
-  if (position.finished() || depth == 0) {
+  if (position.finished() || depth >= max_depth_) {
     // Evaluate the position, from the perspective of position.red_to_move(),
     // and this is same as NegaMax().
     // Thus, there is no need for sign flip.
     best_score = Evaluator::Evaluate(position);
+
+    if (position.Hash() == 12455711137682810522ULL) {
+      std::cerr << "Evaluate(position) = " << best_score << std::endl;
+    }
   } else {
     for (auto&& move : position.GenerateMoves()) {
       Position next_position;
@@ -137,24 +140,41 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
       // NegaMax() evaluates from the perspective of next_position.
       // Therefore, position that is good for next_position.red_to_move() is
       // bad for position.red_to_move().
-      const int score = -NegaMax(next_position, depth - 1, -beta, -alpha);
+      const int score = -NegaMax(next_position, depth + 1, -beta, -alpha);
       best_score = std::max(best_score, score);
       alpha = std::max(alpha, score);
-      if (alpha >= beta) {
-        break;
-      }
+      // if (alpha >= beta) {
+      //  break;
+      // }
     }
   }
 
   if (FLAGS_enable_transposition_table) {
-#ifdef DISABLE_COPYABLE_POSITION
-    return transposition_table_[position.Hash()] = best_score;
-#else
-    return transposition_table_[position] = best_score;
-#endif
-  } else {
-    return best_score;
+    if (FLAGS_debug_transposition_table &&
+        transposition_table_.count(position.Hash()) &&
+        transposition_table_depth_[position.Hash()] == depth &&
+        transposition_table_[position.Hash()] != best_score) {
+      std::cerr << "!!!! Transposition table broken !!!!" << std::endl;
+      std::cerr << "Hash: " << position.Hash() << std::endl;
+      std::cerr << "Depth: " << depth << std::endl;
+      std::cerr << "Score in TT: " << transposition_table_[position.Hash()]
+        << std::endl;
+      std::cerr << "Score: " << best_score << std::endl;
+      // std::cerr << "Before: " << std::endl;
+      // before_position_[position.Hash()].Dump();
+      // std::cerr << "After: " << std::endl;
+      position.Dump();
+      exit(EXIT_FAILURE);
+    }
+
+    transposition_table_[position.Hash()] = best_score;
+    transposition_table_depth_[position.Hash()] = depth;
   }
+
+  if (position.Hash() == 12455711137682810522ULL) {
+    std::cerr << " === END === " << std::endl;
+  }
+  return best_score;
 }
 
 // Instantiation.
