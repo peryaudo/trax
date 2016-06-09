@@ -8,7 +8,9 @@
 
 やっぱりNegaMax(depth=2)がNegaMax(depth=1)より弱いので改めて考えたい
 
-やっぱり評価関数が限界なのか？
+やっぱり評価関数がこれ以上スケールしないのか？
+
+一応SimpleSearcher < NegaMax(depth=1)は達成できててこれは旧版のNegaMax(depth=2)相当なのでまあ深くはできてる
 
 6/10朝版のdepth=2のほうがたしかに強かったのだけれども、TraceVictoryLineOrLoop()
 が普通にバグってたから何がどうだったのか正直わかんねー
@@ -24,6 +26,18 @@
 バカな指し手を追ってみるのはいいと思う
 
 楽しくやるのが第一なんであんまりbisectとかしないように。
+
+まあ深く探索しすぎて弱くなるさもありなんだと思うんだよな〜
+
+深読みしても有益な情報が出てこない評価関数というのはありそう
+
+評価関数が何をやってるかを考えるべき
+統計とってないけどLeafAverageEvaluatorは簡単なループが作れるだけで、
+SimpleSearcherだと簡単なループ防衛すら危うくなるからdepth=1はつよいけど
+これ以上深くしてもメリットがないってことだと思う
+Dumpの下に評価関数を書くってテク
+
+LeafAverageEvaluatorは序盤向けの評価関数だと言える
 
 ## ToDo
 
@@ -94,6 +108,8 @@ http://algoogle.hadrori.jp/algorithm/rolling-hash.html
 どう実装するか分からないけど、探索時に盤面をdecomposeするっていうのはアリだよね
 あるいはあるNegaMax()についてGenerateMovesを一定の領域内だけの手について探索する
 （たとえば下方向の手のみを検討するとか）
+
+http://www.traxgame.com/about_strategy.php#16
 
 ## ぼくのせんりゃく
 

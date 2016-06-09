@@ -115,7 +115,6 @@ TEST(PositionTest, NotHorizontalVictoryLineRealWorld1) {
   ASSERT_EQ(-1, position.winner());
 }
 
-/*
 TEST(PositionTest, NotHorizontalVictoryLineRealWorld2) {
   Position position;
   // Same but different order.
@@ -123,11 +122,10 @@ TEST(PositionTest, NotHorizontalVictoryLineRealWorld2) {
                    "C1\\", "@1+", "@1/", "A2/", "C0/", "@2\\", "C1\\",
                    "B0/", "G5\\", "F7/",
                    // Editing below could reproduce the problem.
-                   "C5\\", "A2\\", "@3/"}, &position);
+                   "B5\\", "A2\\", "@3/"}, &position);
   ASSERT_TRUE(position.finished());
   ASSERT_EQ(-1, position.winner());
 }
-*/
 
 TEST(RandomSearcherTest, OneTime) {
   RandomSearcher random_searcher;
