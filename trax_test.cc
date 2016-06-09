@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "search.h"
 #include "trax.h"
 
 void SupplyNotations(const std::vector<std::string>& notations,
@@ -91,6 +92,16 @@ TEST(PositionTest, NotVerticalVictoryLineSimple) {
   SupplyNotations({"@0+", "A2+", "A3+", "A4+", "A5+", "A6+", "A7+", "A8/"},
                   &position);
   ASSERT_FALSE(position.finished());
+}
+
+TEST(PositionTest, Tie) {
+  Position position;
+  SupplyNotations({"@0+", "B1\\", "B2/", "A2+", "A3/", "A0\\",
+                   "@3+", "@3\\", "B2+"},
+                  &position);
+  position.Dump();
+  ASSERT_TRUE(position.finished());
+  ASSERT_EQ(0, position.winner());
 }
 
 TEST(RandomSearcherTest, OneTime) {
