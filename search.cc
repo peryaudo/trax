@@ -8,7 +8,7 @@
 
 // For NegaMax(depth=2), it has impact of 40secs -> 20secs
 // for 200 times NegaMax-Random self play.
-DEFINE_bool(enable_transposition_table, false, "Enable Transposition Table.");
+DEFINE_bool(enable_transposition_table, true, "Enable Transposition Table.");
 
 
 Move RandomSearcher::SearchBestMove(const Position& position) {

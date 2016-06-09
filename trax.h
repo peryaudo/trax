@@ -193,7 +193,12 @@ class Position {
   // Current implementation uses simple rolling hash.
   PositionHash Hash() const {
     const PositionHash kPrime = 100000007;
-    PositionHash result = red_to_move_;
+    PositionHash result = 0;
+    result += red_to_move_;
+    result *= kPrime;
+    result += max_x_;
+    result += max_y_;
+
     for (int i_x = 0; i_x < max_x_; ++i_x) {
       for (int j_y = 0; j_y < max_y_; ++j_y) {
         result *= kPrime;
