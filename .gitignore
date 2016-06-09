@@ -1,3 +1,4 @@
 *.o
 trax
 trax_test
+.DS_Store

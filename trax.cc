@@ -753,13 +753,15 @@ void StartTraxClient(Searcher* searcher) {
       // Nothing to do for now.
       // Black == Red for Trax.
       i_am_red = true;
+      std::cerr << "The opponent is white." << std::endl;
       continue;
     }
 
-    // Skip Trax notation read if you put the move first.
-    if (command != "-W") {
+    if (command == "-W") {
+      // Skip Trax notation read if you put the move first.
       i_am_red = false;
-
+      std::cerr << "The opponent is red." << std::endl;
+    } else {
       // Otherwise command is raw Trax notation. Apply the received trax move.
       success = position.DoMove(Move(command, position), &next_position);
       if (!success) {

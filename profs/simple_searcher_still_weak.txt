@@ -1,0 +1,88 @@
+/Users/pr/Dropbox/prog/trax% ./trax --client
+Searcher: SimpleSearcher
+@0+
+The opponent is red.
+            
+            
+    @  A  B 
+   . .. .. .
+  0 .  .  . 
+   . .. .. .
+   . . | . .
+  1 . --- . 
+   . . | . .
+   . .. .. .
+  2 .  .  . 
+   . .. .. .
+red_to_move = true, finished = false
+               
+               
+    @  A  B  C 
+   . .. .. .. .
+  0 .  .  .  . 
+   . .. .. .. .
+   . . \  | . .
+  1 . \ \--- . 
+   . . \  | . .
+   . .. .. .. .
+  2 .  .  .  . 
+   . .. .. .. .
+red_to_move = false, finished = false
+@1\
+A0/
+The opponent is red.
+               
+               
+    @  A  B  C 
+   . .. .. .. .
+  0 .  .  .  . 
+   . .. .. .. .
+   . . / . .. .
+  1 . / / .  . 
+   . . / . .. .
+   . . \  | . .
+  2 . \ \--- . 
+   . . \  | . .
+   . .. .. .. .
+  3 .  .  .  . 
+   . .. .. .. .
+red_to_move = true, finished = false
+               
+               
+    @  A  B  C 
+   . .. .. .. .
+  0 .  .  .  . 
+   . .. .. .. .
+   . . /  | . .
+  1 . / /--- . 
+   . . /  | . .
+   . . \  | . .
+  2 . \ \--- . 
+   . . \  | . .
+   . .. .. .. .
+  3 .  .  .  . 
+   . .. .. .. .
+red_to_move = false, finished = false
+B1+
+C1\
+The opponent is red.
+                  
+                  
+    @  A  B  C  D 
+   . .. .. .. .. .
+  0 .  .  .  .  . 
+   . .. .. .. .. .
+   . . /  |  \ . .
+  1 . / /---\ \ . 
+   . . /  |  \ . .
+   . . \  |  / . .
+  2 . \ \---/ / . 
+   . . \  |  / . .
+   . .. .. .. .. .
+  3 .  .  .  .  . 
+   . .. .. .. .. .
+red_to_move = true, finished = true, winner = red
+
+The opponent won...
+
+echo '@0+ A0/ C1\' | ./trax --client
