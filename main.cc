@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 
   if (FLAGS_client) {
     // Contest client.
-    StartTraxClient(&simple_searcher);
+    StartTraxClient(&negamax_searcher);
 
   } else if (FLAGS_self) {
     // Perform self play.
