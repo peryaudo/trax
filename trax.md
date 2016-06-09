@@ -3,40 +3,11 @@
 ## 短期目標
 
 - [x] ランダムプレイヤーに80%以上勝利できる探索を今週中に -> できた(ほぼ100 percentile)
-- [ ] SimpleSearcherをbaselineにして、これに80%以上勝てるものを作る
+- [x] SimpleSearcherをbaselineにして、これに80%以上勝てるものを作る
 
 ## 状況
 
-SimpleSearcherが今のところ一番強いし爆速。
-
-* ゲーム木へのPositionの割り振りとスコアリングは適切なのか
-  * +kInf, -kInfは即詰みを意味するべきで、現状それ以外の物にもアサインされてる気がする
-  * これが不適切だとするとLeafAverageEvaluatorがそこそこの評価関数なのはわりと納得？
-
-じゃあ今kInf, -kInfって割り振ってるヤツはどうするべきなのか？
-ScoreFinishedPositionの符号は正しいのか？
-そもそもScoreFinishedPositionっていう切り出し方は正しいのか？
-その返す値は妥当なのか？
-
-
-/ について
-
-\/と置けば
-
-/\
-\/になるから@1\と置く、というのは間違い
-
-実際には
-
-\/と置いたら
-
-当然
-
-\
-\/されてしまう
-
-これに沿ったスコアリングができているか？
-
+ちゃんとNegaMax(depth=2)がSimpleSearcherより強くなりました、普通にバグってました
 
 * 評価関数につかえそうなもの
   * それを置いたことでの盤面のサイズ
@@ -51,8 +22,6 @@ ScoreFinishedPositionの符号は正しいのか？
   * 盤面を飲み込ませたCNN
 
 ## ToDo
-
-* NegaMaxの2段目以上が弱い理由のデバッグ
 
 * floodgate風レーティングをつけてくれるStartTournamentを実装
 

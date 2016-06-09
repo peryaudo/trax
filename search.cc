@@ -40,6 +40,7 @@ Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
     }
 
     // next_position.red_to_move() == !position.red_to_move() holds.
+    // Evaluate() evaluates from the perspective of next_position.
     // Therefore, position that is good for next_position.red_to_move() is
     // bad for position.red_to_move().
     const int score = -Evaluator::Evaluate(next_position);
@@ -62,7 +63,7 @@ Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
   return best_moves[Random() % best_moves.size()];
 }
 
-// TODO(tetsui): completely revise
+// Return the best move from the perspective of position.red_to_move().
 template<typename Evaluator>
 Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
   assert(!position.finished());
@@ -77,10 +78,11 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
       continue;
     }
 
-    const int score = NegaMax(next_position, max_depth_);
-    // This assert should always hold, but actually transposition table
-    // conflict can lead this condition to fail.
-    assert(score == LeafAverageEvaluator::Evaluate(next_position));
+    // next_position.red_to_move() == !position.red_to_move() holds.
+    // NegaMax() evaluates from the perspective of next_position.
+    // Therefore, position that is good for next_position.red_to_move() is
+    // bad for position.red_to_move().
+    const int score = -NegaMax(next_position, max_depth_);
 
     best_score = std::max(best_score, score);
     moves.emplace_back(score, move);
@@ -97,6 +99,8 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
   return best_moves[Random() % best_moves.size()];
 }
 
+// Score the move from the perspective of position.red_to_move().
+// Larger is better.
 template<typename Evaluator>
 int NegaMaxSearcher<Evaluator>::NegaMax(
     const Position& position, int depth, int alpha, int beta) {
@@ -112,10 +116,13 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
 
   assert(depth >= 0);
 
-  int max_score = -kInf;
+  int best_score = -kInf;
 
   if (position.finished() || depth == 0) {
-    max_score = Evaluator::Evaluate(position);
+    // Evaluate the position, from the perspective of position.red_to_move(),
+    // and this is same as NegaMax().
+    // Thus, there is no need for sign flip.
+    best_score = Evaluator::Evaluate(position);
   } else {
     for (auto&& move : position.GenerateMoves()) {
       Position next_position;
@@ -124,8 +131,12 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
         continue;
       }
 
+      // next_position.red_to_move() == !position.red_to_move() holds.
+      // NegaMax() evaluates from the perspective of next_position.
+      // Therefore, position that is good for next_position.red_to_move() is
+      // bad for position.red_to_move().
       const int score = -NegaMax(next_position, depth - 1, -beta, -alpha);
-      max_score = std::max(max_score, score);
+      best_score = std::max(best_score, score);
       alpha = std::max(alpha, score);
       if (alpha >= beta) {
         break;
@@ -134,9 +145,9 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
   }
 
   if (FLAGS_enable_transposition_table) {
-    return transposition_table_[hash] = max_score;
+    return transposition_table_[hash] = best_score;
   } else {
-    return max_score;
+    return best_score;
   }
 }
 
