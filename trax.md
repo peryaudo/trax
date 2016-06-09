@@ -13,6 +13,12 @@ SimpleSearcherが今のところ一番強いし爆速。
   * +kInf, -kInfは即詰みを意味するべきで、現状それ以外の物にもアサインされてる気がする
   * これが不適切だとするとLeafAverageEvaluatorがそこそこの評価関数なのはわりと納得？
 
+じゃあ今kInf, -kInfって割り振ってるヤツはどうするべきなのか？
+ScoreFinishedPositionの符号は正しいのか？
+そもそもScoreFinishedPositionっていう切り出し方は正しいのか？
+その返す値は妥当なのか？
+
+
 / について
 
 \/と置けば

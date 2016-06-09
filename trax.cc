@@ -739,7 +739,8 @@ void StartTraxClient(Searcher* searcher) {
 
   std::string command;
 
-  bool i_am_red = false;
+  bool handshaken = false;
+  bool i_am_red = true;
 
   while (std::cin >> command) {
     if (command == "-T") {
@@ -749,10 +750,11 @@ void StartTraxClient(Searcher* searcher) {
       continue;
     }
 
-    if (command == "-B") {
+    if (command == "-B" || command == "-R") {
       // Nothing to do for now.
       // Black == Red for Trax.
       i_am_red = true;
+      handshaken = true;
       std::cerr << "The opponent is white." << std::endl;
       continue;
     }
@@ -760,8 +762,17 @@ void StartTraxClient(Searcher* searcher) {
     if (command == "-W") {
       // Skip Trax notation read if you put the move first.
       i_am_red = false;
+      handshaken = true;
       std::cerr << "The opponent is red." << std::endl;
     } else {
+      if (!handshaken) {
+        i_am_red = true;
+        handshaken = true;
+        std::cerr
+          << "Warning: handshake incomplete; "
+          << "Suppose the opponent is white." << std::endl;
+      }
+
       // Otherwise command is raw Trax notation. Apply the received trax move.
       success = position.DoMove(Move(command, position), &next_position);
       if (!success) {

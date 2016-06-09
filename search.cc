@@ -24,6 +24,7 @@ Move RandomSearcher::SearchBestMove(const Position& position) {
   return legal_moves[Random() % legal_moves.size()];
 }
 
+// Return the best move from the perspective of position.red_to_move().
 template<typename Evaluator>
 Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
   assert(!position.finished());
@@ -38,7 +39,14 @@ Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
       continue;
     }
 
-    const int score = Evaluator::Evaluate(next_position);
+    // next_position.red_to_move() == !position.red_to_move() holds.
+    // Therefore, position that is good for next_position.red_to_move() is
+    // bad for position.red_to_move().
+    const int score = -Evaluator::Evaluate(next_position);
+#if 0
+    std::cerr << score << " " << move.notation() << std::endl;
+    std::cerr << std::endl;
+#endif
     best_score = std::max(best_score, score);
     moves.emplace_back(score, move);
   }
@@ -54,6 +62,7 @@ Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
   return best_moves[Random() % best_moves.size()];
 }
 
+// TODO(tetsui): completely revise
 template<typename Evaluator>
 Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
   assert(!position.finished());

@@ -1,31 +1,16 @@
 #ifndef TRAX_SEARCH_H_
 #define TRAX_SEARCH_H_
 
+#include <iostream>
 #include <sstream>
 
 #include "trax.h"
 
-// If the position is finished, it returns positive or negative infinite score
-// depending on the side to move. Otherwise, it returns zero.
-// TODO(tetsui): Write test for ScoreFinishedPosition()
-// TODO(testui): Is the sign correct?
-inline static int ScoreFinishedPosition(const Position& position) {
-  if (position.finished()) {
-    // Think the case where position.red_to_move() == true in SearchBestMove.
-    // red_to_move() == false in NegaMax.
-    // NegaMax should return positive score for winner() == 1.
-    if (position.red_to_move()) {
-      return kInf * -position.winner();
-    } else {
-      return kInf * position.winner();
-    }
-  } else {
-    return 0;
-  }
-}
-
 class NoneEvaluator {
  public:
+  // Evaluate the position, from the perspective of position.red_to_move().
+  // or more simply, you are red inside the method if red_to_move() == true.
+  // Larger value is better.
   static int Evaluate(const Position& position) {
     return 0;
   }
@@ -33,9 +18,21 @@ class NoneEvaluator {
 
 class LeafAverageEvaluator  {
  public:
+  // Evaluate the position, from the perspective of position.red_to_move().
+  // or more simply, you are red inside the method if red_to_move() == true.
+  // Larger value is better.
   static int Evaluate(const Position& position) {
     if (position.finished()) {
-      return ScoreFinishedPosition(position);
+      if (position.red_to_move()) {
+        // I'm red.
+        // winner() > 0 if red wins.
+        return kInf * position.winner();
+      } else {
+        // I'm white.
+        // winner() > 0 if red wins.
+        // Flip the sign.
+        return kInf * -position.winner();
+      }
     }
 
     int64_t numerator = 0;
@@ -47,7 +44,20 @@ class LeafAverageEvaluator  {
         // This is illegal move.
         continue;
       }
-      numerator -= ScoreFinishedPosition(next_position);
+      int64_t score = 0;
+      if (position.red_to_move()) {
+        // I'm red.
+        // winner() > 0 if red wins.
+        score = kInf * next_position.winner();
+      } else {
+        // I'm white.
+        // Flip the sign.
+        score = kInf * -next_position.winner();
+      }
+#if 0
+      std::cerr << "> " << score << " " << move.notation() << std::endl;
+#endif
+      numerator += score;
       ++denominator;
     }
 

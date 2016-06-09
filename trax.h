@@ -226,7 +226,7 @@ class Position {
 
   // Return piece kind at the given coordinate.
   // [0, max_x) and [0, max_y) holds, but sentinels are used,
-  // so additional bounary access is also allowed.
+  // so additional bounary access [-2, +2] is also allowed.
   const Piece at(int x, int y) const {
     assert(-2 <= x && x < max_x_ + 2 && -2 <= y && y < max_y_ + 2);
     assert((x + 2) * (max_y_ + 4) + (y + 2) >= 0);
@@ -238,7 +238,14 @@ class Position {
   int max_x() const { return max_x_; }
   int max_y() const { return max_y_; }
 
-  // Return true if red is the side to move for the next turn.
+  // Return true if red is the side to move for the NEXT turn,
+  // i.e. if red_to_move() == true, the last player that put a piece is white.
+  //
+  // This is formal definition, but simply you can think you are red
+  // if you are passed Position object with red_to_move() == true.
+  //
+  // FYI: white is the first player to put piece, so red_to_move() == false in
+  // the beggining.
   bool red_to_move() const { return red_to_move_; }
 
   // Return true if the game is finished in this position.
@@ -247,7 +254,9 @@ class Position {
   // Return 1 if red is the winner.
   // Return -1 if white is the winner.
   // Return 0 if the game is tie.
-  // It does not return any meaningful value if finished is not yet true.
+  //
+  // It always return 0 if finished is not yet true, but the method is
+  // not supposed to be used for checking if the game is finished.
   int winner() const {
     assert(finished_);
     return winner_;
@@ -294,13 +303,23 @@ class Position {
 
 class Searcher {
  public:
+  // Return the best move from the position, from the perspective of
+  // position.red_to_move(), or more simply, you are red inside the method
+  // if position.red_to_move() == true.
   virtual Move SearchBestMove(const Position& position) = 0;
   virtual ~Searcher() {
   };
 
+  // Searcher name that is shown in the debug messages of
+  // StartSelfGame() and StartTraxClient().
+  // Supposed to describe important configuration information of the searcher,
+  // such as the depth of the search, etc.
   virtual std::string name() = 0;
 };
 
+// Return 1 if red is the winner.
+// Return -1 if white is the winner.
+// Return 0 if the game is tie.
 int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
                   bool verbose=false);
 
