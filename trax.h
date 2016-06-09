@@ -4,9 +4,13 @@
 #include <bitset>
 #include <cassert>
 #include <cstdint>
+#include <iostream>
 #include <queue>
 #include <unordered_map>
 #include <vector>
+
+// If you comment this out, it becomes too slow.
+#define DISABLE_COPYABLE_POSITION
 
 // Infinite.
 static const int kInf = 1000000000;
@@ -166,13 +170,44 @@ class Position {
       , winner_(0) {
   }
 
+#ifdef DISABLE_COPYABLE_POSITION
   // Disable copy and assign.
   Position(Position&) = delete;
   void operator=(Position) = delete;
+#else
+  // Copy constructor.
+  // It is not recommended to copy Position object because it is enough large
+  // but it is unavoidable when implementing transposition table.
+  Position(const Position& position)
+      : board_(new Piece[position.board_size()])
+      , max_x_(position.max_x_)
+      , max_y_(position.max_y_)
+      , red_to_move_(position.red_to_move_)
+      , finished_(position.finished_)
+      , winner_(position.winner_) {
+  }
+  
+  // Compare two Position objects.
+  const bool operator==(const Position& to) const {
+    if (max_x_ != to.max_x_ ||
+        max_y_ != to.max_y_ ||
+        red_to_move_ != to.red_to_move_) {
+      return false;
+    }
+
+    for (int i = 0; i < to.board_size(); ++i) {
+      if (board_[i] != to.board_[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+#endif
 
   // Destructor.
   ~Position() {
-    delete board_;
+    delete[] board_;
   }
 
   // Return possible moves. They may include illegal moves.
@@ -293,9 +328,13 @@ class Position {
     return board_[(x + 2) * (max_y_ + 4) + (y + 2)];
   }
 
+  // Board array size including sentinels. Used internally.
+  int board_size() const {
+    return (max_x_ + 4) * (max_y_ + 4);
+  }
+
   Piece* board_;
 
-  // (max_x_ + 4) * (max_y_ + 4) is the size of board_.
   int max_x_;
   int max_y_;
 
@@ -305,6 +344,18 @@ class Position {
 
   int winner_;
 };
+
+#ifndef DISABLE_COPYABLE_POSITION
+namespace std {
+  template<>
+  struct hash<Position>
+  {
+    std::size_t operator()(const Position& position) const {
+      return position.Hash();
+    }
+  };
+}  // namespace std
+#endif
 
 class Searcher {
  public:

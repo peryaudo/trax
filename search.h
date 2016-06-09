@@ -103,7 +103,11 @@ class NegaMaxSearcher : public Searcher {
               int depth, int alpha=-kInf, int beta=kInf);
 
   int max_depth_;
+#ifdef DISABLE_COPYABLE_POSITION
   std::unordered_map<PositionHash, int> transposition_table_;
+#else
+  std::unordered_map<Position, int> transposition_table_;
+#endif
 };
 
 #endif // TRAX_SEARCH_H_

@@ -71,7 +71,14 @@ int main(int argc, char *argv[]) {
       StartMultipleSelfGames(&negamax_searcher, &random_searcher,
                              FLAGS_num_games, !FLAGS_silent);
     } else {
+#if 0
       StartMultipleSelfGames(&simple_searcher, &random_searcher,
+                             FLAGS_num_games, !FLAGS_silent);
+#endif
+
+      NegaMaxSearcher<LeafAverageEvaluator> negamax_searcher1(1);
+      NegaMaxSearcher<LeafAverageEvaluator> negamax_searcher2(2);
+      StartMultipleSelfGames(&negamax_searcher1, &negamax_searcher2,
                              FLAGS_num_games, !FLAGS_silent);
     }
   } else if (FLAGS_perft) {

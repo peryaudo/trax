@@ -280,7 +280,7 @@ bool Position::DoMove(Move move, Position *next_position) const {
   }
 
   // Be aware of the memory leak!
-  delete next_position->board_;
+  delete[] next_position->board_;
 
   // Flip the side to move.
   next_position->red_to_move_ = !red_to_move_;
@@ -306,13 +306,11 @@ bool Position::DoMove(Move move, Position *next_position) const {
   }
 
   // Sentinels with its depth 2 is used here.
-  next_position->board_ =
-      new Piece[(next_position->max_x_ + 4) * (next_position->max_y_ + 4)];
+  next_position->board_ = new Piece[next_position->board_size()];
 
   // Fill the board with empty pieces.
   std::fill(next_position->board_,
-            next_position->board_ +
-            (next_position->max_x_ + 4) * (next_position->max_y_ + 4),
+            next_position->board_ + next_position->board_size(),
             PIECE_EMPTY);
 
   // Copy the board (if exists).

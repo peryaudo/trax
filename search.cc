@@ -4,11 +4,10 @@
 #include <cstdlib>
 
 #include "gflags/gflags.h"
+#include "trax.h"
 
 
-// For NegaMax(depth=2), it has impact of 40secs -> 20secs
-// for 200 times NegaMax-Random self play.
-DEFINE_bool(enable_transposition_table, true, "Enable Transposition Table.");
+DEFINE_bool(enable_transposition_table, false, "Enable Transposition Table.");
 
 
 Move RandomSearcher::SearchBestMove(const Position& position) {
@@ -104,14 +103,17 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
 template<typename Evaluator>
 int NegaMaxSearcher<Evaluator>::NegaMax(
     const Position& position, int depth, int alpha, int beta) {
-  PositionHash hash;
   if (FLAGS_enable_transposition_table) {
-    hash = position.Hash();
-
+#ifdef DISABLE_COPYABLE_POSITION
     // Conflict could happen but we don't care.
-    if (transposition_table_.count(hash)) {
-      return transposition_table_[hash];
+    if (transposition_table_.count(position.Hash())) {
+      return transposition_table_[position.Hash()];
     }
+#else
+    if (transposition_table_.count(position)) {
+      return transposition_table_[position];
+    }
+#endif
   }
 
   assert(depth >= 0);
@@ -145,7 +147,11 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
   }
 
   if (FLAGS_enable_transposition_table) {
-    return transposition_table_[hash] = best_score;
+#ifdef DISABLE_COPYABLE_POSITION
+    return transposition_table_[position.Hash()] = best_score;
+#else
+    return transposition_table_[position] = best_score;
+#endif
   } else {
     return best_score;
   }
