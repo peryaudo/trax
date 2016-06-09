@@ -546,7 +546,6 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
   }
 
   // Fill winner flags based on the position state.
-  
   for (auto&& coordinate : winner_flag_checkpoints) {
     FillWinnerFlags(coordinate.first, coordinate.second);
   }
@@ -593,40 +592,51 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
 
   const char traced_color = red_line ? 'R' : 'W';
 
-  int finish_xs[4] = {0};
-  int finish_ys[4] = {0};
+  // See also: definition of kDx[] and kDy[]
+  //                    x           y  x  y
+  const int edges[4] = {max_x_ - 1, 0, 0, max_y_ - 1};
+
+  // hits becomes true if the line *hits* the edge of the board,
+  // which is necessary for checking victory line.
   bool hits[4] = {false};
 
   // Traces line to two directions with the edges of the given color.
   for (int i = 0; i < 4; ++i) {
     if (kPieceColors[at(start_x, start_y)][i] != traced_color) {
+      // continue if the i-th edge color of the starting piece is
+      // not trace_color.
       continue;
     }
 
-    finish_xs[i] = start_x;
-    finish_ys[i] = start_y;
-    hits[i] = true;
+    {
+      const int xy[2] = {start_x, start_y};
+      if (edges[i] == xy[i % 2]) {
+        // You hit the edge at the beggining.
+        hits[i] = true;
+      }
+    }
 
     int x = start_x + kDx[i];
     int y = start_y + kDy[i];
     int previous_direction = (i + 2) % 4;
 
+    // Trace the line until it hits an empty cell.
     while (at(x, y) != PIECE_EMPTY) {
       if (x == start_x && y == start_y) {
         // This is loop.
-        if (Hash() == 6357593829197971889ULL) {
-          std::cerr << "This is loop." << std::endl;
-        }
         return true;
       }
+
+      const int xy[2] = {x, y};
 
       // Continue tracing the line.
       const int next_direction =
         g_track_direction_table[at(x, y)][previous_direction];
 
-      finish_xs[next_direction] = x;
-      finish_ys[next_direction] = y;
-      hits[next_direction] = true;
+      if (edges[next_direction] == xy[next_direction % 2]) {
+        // You hit the edge.
+        hits[next_direction] = true;
+      }
 
       x += kDx[next_direction];
       y += kDy[next_direction];
@@ -634,31 +644,17 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
     }
   }
 
-  // Check if it constitutes vertical or horizontal victory line.
-  bool has_victory_line = false;
-
-  has_victory_line = has_victory_line || (
-      hits[0] && hits[2] &&
-      finish_xs[2] == 0 && finish_xs[0] == max_x_ - 1 &&
-      finish_xs[0] - finish_xs[2] >= 7);
-
-  if (Hash() == 6357593829197971889ULL && has_victory_line) {
-    std::cerr << "This is horizontal victory line." << std::endl;
-    std::cerr << finish_xs[2] << " " << finish_xs[0] << std::endl;
+  // If the victory line is enabled i.e. the axis is longer than 8 or not.
+  // 0: x-axis 1: y-axis
+  const bool victory_line_enabled[2] = {max_x_ >= 8, max_y_ >= 8};
+  for (int i = 0; i < 2; ++i) {
+    if (victory_line_enabled[i] && hits[i] && hits[(i + 2) % 4]) {
+      // This is victory line.
+      return true;
+    }
   }
-
-  has_victory_line = has_victory_line || (
-      hits[3] && hits[1] &&
-      finish_ys[1] == 0 && finish_ys[3] == max_y_ - 1 &&
-      finish_ys[3] - finish_ys[1] >= 7);
-
-  if (Hash() == 6357593829197971889ULL && has_victory_line) {
-    std::cerr << "This is vertical victory line." << std::endl;
-    std::cerr << finish_ys[3] << " " << finish_ys[1] << std::endl;
-  }
-
-
-  return has_victory_line;
+  
+  return false;
 }
 
 // Enumerate all possible positions within the given depth.
@@ -752,11 +748,15 @@ void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
     }
 
     if (verbose) {
-      std::cerr << "white: " << white << " red: " << red << " "
+      std::cerr
+        << "white(" << white_searcher->name() << "): " << white << " "
+        << "red(" << red_searcher->name() << "): " << red << " "
         << (white * 100.0 / (white + red)) << "%" << std::endl;
     }
   }
-  std::cerr << "white: " << white << " red: " << red << " "
+  std::cerr
+    << "white(" << white_searcher->name() << "): " << white << " "
+    << "red(" << red_searcher->name() << "): " << red << " "
     << (white * 100.0 / (white + red)) << "%" << std::endl;
 }
 

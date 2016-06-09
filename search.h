@@ -22,9 +22,6 @@ class LeafAverageEvaluator  {
   // or more simply, you are red inside the method if red_to_move() == true.
   // Larger value is better.
   static int Evaluate(const Position& position) {
-    if (position.Hash() == 6357593829197971889ULL) {
-      position.Dump();
-    }
     if (position.finished()) {
       if (position.red_to_move()) {
         // I'm red.
@@ -57,8 +54,8 @@ class LeafAverageEvaluator  {
         // Flip the sign.
         score = kInf * -next_position.winner();
       }
-#if 1
-      if (position.Hash() == 6357593829197971889ULL) {
+#if 0
+      if (position.Hash() == /* set board hash you want to debug here */) {
         std::cerr << "> " << score << " " << move.notation() << std::endl;
       }
 #endif

@@ -103,6 +103,32 @@ TEST(PositionTest, Tie) {
   ASSERT_EQ(0, position.winner());
 }
 
+TEST(PositionTest, NotHorizontalVictoryLineRealWorld1) {
+  Position position;
+  // Found wild on the way of debugging transposition table.
+  SupplyNotations({"@0+", "A2+", "B1+", "A3/", "A4+", "B4+", "B5\\",
+                   "C1\\", "@1+", "@1/", "A2/", "C0/", "@2\\", "C1\\",
+                   "B0/", "G5\\", "F7/",
+                   // Editing below could reproduce the problem.
+                   "A2\\", "@3/", "C5\\"}, &position);
+  ASSERT_TRUE(position.finished());
+  ASSERT_EQ(-1, position.winner());
+}
+
+/*
+TEST(PositionTest, NotHorizontalVictoryLineRealWorld2) {
+  Position position;
+  // Same but different order.
+  SupplyNotations({"@0+", "A2+", "B1+", "A3/", "A4+", "B4+", "B5\\",
+                   "C1\\", "@1+", "@1/", "A2/", "C0/", "@2\\", "C1\\",
+                   "B0/", "G5\\", "F7/",
+                   // Editing below could reproduce the problem.
+                   "C5\\", "A2\\", "@3/"}, &position);
+  ASSERT_TRUE(position.finished());
+  ASSERT_EQ(-1, position.winner());
+}
+*/
+
 TEST(RandomSearcherTest, OneTime) {
   RandomSearcher random_searcher;
   StartSelfGame(&random_searcher, &random_searcher, /* verbose = */ false);
