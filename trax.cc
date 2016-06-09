@@ -85,7 +85,7 @@ void GeneratePossiblePiecesTable() {
                 // and the color of the shared edges are different, 
                 // then the candidate is invalid piece placement.
                 if (neighbors[n][0] != '_' &&
-                    candidate[n] != neighbors[n][(n + 2) % 4]) {
+                    candidate[n] != neighbors[n][(n + 2) & 3]) {
                   valid = false;
                   break;
                 }
@@ -507,9 +507,9 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
         continue;
       }
 
-      if (kPieceColors[neighbor][(i + 2) % 4] == 'R') {
+      if (kPieceColors[neighbor][(i + 2) & 3] == 'R') {
         ++red_count;
-      } else if (kPieceColors[neighbor][(i + 2) % 4] == 'W') {
+      } else if (kPieceColors[neighbor][(i + 2) & 3] == 'W') {
         ++white_count;
       }
     }
@@ -610,7 +610,7 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
 
     {
       const int xy[2] = {start_x, start_y};
-      if (edges[i] == xy[i % 2]) {
+      if (edges[i] == xy[i & 1]) {
         // You hit the edge at the beggining.
         hits[i] = true;
       }
@@ -618,7 +618,7 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
 
     int x = start_x + kDx[i];
     int y = start_y + kDy[i];
-    int previous_direction = (i + 2) % 4;
+    int previous_direction = (i + 2) & 3;
 
     // Trace the line until it hits an empty cell.
     while (at(x, y) != PIECE_EMPTY) {
@@ -633,14 +633,14 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
       const int next_direction =
         g_track_direction_table[at(x, y)][previous_direction];
 
-      if (edges[next_direction] == xy[next_direction % 2]) {
+      if (edges[next_direction] == xy[next_direction & 1]) {
         // You hit the edge.
         hits[next_direction] = true;
       }
 
       x += kDx[next_direction];
       y += kDy[next_direction];
-      previous_direction = (next_direction + 2) % 4;
+      previous_direction = (next_direction + 2) & 3;
     }
   }
 
@@ -648,12 +648,12 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
   // 0: x-axis 1: y-axis
   const bool victory_line_enabled[2] = {max_x_ >= 8, max_y_ >= 8};
   for (int i = 0; i < 2; ++i) {
-    if (victory_line_enabled[i] && hits[i] && hits[(i + 2) % 4]) {
+    if (victory_line_enabled[i] && hits[i] && hits[(i + 2) & 3]) {
       // This is victory line.
       return true;
     }
   }
-  
+
   return false;
 }
 

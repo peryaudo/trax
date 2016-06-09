@@ -6,7 +6,24 @@
 
 ## 状況
 
-ちゃんとNegaMax(depth=1)がSimpleSearcherより強くなりました、普通にバグってました
+やっぱりNegaMax(depth=2)がNegaMax(depth=1)より弱いので改めて考えたい
+
+やっぱり評価関数が限界なのか？
+
+6/10朝版のdepth=2のほうがたしかに強かったのだけれども、TraceVictoryLineOrLoop()
+が普通にバグってたから何がどうだったのか正直わかんねー
+
+一つ考えられる仮説としてはバグってた版のTraceVictoryLineOrLoop()が何らかの
+
+特徴を抽出してたというのはありそう
+
+その証拠にやたらクネクネした局面が生成されてた
+
+でもそれって別ゲーだよね…
+
+バカな指し手を追ってみるのはいいと思う
+
+楽しくやるのが第一なんであんまりbisectとかしないように。
 
 ## ToDo
 
@@ -68,6 +85,7 @@ http://algoogle.hadrori.jp/algorithm/rolling-hash.html
     * Evidence: 連鎖をより起こすものを置いたほうがよい？ or 置かないほうがよい？
   * 外接する辺のうち自分と同じ色の辺の数
     * Evidence: Victory Lineの作りやすさ
+  * 探索の深さ
 
   * モンテカルロ
   * モンテカルロ木探索
