@@ -99,7 +99,6 @@ TEST(PositionTest, Tie) {
   SupplyNotations({"@0+", "B1\\", "B2/", "A2+", "A3/", "A0\\",
                    "@3+", "@3\\", "B2+"},
                   &position);
-  position.Dump();
   ASSERT_TRUE(position.finished());
   ASSERT_EQ(0, position.winner());
 }

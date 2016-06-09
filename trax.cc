@@ -540,24 +540,24 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
 }
 
 void Position::FillWinnerFlags(int x, int y) {
-  if (finished_) {
-    return;
+  if (!finished_) {
+    // FYI: 1: red wins. 0: tie. -1: white wins.
+    winner_ = 0;
   }
 
-  // FYI: 1: red wins. 0: tie. -1: white wins.
-  winner_ = 0;
-
-  if (TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) {
+  if ((!finished_ || winner_ < 0) &&
+      TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) {
     finished_ = true;
     ++winner_;
   }
 
-  if (TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) {
+  if ((!finished_ || winner_ > 0) &&
+      TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) {
     finished_ = true;
     --winner_;
   }
 
-  if (FLAGS_trax8x8 && max_x_ >= 8 && max_y_ >= 8) {
+  if (FLAGS_trax8x8 && !finished_ && max_x_ >= 8 && max_y_ >= 8) {
     // For 8x8 Trax, if region is filled without any victory lines or loops,
     // the game is considered tie.
 
