@@ -14,23 +14,41 @@ DEFINE_bool(perft, false, "Run perft.");
 
 DEFINE_int32(seed, 0, "Random seed.");
 
-DEFINE_int32(depth, 1, "Search depth.");
+DEFINE_int32(depth, 1, "Perft depth.");
 
 DEFINE_int32(num_games, 100, "How many times to self play.");
 
-DEFINE_bool(random_random, false,
-            "Self play between random-random");
+DEFINE_string(white, "simple-la", "Searcher name of white player (first)");
 
-DEFINE_bool(simple_simple, false,
-            "Self play between simple-simple");
+DEFINE_string(red, "negamax1-la", "Searcher name of red player (second)");
 
-DEFINE_bool(simple_negmax, false,
-            "Self play between simple-negmax");
-
-DEFINE_bool(negamax_random, false,
-            "Self play between negamax-random");
+DEFINE_string(contest_player, "negamax1-la",
+              "Searcher name of contest client player");
 
 DEFINE_bool(silent, false, "Self play silently.");
+
+
+namespace {
+
+Searcher *GetSearcherFromName(const std::string& name) {
+  if (name == "random") {
+    return new RandomSearcher();
+  } else if (name == "simple-la") {
+    return new SimpleSearcher<LeafAverageEvaluator>();
+  } else if (name == "negamax0-la") {
+    return new NegaMaxSearcher<LeafAverageEvaluator>(0);
+  } else if (name == "negamax1-la") {
+    return new NegaMaxSearcher<LeafAverageEvaluator>(1);
+  } else if (name == "negamax2-la") {
+    return new NegaMaxSearcher<LeafAverageEvaluator>(2);
+  } else {
+    std::cerr << "cannot find searcher with name " << name << std::endl;
+    exit(EXIT_FAILURE);
+    return nullptr;
+  }
+}
+
+}  // namespace
 
 int main(int argc, char *argv[]) {
   google::SetUsageMessage(
@@ -50,39 +68,19 @@ int main(int argc, char *argv[]) {
     Random();
   }
 
-  NegaMaxSearcher<LeafAverageEvaluator> negamax_searcher(FLAGS_depth);
-  SimpleSearcher<LeafAverageEvaluator> simple_searcher;
-  RandomSearcher random_searcher;
-
   if (FLAGS_client) {
     // Contest client.
-    StartTraxClient(&negamax_searcher);
-
+    Searcher *player = GetSearcherFromName(FLAGS_contest_player);
+    StartTraxClient(player);
+    delete player;
   } else if (FLAGS_self) {
     // Perform self play.
-    if (FLAGS_random_random) {
-      StartMultipleSelfGames(&random_searcher, &random_searcher,
-                             FLAGS_num_games, !FLAGS_silent);
-    } else if (FLAGS_simple_simple) {
-      StartMultipleSelfGames(&simple_searcher, &simple_searcher,
-                             FLAGS_num_games, !FLAGS_silent);
-    } else if (FLAGS_simple_negmax) {
-      StartMultipleSelfGames(&simple_searcher, &negamax_searcher,
-                             FLAGS_num_games, !FLAGS_silent);
-    } else if (FLAGS_negamax_random) {
-      StartMultipleSelfGames(&negamax_searcher, &random_searcher,
-                             FLAGS_num_games, !FLAGS_silent);
-    } else {
-#if 0
-      StartMultipleSelfGames(&simple_searcher, &random_searcher,
-                             FLAGS_num_games, !FLAGS_silent);
-#endif
-
-      NegaMaxSearcher<LeafAverageEvaluator> negamax_searcher1(1);
-      NegaMaxSearcher<LeafAverageEvaluator> negamax_searcher2(2);
-      StartMultipleSelfGames(&negamax_searcher1, &negamax_searcher2,
-                             FLAGS_num_games, !FLAGS_silent);
-    }
+    Searcher *white_player = GetSearcherFromName(FLAGS_white);
+    Searcher *red_player = GetSearcherFromName(FLAGS_red);
+    StartMultipleSelfGames(white_player, red_player,
+                           FLAGS_num_games, !FLAGS_silent);
+    delete white_player;
+    delete red_player;
   } else if (FLAGS_perft) {
     // Do perft (performance testing by counting all the possible moves
     // within the given depth.)
