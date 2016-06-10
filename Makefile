@@ -5,8 +5,8 @@ CXXFLAGS = -std=c++11 -Wall -Wno-unused-const-variable -Ivendor/googletest -Iven
 LDFLAGS = -O3
 
 # Debug
-# CXXFLAGS = -std=c++11 -Wall -Wno-unused-const-variable -Wno-tautological-constant-out-of-range-compare -Ivendor/googletest -Ivendor/gflags -O1 -g -fsanitize=address
-# LDFLAGS = -O1 -fsanitize=address -fno-omit-frame-pointer
+# CXXFLAGS = -std=c++11 -Wall -Wno-unused-const-variable -Wno-tautological-constant-out-of-range-compare -Ivendor/googletest -Ivendor/gflags -O1 -g -fsanitize=address #-pg -DNDEBUG
+# LDFLAGS = -O1 -fsanitize=address -fno-omit-frame-pointer #-pg -DNDEBUG
 
 trax: main.o trax.o search.o gflags.o gflags_completions.o gflags_reporting.o
 	$(CXX) $^ $(LDFLAGS) -o $@
