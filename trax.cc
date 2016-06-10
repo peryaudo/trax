@@ -7,7 +7,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <set>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -499,9 +498,9 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
   // but suddenly forced play filled the rightmost cells.
   //
   // Thus, we have to enumerate all of them first.
-  std::set<std::pair<int, int>> winner_flag_checkpoints;
+  std::vector<std::pair<int, int>> winner_flag_checkpoints;
 
-  winner_flag_checkpoints.insert(std::make_pair(move_x, move_y));
+  winner_flag_checkpoints.emplace_back(move_x, move_y);
 
   std::queue<std::pair<int, int>> possible_queue;
 
@@ -556,7 +555,7 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
 
         at(x, y) = static_cast<Piece>(i);
 
-        winner_flag_checkpoints.insert(std::make_pair(x, y));
+        winner_flag_checkpoints.emplace_back(x, y);
 
         // Add neighboring cells to the queue as new forced play candidates.
         for (int j = 0; j < 4; ++j) {
