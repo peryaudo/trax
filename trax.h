@@ -337,12 +337,5 @@ void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
 // Start Trax client which connects through stdin / stdout.
 void StartTraxClient(Searcher* searcher);
 
-// Do performance testing by counting all the possible moves
-// within the given depth.
-int Perft(int depth);
-
-// Show results of perft between 0<=depth<=max_depth in readable format.
-void ShowPerft(int max_depth);
-
 #endif // TRAX_TRAX_H_
 

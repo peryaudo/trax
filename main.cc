@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "gflags/gflags.h"
+#include "perft.h"
 #include "search.h"
 
 DEFINE_bool(client, false, "Run as contest client.");

@@ -698,38 +698,6 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
   return false;
 }
 
-// Enumerate all possible positions within the given depth.
-int Perft(const Position& position, int depth) {
-  // position.Dump();
-  if (depth <= 0) {
-    return 1;
-  }
-
-  int total_positions = 0;
-
-  for (auto&& move : position.GenerateMoves()) {
-    Position next_position;
-    if (!position.DoMove(move, &next_position)) {
-      // The move was illegal.
-      continue;
-    }
-    total_positions += Perft(next_position, depth - 1);
-  }
-  return total_positions;
-}
-
-int Perft(int depth) {
-  Position position;
-  return Perft(position, depth);
-}
-
-void ShowPerft(int max_depth) {
-  for (int i_depth = 0; i_depth <= max_depth; ++i_depth) {
-    std::cerr
-      << "depth: " << i_depth << " leaves: " << Perft(i_depth) << std::endl;
-  }
-}
-
 // Return true if red is the winner.
 int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
                   bool verbose) {
