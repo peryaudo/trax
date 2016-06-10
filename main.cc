@@ -36,6 +36,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new RandomSearcher();
   } else if (name == "simple-la") {
     return new SimpleSearcher<LeafAverageEvaluator>();
+  } else if (name == "simple-mc") {
+    return new SimpleSearcher<MonteCarloEvaluator>();
   } else if (name == "negamax0-la") {
     return new NegaMaxSearcher<LeafAverageEvaluator>(0);
   } else if (name == "negamax1-la") {

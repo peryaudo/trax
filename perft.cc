@@ -34,6 +34,8 @@ int Perft(int depth) {
 
 void ShowPerft(int max_depth) {
   for (int i_depth = 0; i_depth <= max_depth; ++i_depth) {
+    // TODO(tetsui): Implement using clock_gettime(CLOCK_MONOTONIC) for Linux
+
 #ifdef __MACH__
     uint64_t before = mach_absolute_time();
 #endif

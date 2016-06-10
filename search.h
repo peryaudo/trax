@@ -7,6 +7,10 @@
 
 #include "trax.h"
 
+//
+// Evaluators
+//
+
 class NoneEvaluator {
  public:
   // Evaluate the position, from the perspective of position.red_to_move().
@@ -24,6 +28,8 @@ class NoneEvaluator {
       return kInf * -position.winner();
     }
   }
+
+  static std::string name() { return "NoneEvaluator"; }
 };
 
 class LeafAverageEvaluator  {
@@ -75,7 +81,70 @@ class LeafAverageEvaluator  {
 
     return numerator / denominator;
   }
+
+  static std::string name() { return "LeafAverageEvaluator"; }
 };
+
+const static int kNumMonteCarloTrial = 100;
+
+class MonteCarloEvaluator {
+ public:
+  static int Evaluate(const Position& initial_position) {
+    if (initial_position.finished()) {
+      if (initial_position.red_to_move()) {
+        // I'm red.
+        // winner() > 0 if red wins.
+        return kInf * initial_position.winner();
+      } else {
+        // I'm white.
+        // winner() > 0 if red wins.
+        // Flip the sign.
+        return kInf * -initial_position.winner();
+      }
+    }
+
+    int winner_sum = 0;
+
+    std::vector<Move> initial_moves = initial_position.GenerateMoves();
+
+    for (int i = 0; i < kNumMonteCarloTrial; ++i) {
+      Position position;
+
+      // First step.
+      Move initial_move = initial_moves[Random() % initial_moves.size()];
+      if (!initial_position.DoMove(initial_move, &position)) {
+        // The move is illegal.
+        continue;
+      }
+
+      while (!position.finished()) {
+        Position next_position;
+
+        std::vector<Move> moves = position.GenerateMoves();
+        Move move = moves[Random() % moves.size()];
+        position.DoMove(move, &next_position);
+        position.Swap(&next_position);
+      }
+
+      winner_sum += position.winner();
+    }
+
+    if (initial_position.red_to_move()) {
+      // I'm red.
+      return kInf * winner_sum / kNumMonteCarloTrial;
+    } else {
+      // I'm white.
+      return kInf * -winner_sum / kNumMonteCarloTrial;
+    }
+  }
+
+  static std::string name() { return "MonteCarloEvaluator"; }
+};
+
+
+//
+// Searchers
+//
 
 // Searcher that randomly selects any legal moves.
 class RandomSearcher : public Searcher {
@@ -91,7 +160,9 @@ class SimpleSearcher : public Searcher {
  public:
   virtual Move SearchBestMove(const Position& position);
 
-  virtual std::string name() { return "SimpleSearcher"; }
+  virtual std::string name() {
+    return "SimpleSearcher<" + Evaluator::name() + ">";
+  }
 };
 
 // Transposition Table boundary flags for combination with alpha-beta pruning.
@@ -129,7 +200,8 @@ class NegaMaxSearcher : public Searcher {
 
   virtual std::string name() {
     std::stringstream name;
-    name << "NegaMaxSearcher(max_depth=" << max_depth_ << ")";
+    name << "NegaMaxSearcher<" << Evaluator::name()
+      << ">(max_depth=" << max_depth_ << ")";
     return name.str();
   }
 
