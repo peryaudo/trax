@@ -5,13 +5,16 @@
 #include <gflags/gflags.h>
 
 #include <algorithm>
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
 #include "./trax.h"
 
 
 DEFINE_bool(enable_transposition_table, true, "Enable Transposition Table.");
+
+
+int g_num_monte_carlo_trial = 100;
 
 
 Move RandomSearcher::SearchBestMove(const Position& position) {

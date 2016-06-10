@@ -89,7 +89,7 @@ class LeafAverageEvaluator  {
   static std::string name() { return "LeafAverageEvaluator"; }
 };
 
-static const int kNumMonteCarloTrial = 100;
+extern int g_num_monte_carlo_trial;
 
 class MonteCarloEvaluator {
  public:
@@ -111,7 +111,7 @@ class MonteCarloEvaluator {
 
     std::vector<Move> initial_moves = initial_position.GenerateMoves();
 
-    for (int i = 0; i < kNumMonteCarloTrial; ++i) {
+    for (int i = 0; i < g_num_monte_carlo_trial; ++i) {
       Position position;
 
       // First step.
@@ -135,10 +135,10 @@ class MonteCarloEvaluator {
 
     if (initial_position.red_to_move()) {
       // I'm red.
-      return kInf * winner_sum / kNumMonteCarloTrial;
+      return kInf * winner_sum / g_num_monte_carlo_trial;
     } else {
       // I'm white.
-      return kInf * -winner_sum / kNumMonteCarloTrial;
+      return kInf * -winner_sum / g_num_monte_carlo_trial;
     }
   }
 

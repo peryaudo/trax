@@ -31,6 +31,9 @@ DEFINE_string(contest_player, "negamax1-la",
 DEFINE_bool(silent, false, "Self play silently.");
 
 
+DEFINE_int32(num_monte_carlo_trial, 100, "Number of Monte Carlo sampling.");
+
+
 namespace {
 
 Searcher *GetSearcherFromName(const std::string& name) {
@@ -48,6 +51,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<LeafAverageEvaluator>(2);
   } else if (name == "negamax1-mc") {
     return new NegaMaxSearcher<MonteCarloEvaluator>(1);
+  } else if (name == "negamax2-mc") {
+    return new NegaMaxSearcher<MonteCarloEvaluator>(2);
   } else {
     std::cerr << "cannot find searcher with name " << name << std::endl;
     exit(EXIT_FAILURE);
@@ -74,6 +79,8 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < FLAGS_seed; ++i) {
     Random();
   }
+
+  g_num_monte_carlo_trial = FLAGS_num_monte_carlo_trial;
 
   if (FLAGS_client) {
     // Contest client.
