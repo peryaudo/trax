@@ -516,7 +516,7 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
     }
 
     if (at(nx, ny) == PIECE_EMPTY) {
-      possible_queue.push(std::make_pair(nx, ny));
+      possible_queue.emplace(nx, ny);
     }
   }
 
@@ -569,7 +569,7 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
           }
 
           if (at(nx, ny) == PIECE_EMPTY) {
-            possible_queue.push(std::make_pair(nx, ny));
+            possible_queue.emplace(nx, ny);
           }
         }
         break;
