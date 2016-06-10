@@ -44,6 +44,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<LeafAverageEvaluator>(1);
   } else if (name == "negamax2-la") {
     return new NegaMaxSearcher<LeafAverageEvaluator>(2);
+  } else if (name == "negamax1-mc") {
+    return new NegaMaxSearcher<MonteCarloEvaluator>(1);
   } else {
     std::cerr << "cannot find searcher with name " << name << std::endl;
     exit(EXIT_FAILURE);

@@ -199,6 +199,10 @@ template Move SimpleSearcher<MonteCarloEvaluator>::SearchBestMove(
 
 template Move NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(
     const Position& position);
-
 template int NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(
+    const Position& position, int depth, int alpha, int beta);
+
+template Move NegaMaxSearcher<MonteCarloEvaluator>::SearchBestMove(
+    const Position& position);
+template int NegaMaxSearcher<MonteCarloEvaluator>::NegaMax(
     const Position& position, int depth, int alpha, int beta);
