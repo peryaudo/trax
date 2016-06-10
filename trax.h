@@ -154,6 +154,9 @@ struct ScoredMove {
 // Needless to say, user must care about conflicts.
 using PositionHash = uint64_t;
 
+const PositionHash kPositionHashPrimeA = 100000007ULL;
+const PositionHash kPositionHashPrimeB = 100000037ULL;
+
 // Hold a board configuration, or Position.
 class Position {
  public:
@@ -195,31 +198,21 @@ class Position {
 
   // Hash current board configuration.
   // Current implementation uses simple rolling hash.
-  PositionHash Hash() const {
-    const PositionHash kPrime = 100000007ULL;
-
+  PositionHash Hash(PositionHash hash_prime) const {
     PositionHash result = 0;
     result += red_to_move_;
-    result *= kPrime;
+    result *= hash_prime;
     result += max_x_;
-    result *= kPrime;
+    result *= hash_prime;
     result += max_y_;
 
     for (int i_x = 0; i_x < max_x_; ++i_x) {
       for (int j_y = 0; j_y < max_y_; ++j_y) {
-        result *= kPrime;
+        result *= hash_prime;
         result += at(i_x, j_y);
       }
     }
     return result;
-  }
-
-  // Return all the hashes of isomorphic positions.
-  // For example, rotated positions are isomorphic.
-  // If flip is true, it returns isomorphic hashes with flipped turn to move.
-  std::vector<PositionHash> Hashes(bool flip) const {
-    // TODO(tetsui): implement
-    return std::vector<PositionHash>();
   }
 
   // Swap
@@ -313,18 +306,6 @@ class Position {
   bool red_winner_;
   bool white_winner_;
 };
-
-#ifndef DISABLE_COPYABLE_POSITION
-namespace std {
-  template<>
-  struct hash<Position>
-  {
-    std::size_t operator()(const Position& position) const {
-      return position.Hash();
-    }
-  };
-}  // namespace std
-#endif
 
 class Searcher {
  public:

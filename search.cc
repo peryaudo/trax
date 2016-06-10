@@ -107,16 +107,21 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
 
   TranspositionTableEntry* entry = nullptr;
 
+  PositionHash hash_b;
+
   if (FLAGS_enable_transposition_table) {
     // At that point of time, we don't care about conflicts.
-    const PositionHash hash = position.Hash();
+    const PositionHash hash_a = position.Hash(kPositionHashPrimeA);
 
-    auto it = transposition_table_.find(hash);
+    // But at least it uses two hashes to decrese likelihood of hash conflict.
+    hash_b = position.Hash(kPositionHashPrimeB);
+
+    auto it = transposition_table_.find(hash_a);
     if (it != transposition_table_.end()) {
       entry = &it->second;
     }
 
-    if (entry != nullptr && entry->depth >= depth) {
+    if (entry != nullptr && entry->hash_b == hash_b && entry->depth >= depth) {
       if (entry->bound == TRANSPOSITION_TABLE_EXACT) {
         return entry->score;
       } else if (entry->bound == TRANSPOSITION_TABLE_LOWER_BOUND) {
@@ -131,7 +136,7 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
     }
 
     if (entry == nullptr) {
-      entry = &transposition_table_[hash];
+      entry = &transposition_table_[hash_a];
     }
   }
 
@@ -178,6 +183,8 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
     } else {
       entry->bound = TRANSPOSITION_TABLE_EXACT;
     }
+
+    entry->hash_b = hash_b;
   }
 
   return best_score;

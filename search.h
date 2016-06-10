@@ -103,6 +103,7 @@ struct TranspositionTableEntry {
   int score;
   int depth;
   TranspositionTableBound bound;
+  PositionHash hash_b;
 };
 
 // Searcher that selects the best move by using the given evaluator and NegaMax
