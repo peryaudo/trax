@@ -1,0 +1,303 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 34.65      2.90     2.90 40510480     0.00     0.00  Position::TraceVictoryLineOrLoop(int, int, bool)
+ 21.86      4.73     1.83 10923148     0.00     0.00  Position::DoMove(Move, Position*) const
+ 16.49      6.11     1.38 10923148     0.00     0.00  Position::FillForcedPieces(int, int)
+ 10.87      7.02     0.91 34069224     0.00     0.00  Position::GetPossiblePieces(int, int) const
+  4.18      7.37     0.35 20599190     0.00     0.00  std::pair<std::_Rb_tree_iterator<std::pair<int, int> >, bool> std::_Rb_tree<std::pair<int, int>, std::pair<int, int>, std::_Identity<std::pair<int, int> >, std::less<std::pair<int, int> >, std::allocator<std::pair<int, int> > >::_M_insert_unique<std::pair<int, int> >(std::pair<int, int>&&)
+  3.82      7.69     0.32 21846296     0.00     0.00  std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::_M_initialize_map(unsigned long)
+  2.87      7.93     0.24   230678     0.00     0.00  Position::GenerateMoves() const
+  1.79      8.08     0.15    15516     0.01     0.51  NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(Position const&, int, int, int)
+  1.55      8.21     0.13 25886593     0.00     0.00  void std::deque<std::pair<int, int>, std::allocator<std::pair<int, int> > >::emplace_back<std::pair<int, int> >(std::pair<int, int>&&)
+  1.08      8.30     0.09 10923148     0.00     0.00  std::_Rb_tree<std::pair<int, int>, std::pair<int, int>, std::_Identity<std::pair<int, int> >, std::less<std::pair<int, int> >, std::allocator<std::pair<int, int> > >::_M_erase(std::_Rb_tree_node<std::pair<int, int> >*)
+  0.36      8.33     0.03   214976     0.00     0.00  std::_Hashtable<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_insert_unique_node(unsigned long, unsigned long, std::__detail::_Hash_node<std::pair<unsigned long const, TranspositionTableEntry>, false>*)
+  0.12      8.34     0.01     5963     0.00     0.00  void std::vector<ScoredMove, std::allocator<ScoredMove> >::_M_emplace_back_aux<int const&, Move&>(int const&, Move&)
+  0.12      8.35     0.01      506     0.02     0.82  SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&)
+  0.12      8.36     0.01                             std::_Hashtable<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::~_Hashtable()
+  0.12      8.37     0.01                             std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::~_Deque_base()
+  0.00      8.37     0.00   214976     0.00     0.00  std::__detail::_Map_base<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true>, true>::operator[](unsigned long const&)
+  0.00      8.37     0.00     3361     0.00     0.00  void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move>(Move&&)
+  0.00      8.37     0.00     1011     0.00     0.00  Random()
+  0.00      8.37     0.00      505     0.00    15.71  NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&)
+  0.00      8.37     0.00      200     0.00     0.00  Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&)
+  0.00      8.37     0.00      200     0.00     0.00  void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&)
+  0.00      8.37     0.00      100     0.00    83.50  StartSelfGame(Searcher*, Searcher*, bool)
+  0.00      8.37     0.00        2     0.00     0.00  SimpleSearcher<LeafAverageEvaluator>::name[abi:cxx11]()
+  0.00      8.37     0.00        2     0.00     0.00  NegaMaxSearcher<LeafAverageEvaluator>::name[abi:cxx11]()
+  0.00      8.37     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN3fLB12FLAGS_clientE
+  0.00      8.37     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN3fLB24FLAGS_enable_pretty_dumpE
+  0.00      8.37     0.00        1     0.00     0.00  _GLOBAL__sub_I__ZN3fLB32FLAGS_enable_transposition_tableE
+  0.00      8.37     0.00        1     0.00     0.00  std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~vector()
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.12% of 8.37 seconds
+
+index % time    self  children    called     name
+                0.00    8.35     100/100         StartMultipleSelfGames(Searcher*, Searcher*, int, bool) [2]
+[1]     99.8    0.00    8.35     100         StartSelfGame(Searcher*, Searcher*, bool) [1]
+                0.00    7.93     505/505         NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [3]
+                0.01    0.40     506/506         SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [10]
+                0.00    0.00    1011/10923148     Position::DoMove(Move, Position*) const [5]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]     99.8    0.00    8.35                 StartMultipleSelfGames(Searcher*, Searcher*, int, bool) [2]
+                0.00    8.35     100/100         StartSelfGame(Searcher*, Searcher*, bool) [1]
+                0.00    0.00       2/2           NegaMaxSearcher<LeafAverageEvaluator>::name[abi:cxx11]() [32]
+                0.00    0.00       2/2           SimpleSearcher<LeafAverageEvaluator>::name[abi:cxx11]() [31]
+-----------------------------------------------
+                0.00    7.93     505/505         StartSelfGame(Searcher*, Searcher*, bool) [1]
+[3]     94.8    0.00    7.93     505         NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [3]
+                0.15    7.77   15516/15516       NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(Position const&, int, int, int) [4]
+                0.00    0.01   15516/10923148     Position::DoMove(Move, Position*) const [5]
+                0.01    0.00    3141/5963        void std::vector<ScoredMove, std::allocator<ScoredMove> >::_M_emplace_back_aux<int const&, Move&>(int const&, Move&) [17]
+                0.00    0.00     505/230678      Position::GenerateMoves() const [9]
+                0.00    0.00    1393/3361        void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move>(Move&&) [27]
+                0.00    0.00     505/1011        Random() [28]
+-----------------------------------------------
+                              353793             NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(Position const&, int, int, int) [4]
+                0.15    7.77   15516/15516       NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [3]
+[4]     94.6    0.15    7.77   15516+353793  NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(Position const&, int, int, int) [4]
+                1.74    5.57 10376665/10923148     Position::DoMove(Move, Position*) const [5]
+                0.23    0.21  216692/230678      Position::GenerateMoves() const [9]
+                0.00    0.03  214976/214976      std::__detail::_Map_base<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true>, true>::operator[](unsigned long const&) [16]
+                              353793             NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(Position const&, int, int, int) [4]
+-----------------------------------------------
+                0.00    0.00    1011/10923148     StartSelfGame(Searcher*, Searcher*, bool) [1]
+                0.00    0.01   15516/10923148     NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [3]
+                0.09    0.28  529956/10923148     SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [10]
+                1.74    5.57 10376665/10923148     NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(Position const&, int, int, int) [4]
+[5]     91.9    1.83    5.86 10923148         Position::DoMove(Move, Position*) const [5]
+                1.38    4.48 10923148/10923148     Position::FillForcedPieces(int, int) [6]
+-----------------------------------------------
+                1.38    4.48 10923148/10923148     Position::DoMove(Move, Position*) const [5]
+[6]     70.0    1.38    4.48 10923148         Position::FillForcedPieces(int, int) [6]
+                2.90    0.00 40510480/40510480     Position::TraceVictoryLineOrLoop(int, int, bool) [7]
+                0.69    0.00 25858034/34069224     Position::GetPossiblePieces(int, int) const [8]
+                0.35    0.00 20599190/20599190     std::pair<std::_Rb_tree_iterator<std::pair<int, int> >, bool> std::_Rb_tree<std::pair<int, int>, std::pair<int, int>, std::_Identity<std::pair<int, int> >, std::less<std::pair<int, int> >, std::allocator<std::pair<int, int> > >::_M_insert_unique<std::pair<int, int> >(std::pair<int, int>&&) [11]
+                0.32    0.00 21846296/21846296     std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::_M_initialize_map(unsigned long) [12]
+                0.13    0.00 25886593/25886593     void std::deque<std::pair<int, int>, std::allocator<std::pair<int, int> > >::emplace_back<std::pair<int, int> >(std::pair<int, int>&&) [13]
+                0.09    0.00 10923148/10923148     std::_Rb_tree<std::pair<int, int>, std::pair<int, int>, std::_Identity<std::pair<int, int> >, std::less<std::pair<int, int> >, std::allocator<std::pair<int, int> > >::_M_erase(std::_Rb_tree_node<std::pair<int, int> >*) [14]
+-----------------------------------------------
+                2.90    0.00 40510480/40510480     Position::FillForcedPieces(int, int) [6]
+[7]     34.6    2.90    0.00 40510480         Position::TraceVictoryLineOrLoop(int, int, bool) [7]
+-----------------------------------------------
+                0.22    0.00 8211190/34069224     Position::GenerateMoves() const [9]
+                0.69    0.00 25858034/34069224     Position::FillForcedPieces(int, int) [6]
+[8]     10.9    0.91    0.00 34069224         Position::GetPossiblePieces(int, int) const [8]
+-----------------------------------------------
+                0.00    0.00     505/230678      NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [3]
+                0.01    0.01   13481/230678      SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [10]
+                0.23    0.21  216692/230678      NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(Position const&, int, int, int) [4]
+[9]      5.5    0.24    0.22  230678         Position::GenerateMoves() const [9]
+                0.22    0.00 8211190/34069224     Position::GetPossiblePieces(int, int) const [8]
+                0.00    0.00     200/200         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [30]
+-----------------------------------------------
+                0.01    0.40     506/506         StartSelfGame(Searcher*, Searcher*, bool) [1]
+[10]     5.0    0.01    0.40     506         SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [10]
+                0.09    0.28  529956/10923148     Position::DoMove(Move, Position*) const [5]
+                0.01    0.01   13481/230678      Position::GenerateMoves() const [9]
+                0.00    0.00    2822/5963        void std::vector<ScoredMove, std::allocator<ScoredMove> >::_M_emplace_back_aux<int const&, Move&>(int const&, Move&) [17]
+                0.00    0.00    1968/3361        void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move>(Move&&) [27]
+                0.00    0.00     506/1011        Random() [28]
+-----------------------------------------------
+                0.35    0.00 20599190/20599190     Position::FillForcedPieces(int, int) [6]
+[11]     4.2    0.35    0.00 20599190         std::pair<std::_Rb_tree_iterator<std::pair<int, int> >, bool> std::_Rb_tree<std::pair<int, int>, std::pair<int, int>, std::_Identity<std::pair<int, int> >, std::less<std::pair<int, int> >, std::allocator<std::pair<int, int> > >::_M_insert_unique<std::pair<int, int> >(std::pair<int, int>&&) [11]
+-----------------------------------------------
+                0.32    0.00 21846296/21846296     Position::FillForcedPieces(int, int) [6]
+[12]     3.8    0.32    0.00 21846296         std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::_M_initialize_map(unsigned long) [12]
+-----------------------------------------------
+                0.13    0.00 25886593/25886593     Position::FillForcedPieces(int, int) [6]
+[13]     1.6    0.13    0.00 25886593         void std::deque<std::pair<int, int>, std::allocator<std::pair<int, int> > >::emplace_back<std::pair<int, int> >(std::pair<int, int>&&) [13]
+-----------------------------------------------
+                0.09    0.00 10923148/10923148     Position::FillForcedPieces(int, int) [6]
+[14]     1.1    0.09    0.00 10923148         std::_Rb_tree<std::pair<int, int>, std::pair<int, int>, std::_Identity<std::pair<int, int> >, std::less<std::pair<int, int> >, std::allocator<std::pair<int, int> > >::_M_erase(std::_Rb_tree_node<std::pair<int, int> >*) [14]
+-----------------------------------------------
+                0.03    0.00  214976/214976      std::__detail::_Map_base<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true>, true>::operator[](unsigned long const&) [16]
+[15]     0.4    0.03    0.00  214976         std::_Hashtable<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_insert_unique_node(unsigned long, unsigned long, std::__detail::_Hash_node<std::pair<unsigned long const, TranspositionTableEntry>, false>*) [15]
+-----------------------------------------------
+                0.00    0.03  214976/214976      NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(Position const&, int, int, int) [4]
+[16]     0.4    0.00    0.03  214976         std::__detail::_Map_base<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true>, true>::operator[](unsigned long const&) [16]
+                0.03    0.00  214976/214976      std::_Hashtable<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_insert_unique_node(unsigned long, unsigned long, std::__detail::_Hash_node<std::pair<unsigned long const, TranspositionTableEntry>, false>*) [15]
+-----------------------------------------------
+                0.00    0.00    2822/5963        SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [10]
+                0.01    0.00    3141/5963        NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [3]
+[17]     0.1    0.01    0.00    5963         void std::vector<ScoredMove, std::allocator<ScoredMove> >::_M_emplace_back_aux<int const&, Move&>(int const&, Move&) [17]
+-----------------------------------------------
+                                                 <spontaneous>
+[18]     0.1    0.01    0.00                 std::_Hashtable<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::~_Hashtable() [18]
+-----------------------------------------------
+                                                 <spontaneous>
+[19]     0.1    0.01    0.00                 std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::~_Deque_base() [19]
+-----------------------------------------------
+                0.00    0.00    1393/3361        NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [3]
+                0.00    0.00    1968/3361        SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [10]
+[27]     0.0    0.00    0.00    3361         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move>(Move&&) [27]
+-----------------------------------------------
+                0.00    0.00     505/1011        NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [3]
+                0.00    0.00     506/1011        SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [10]
+[28]     0.0    0.00    0.00    1011         Random() [28]
+-----------------------------------------------
+                0.00    0.00     200/200         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [30]
+[29]     0.0    0.00    0.00     200         Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [29]
+-----------------------------------------------
+                0.00    0.00     200/200         Position::GenerateMoves() const [9]
+[30]     0.0    0.00    0.00     200         void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&) [30]
+                0.00    0.00     200/200         Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [29]
+-----------------------------------------------
+                0.00    0.00       2/2           StartMultipleSelfGames(Searcher*, Searcher*, int, bool) [2]
+[31]     0.0    0.00    0.00       2         SimpleSearcher<LeafAverageEvaluator>::name[abi:cxx11]() [31]
+-----------------------------------------------
+                0.00    0.00       2/2           StartMultipleSelfGames(Searcher*, Searcher*, int, bool) [2]
+[32]     0.0    0.00    0.00       2         NegaMaxSearcher<LeafAverageEvaluator>::name[abi:cxx11]() [32]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [934]
+[33]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN3fLB12FLAGS_clientE [33]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [934]
+[34]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN3fLB24FLAGS_enable_pretty_dumpE [34]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [934]
+[35]     0.0    0.00    0.00       1         _GLOBAL__sub_I__ZN3fLB32FLAGS_enable_transposition_tableE [35]
+-----------------------------------------------
+                0.00    0.00       1/1           google::HandleCommandLineHelpFlags() [161]
+[36]     0.0    0.00    0.00       1         std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~vector() [36]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [33] _GLOBAL__sub_I__ZN3fLB12FLAGS_clientE (main.cc) [29] Move::Move(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Position const&) [13] void std::deque<std::pair<int, int>, std::allocator<std::pair<int, int> > >::emplace_back<std::pair<int, int> >(std::pair<int, int>&&)
+  [34] _GLOBAL__sub_I__ZN3fLB24FLAGS_enable_pretty_dumpE (trax.cc) [6] Position::FillForcedPieces(int, int) [17] void std::vector<ScoredMove, std::allocator<ScoredMove> >::_M_emplace_back_aux<int const&, Move&>(int const&, Move&)
+  [35] _GLOBAL__sub_I__ZN3fLB32FLAGS_enable_transposition_tableE (search.cc) [7] Position::TraceVictoryLineOrLoop(int, int, bool) [30] void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<char const (&) [4], Position const&>(char const (&) [4], Position const&)
+   [1] StartSelfGame(Searcher*, Searcher*, bool) [9] Position::GenerateMoves() const [27] void std::vector<Move, std::allocator<Move> >::_M_emplace_back_aux<Move>(Move&&)
+  [28] Random()                [8] Position::GetPossiblePieces(int, int) const [36] std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~vector()
+  [10] SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [5] Position::DoMove(Move, Position*) const [11] std::pair<std::_Rb_tree_iterator<std::pair<int, int> >, bool> std::_Rb_tree<std::pair<int, int>, std::pair<int, int>, std::_Identity<std::pair<int, int> >, std::less<std::pair<int, int> >, std::allocator<std::pair<int, int> > >::_M_insert_unique<std::pair<int, int> >(std::pair<int, int>&&)
+  [31] SimpleSearcher<LeafAverageEvaluator>::name[abi:cxx11]() [15] std::_Hashtable<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_insert_unique_node(unsigned long, unsigned long, std::__detail::_Hash_node<std::pair<unsigned long const, TranspositionTableEntry>, false>*) [14] std::_Rb_tree<std::pair<int, int>, std::pair<int, int>, std::_Identity<std::pair<int, int> >, std::less<std::pair<int, int> >, std::allocator<std::pair<int, int> > >::_M_erase(std::_Rb_tree_node<std::pair<int, int> >*)
+   [3] NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(Position const&) [18] std::_Hashtable<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::~_Hashtable() [16] std::__detail::_Map_base<unsigned long, std::pair<unsigned long const, TranspositionTableEntry>, std::allocator<std::pair<unsigned long const, TranspositionTableEntry> >, std::__detail::_Select1st, std::equal_to<unsigned long>, std::hash<unsigned long>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true>, true>::operator[](unsigned long const&)
+  [32] NegaMaxSearcher<LeafAverageEvaluator>::name[abi:cxx11]() [12] std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::_M_initialize_map(unsigned long)
+   [4] NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(Position const&, int, int, int) [19] std::_Deque_base<std::pair<int, int>, std::allocator<std::pair<int, int> > >::~_Deque_base()
