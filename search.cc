@@ -9,8 +9,6 @@
 
 DEFINE_bool(enable_transposition_table, true, "Enable Transposition Table.");
 
-// #define DEBUG_TRANSPOSITION_TABLE
-
 
 Move RandomSearcher::SearchBestMove(const Position& position) {
   std::vector<Move> legal_moves;
@@ -105,15 +103,37 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
 template<typename Evaluator>
 int NegaMaxSearcher<Evaluator>::NegaMax(
     const Position& position, int depth, int alpha, int beta) {
-#ifndef DEBUG_TRANSPOSITION_TABLE
+  const int original_alpha = alpha;
+
+  TranspositionTableEntry* entry = nullptr;
+
   if (FLAGS_enable_transposition_table) {
-    // Conflict could happen but we don't care.
-    if (transposition_table_.count(position.Hash()) &&
-        transposition_table_depth_[position.Hash()] >= depth) {
-      return transposition_table_[position.Hash()];
+    // At that point of time, we don't care about conflicts.
+    const PositionHash hash = position.Hash();
+
+    auto it = transposition_table_.find(hash);
+    if (it != transposition_table_.end()) {
+      entry = &it->second;
+    }
+
+    if (entry != nullptr && entry->depth >= depth) {
+      if (entry->bound == TRANSPOSITION_TABLE_EXACT) {
+        return entry->score;
+      } else if (entry->bound == TRANSPOSITION_TABLE_LOWER_BOUND) {
+        alpha = std::max(alpha, entry->score);
+      } else if (entry->bound == TRANSPOSITION_TABLE_UPPER_BOUND) {
+        beta = std::min(beta, entry->score);
+      }
+
+      if (alpha >= beta) {
+        return entry->score;
+      }
+    }
+
+    if (entry == nullptr) {
+      entry = &transposition_table_[hash];
     }
   }
-#endif
 
   assert(depth <= max_depth_);
 
@@ -140,30 +160,24 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
       const int score = -NegaMax(next_position, depth + 1, -beta, -alpha);
       best_score = std::max(best_score, score);
       alpha = std::max(alpha, score);
-      // if (alpha >= beta) {
-      //  break;
-      // }
+      if (alpha >= beta) {
+       break;
+      }
     }
   }
 
   if (FLAGS_enable_transposition_table) {
-#ifdef DEBUG_TRANSPOSITION_TABLE
-    if (transposition_table_.count(position.Hash()) &&
-        transposition_table_depth_[position.Hash()] == depth &&
-        transposition_table_[position.Hash()] != best_score) {
-      std::cerr << "!!!! Transposition table broken !!!!" << std::endl;
-      std::cerr << "Hash: " << position.Hash() << std::endl;
-      std::cerr << "Depth: " << depth << std::endl;
-      std::cerr << "Score in TT: " << transposition_table_[position.Hash()]
-        << std::endl;
-      std::cerr << "Score: " << best_score << std::endl;
-      position.Dump();
-      exit(EXIT_FAILURE);
-    }
-#endif
+    assert(entry != nullptr);
 
-    transposition_table_[position.Hash()] = best_score;
-    transposition_table_depth_[position.Hash()] = depth;
+    entry->score = best_score;
+    entry->depth = depth;
+    if (best_score <= original_alpha) {
+      entry->bound = TRANSPOSITION_TABLE_UPPER_BOUND;
+    } else if (best_score >= beta) {
+      entry->bound = TRANSPOSITION_TABLE_LOWER_BOUND;
+    } else {
+      entry->bound = TRANSPOSITION_TABLE_EXACT;
+    }
   }
 
   return best_score;

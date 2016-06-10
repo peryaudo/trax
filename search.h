@@ -84,6 +84,27 @@ class SimpleSearcher : public Searcher {
   virtual std::string name() { return "SimpleSearcher"; }
 };
 
+enum TranspositionTableBound {
+  TRANSPOSITION_TABLE_LOWER_BOUND,
+  TRANSPOSITION_TABLE_UPPER_BOUND,
+  TRANSPOSITION_TABLE_EXACT
+};
+
+// Entry of Transposition Table.
+//
+// See also:
+//
+// https://en.wikipedia.org/wiki/Negamax
+// #Negamax_with_alpha_beta_pruning_and_transposition_tables
+//
+// https://groups.google.com/forum/#!msg/
+// rec.games.chess.computer/p8GbiiLjp0o/81vZ3czsthIJ
+struct TranspositionTableEntry {
+  int score;
+  int depth;
+  TranspositionTableBound bound;
+};
+
 // Searcher that selects the best move by using the given evaluator and NegaMax
 // search with Alpha-Beta pruning.
 template <typename Evaluator>
@@ -105,8 +126,8 @@ class NegaMaxSearcher : public Searcher {
               int depth, int alpha=-kInf, int beta=kInf);
 
   int max_depth_;
-  std::unordered_map<PositionHash, int> transposition_table_;
-  std::unordered_map<PositionHash, int> transposition_table_depth_;
+  std::unordered_map<PositionHash,
+                     TranspositionTableEntry> transposition_table_;
 };
 
 #endif // TRAX_SEARCH_H_
