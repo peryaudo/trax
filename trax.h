@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <iostream>
 #include <queue>
-#include <unordered_map>
 #include <vector>
 
 // Infinite.
@@ -25,6 +24,9 @@ void GeneratePossiblePiecesTable();
 
 // Should be called before Position::TraceVictoryLineOrLoop().
 void GenerateTrackDirectionTable();
+
+// Should be called before Position::FillForcedPieces().
+void GenerateForcedPlayTable();
 
 // Piece kinds. It includes color information so it is more specific than
 // Trax notation. The alphabets after the prefix specifies colors on the edges
@@ -337,7 +339,10 @@ void StartTraxClient(Searcher* searcher);
 
 // Do performance testing by counting all the possible moves
 // within the given depth.
-void Perft(int max_depth);
+int Perft(int depth);
+
+// Show results of perft between 0<=depth<=max_depth in readable format.
+void ShowPerft(int max_depth);
 
 #endif // TRAX_TRAX_H_
 

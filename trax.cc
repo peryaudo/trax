@@ -8,6 +8,8 @@
 #include <sstream>
 #include <string>
 #include <set>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "gflags/gflags.h"
 
@@ -121,6 +123,61 @@ void GenerateTrackDirectionTable() {
         // Two edges have the same color.
         if (j != k && kPieceColors[i][j] == kPieceColors[i][k]) {
           g_track_direction_table[i][j] = k;
+        }
+      }
+    }
+  }
+}
+
+std::unordered_set<NeighborKey> g_forced_play_table;
+
+// Should be called before Position::FillForcedPieces().
+void GenerateForcedPlayTable() {
+  for (int i_right = 0; i_right < NUM_PIECES; ++i_right) {
+    for (int j_top = 0; j_top < NUM_PIECES; ++j_top) {
+      for (int k_left = 0; k_left < NUM_PIECES; ++k_left) {
+        for (int l_bottom = 0; l_bottom < NUM_PIECES; ++l_bottom) {
+          NeighborKey key = EncodeNeighborKey(
+              i_right, j_top, k_left, l_bottom);
+          if (!g_possible_pieces_table.count(key)) {
+            continue;
+          }
+
+          PieceSet pieces = g_possible_pieces_table[key];
+          // No possible piece including empty one for the location.
+          // The position is invalid.
+          if (pieces.count() == 0) {
+            continue;
+          }
+
+          // Exclude empty piece.
+          pieces.reset(PIECE_EMPTY);
+
+          if (pieces.count() != 1) {
+            // If more than one piece kind is possible, forced play
+            // does not happen.
+            continue;
+          }
+
+          int red_count = 0;
+          int white_count = 0;
+
+          int neighbors[4] = {i_right, j_top, k_left, l_bottom};
+          for (int m = 0; m < 4; ++m) {
+            const int neighbor = neighbors[m];
+            if (neighbor == PIECE_EMPTY) {
+              continue;
+            }
+
+            if (kPieceColors[neighbor][(m + 2) & 3] == 'R') {
+              ++red_count;
+            } else if (kPieceColors[neighbor][(m + 2) & 3] == 'W') {
+              ++white_count;
+            }
+          }
+          if (red_count >= 2 || white_count >= 2) {
+            g_forced_play_table.insert(key);
+          }
         }
       }
     }
@@ -476,46 +533,22 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
       continue;
     }
 
-    PieceSet pieces = GetPossiblePieces(x, y);
+    const PieceSet pieces = GetPossiblePieces(x, y);
     // No possible piece including empty one for the location.
-    // The position is invalid.
+    // The whole position is invalid.
     if (pieces.count() == 0) {
       return false;
     }
 
-    // Exclude empty piece.
-    pieces.reset(PIECE_EMPTY);
+    // One sastisfies the condition is forced play.
+    const bool is_forced_play = g_forced_play_table.count(
+        EncodeNeighborKey(
+          at(x + kDx[0], y + kDy[0]),
+          at(x + kDx[1], y + kDy[1]),
+          at(x + kDx[2], y + kDy[2]),
+          at(x + kDx[3], y + kDy[3])));
 
-    if (pieces.count() != 1) {
-      // If more than one piece kind is possible, forced play
-      // does not happen.
-      continue;
-    }
-
-    // But not all place with only one possible piece is forced play.
-
-    // TODO(tetsui): This can also be implemented as a table like
-    // GetPossiblePieces().
-    int red_count = 0;
-    int white_count = 0;
-
-    for (int i = 0; i < 4; ++i) {
-      const int nx = x + kDx[i];
-      const int ny = y + kDy[i];
-      Piece neighbor = at(nx, ny);
-      if (neighbor == PIECE_EMPTY) {
-        continue;
-      }
-
-      if (kPieceColors[neighbor][(i + 2) & 3] == 'R') {
-        ++red_count;
-      } else if (kPieceColors[neighbor][(i + 2) & 3] == 'W') {
-        ++white_count;
-      }
-    }
-
-    // This is forced play.
-    if (red_count >= 2 || white_count >= 2) {
+    if (is_forced_play) {
       for (int i = 1; i < NUM_PIECES; ++i) {
         if (!pieces.test(i)) {
           continue;
@@ -658,7 +691,7 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
 }
 
 // Enumerate all possible positions within the given depth.
-int DoPerft(const Position& position, int depth) {
+int Perft(const Position& position, int depth) {
   // position.Dump();
   if (depth <= 0) {
     return 1;
@@ -672,17 +705,20 @@ int DoPerft(const Position& position, int depth) {
       // The move was illegal.
       continue;
     }
-    total_positions += DoPerft(next_position, depth - 1);
+    total_positions += Perft(next_position, depth - 1);
   }
   return total_positions;
 }
 
-void Perft(int max_depth) {
+int Perft(int depth) {
   Position position;
+  return Perft(position, depth);
+}
+
+void ShowPerft(int max_depth) {
   for (int i_depth = 0; i_depth <= max_depth; ++i_depth) {
     std::cerr
-      << "depth: " << i_depth
-      << " leaves: " << DoPerft(position, i_depth) << std::endl;
+      << "depth: " << i_depth << " leaves: " << Perft(i_depth) << std::endl;
   }
 }
 

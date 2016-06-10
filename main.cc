@@ -42,6 +42,8 @@ int main(int argc, char *argv[]) {
   GeneratePossiblePiecesTable();
   // Otherwise Position::TraceVictoryLineOrLoop() doesn't work.
   GenerateTrackDirectionTable();
+  // Otherwise Position::FillForcedPieces() doesn't work.
+  GenerateForcedPlayTable();
 
   // Initialize random seed.
   for (int i = 0; i < FLAGS_seed; ++i) {
@@ -84,7 +86,7 @@ int main(int argc, char *argv[]) {
   } else if (FLAGS_perft) {
     // Do perft (performance testing by counting all the possible moves
     // within the given depth.)
-    Perft(FLAGS_depth);
+    ShowPerft(FLAGS_depth);
   } else {
     google::ShowUsageWithFlags(argv[0]);
   }

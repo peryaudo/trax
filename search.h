@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
 
 #include "trax.h"
 
@@ -93,6 +94,7 @@ class SimpleSearcher : public Searcher {
   virtual std::string name() { return "SimpleSearcher"; }
 };
 
+// Transposition Table boundary flags for combination with alpha-beta pruning.
 enum TranspositionTableBound {
   TRANSPOSITION_TABLE_LOWER_BOUND,
   TRANSPOSITION_TABLE_UPPER_BOUND,

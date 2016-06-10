@@ -127,6 +127,10 @@ TEST(PositionTest, NotHorizontalVictoryLineRealWorld2) {
   ASSERT_EQ(-1, position.winner());
 }
 
+TEST(PerftTest, PerftReturnsCorrectNumberIn4) {
+  ASSERT_EQ(246888, Perft(5));
+}
+
 TEST(RandomSearcherTest, OneTime) {
   RandomSearcher random_searcher;
   StartSelfGame(&random_searcher, &random_searcher, /* verbose = */ false);
@@ -160,6 +164,8 @@ int main(int argc, char *argv[]) {
   GeneratePossiblePiecesTable();
   // Otherwise Position::TraceVictoryLineOrLoop() doesn't work.
   GenerateTrackDirectionTable();
+  // Otherwise Position::FillForcedPieces() doesn't work.
+  GenerateForcedPlayTable();
 
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
