@@ -6,6 +6,8 @@
 
 ## 状況
 
+* モンテカルロを実装した
+  * NegaMax<MonteCarloEvaluator>(depth=1) ＞ Simple<LeafAverageEvaluator>くらいはある
 * 評価関数がスケールしない
 * フレームワーク部がいま一つ遅い気がする（毎ステップnewしてるのを含む）
   * StateInfoの導入とDoMoveの差分更新

@@ -1,10 +1,14 @@
-#include "search.h"
+// Copyright (C) 2016 Tetsui Ohkubo.
 
+#include "./search.h"
+
+#include <gflags/gflags.h>
+
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
 
-#include "gflags/gflags.h"
-#include "trax.h"
+#include "./trax.h"
 
 
 DEFINE_bool(enable_transposition_table, true, "Enable Transposition Table.");
@@ -12,7 +16,7 @@ DEFINE_bool(enable_transposition_table, true, "Enable Transposition Table.");
 
 Move RandomSearcher::SearchBestMove(const Position& position) {
   std::vector<Move> legal_moves;
-  for (auto&& move : position.GenerateMoves()) {
+  for (Move move : position.GenerateMoves()) {
     Position next_position;
     if (position.DoMove(move, &next_position)) {
       // The move is proved to be legal.
@@ -31,7 +35,7 @@ Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
   int best_score = -kInf;
   std::vector<ScoredMove> moves;
 
-  for (auto&& move : position.GenerateMoves()) {
+  for (Move move : position.GenerateMoves()) {
     Position next_position;
     if (!position.DoMove(move, &next_position)) {
       // This is illegal move.
@@ -52,7 +56,7 @@ Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
   }
 
   std::vector<Move> best_moves;
-  for (auto&& move : moves) {
+  for (ScoredMove& move : moves) {
     if (move.score == best_score) {
       best_moves.push_back(move);
     }
@@ -70,7 +74,7 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
   int best_score = -kInf;
   std::vector<ScoredMove> moves;
 
-  for (auto&& move : position.GenerateMoves()) {
+  for (Move move : position.GenerateMoves()) {
     Position next_position;
     if (!position.DoMove(move, &next_position)) {
       // This is illegal move.
@@ -88,7 +92,7 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
   }
 
   std::vector<Move> best_moves;
-  for (auto&& move : moves) {
+  for (ScoredMove& move : moves) {
     if (move.score == best_score) {
       best_moves.push_back(move);
     }
@@ -151,7 +155,7 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
     best_score = Evaluator::Evaluate(position);
 
   } else {
-    for (auto&& move : position.GenerateMoves()) {
+    for (Move move : position.GenerateMoves()) {
       Position next_position;
       if (!position.DoMove(move, &next_position)) {
         // This is illegal move.

@@ -1,14 +1,18 @@
+// Copyright (C) 2016 Tetsui Ohkubo.
+
+#include <gtest/gtest.h>
+
 #include <cassert>
 #include <string>
 #include <vector>
 
-#include "gtest/gtest.h"
-#include "search.h"
-#include "trax.h"
+#include "./perft.h"
+#include "./search.h"
+#include "./trax.h"
 
 void SupplyNotations(const std::vector<std::string>& notations,
                      Position *position) {
-  for (auto&& notation : notations) {
+  for (const std::string& notation : notations) {
     Position next_position;
     ASSERT_TRUE(position->DoMove(Move(notation, *position), &next_position));
     position->Swap(&next_position);

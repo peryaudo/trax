@@ -1,11 +1,13 @@
-#include "trax.h"
+// Copyright (C) 2016 Tetsui Ohkubo.
+
+#include <gflags/gflags.h>
 
 #include <cstdlib>
 #include <iostream>
 
-#include "gflags/gflags.h"
-#include "perft.h"
-#include "search.h"
+#include "./perft.h"
+#include "./search.h"
+#include "./trax.h"
 
 DEFINE_bool(client, false, "Run as contest client.");
 

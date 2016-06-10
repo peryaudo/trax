@@ -1,11 +1,15 @@
-#ifndef TRAX_TRAX_H_
-#define TRAX_TRAX_H_
+// Copyright (C) 2016 Tetsui Ohkubo.
 
+#ifndef TRAX_H_
+#define TRAX_H_
+
+#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cstdint>
 #include <iostream>
 #include <queue>
+#include <string>
 #include <vector>
 
 // Infinite.
@@ -32,37 +36,37 @@ void GenerateForcedPlayTable();
 // Trax notation. The alphabets after the prefix specifies colors on the edges
 // in anti-clockwise order from the rightmost one.
 enum Piece {
-	PIECE_EMPTY = 0,
+  PIECE_EMPTY = 0,
 
-  // W
-  //R R
-  // W
-	PIECE_RWRW,
+  //  W
+  // R R
+  //  W
+  PIECE_RWRW,
 
-  // R
-  //W W
-  // R
-	PIECE_WRWR,
+  //  R
+  // W W
+  //  R
+  PIECE_WRWR,
 
-  // W
-  //W R
-  // R
-	PIECE_RWWR,
+  //  W
+  // W R
+  //  R
+  PIECE_RWWR,
 
-  // R
-  //W R
-  // W
-	PIECE_RRWW,
+  //  R
+  // W R
+  //  W
+  PIECE_RRWW,
 
-  // R
-  //R W
-  // W
-	PIECE_WRRW,
+  //  R
+  // R W
+  //  W
+  PIECE_WRRW,
 
-  // W
-  //R W
-  // R
-	PIECE_WWRR,
+  //  W
+  // R W
+  //  R
+  PIECE_WWRR,
 
   NUM_PIECES
 };
@@ -85,27 +89,27 @@ static const char* kPieceColors[] = {
 static const char kPieceNotations[] = ".++/\\/\\";
 
 static const char kLargePieceNotations[][3][32] = {
-  {". .",
-   " . ",
-   ". ."},
-  {" \33[37m|\33[0m ",
-   "\33[31m---\33[0m",
-   " \33[37m|\33[0m "},
-  {" \33[31m|\33[0m ",
-   "\33[37m-\33[31m|\33[37m-\33[0m",
-   " \33[31m|\33[0m "},
-  {" \33[37m/\33[0m ",
-   "\33[37m/\33[0m \33[31m/\33[0m",
-   " \33[31m/\33[0m "},
-  {" \33[31m\\\33[0m ",
-   "\33[37m\\\33[0m \33[31m\\\33[0m",
-   " \33[37m\\\33[0m "},
-  {" \33[31m/\33[0m ",
-   "\33[31m/\33[0m \33[37m/\33[0m",
-   " \33[37m/\33[0m "},
-  {" \33[37m\\\33[0m ",
-   "\33[31m\\\33[0m \33[37m\\\33[0m",
-   " \33[31m\\\33[0m "},
+    {". .",
+     " . ",
+     ". ."},
+    {" \33[37m|\33[0m ",
+     "\33[31m---\33[0m",
+     " \33[37m|\33[0m "},
+    {" \33[31m|\33[0m ",
+     "\33[37m-\33[31m|\33[37m-\33[0m",
+     " \33[31m|\33[0m "},
+    {" \33[37m/\33[0m ",
+     "\33[37m/\33[0m \33[31m/\33[0m",
+     " \33[31m/\33[0m "},
+    {" \33[31m\\\33[0m ",
+     "\33[37m\\\33[0m \33[31m\\\33[0m",
+     " \33[37m\\\33[0m "},
+    {" \33[31m/\33[0m ",
+     "\33[31m/\33[0m \33[37m/\33[0m",
+     " \33[37m/\33[0m "},
+    {" \33[37m\\\33[0m ",
+     "\33[31m\\\33[0m \33[37m\\\33[0m",
+     " \33[31m\\\33[0m "},
 };
 
 class Position;
@@ -319,7 +323,7 @@ class Searcher {
   // if position.red_to_move() == true.
   virtual Move SearchBestMove(const Position& position) = 0;
   virtual ~Searcher() {
-  };
+  }
 
   // Searcher name that is shown in the debug messages of
   // StartSelfGame() and StartTraxClient().
@@ -332,13 +336,13 @@ class Searcher {
 // Return -1 if white is the winner.
 // Return 0 if the game is tie.
 int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
-                  bool verbose=false);
+                  bool verbose = false);
 
 void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
-                            int num_games, bool verbose=false);
+                            int num_games, bool verbose = false);
 
 // Start Trax client which connects through stdin / stdout.
 void StartTraxClient(Searcher* searcher);
 
-#endif // TRAX_TRAX_H_
+#endif  // TRAX_H_
 

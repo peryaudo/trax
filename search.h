@@ -1,11 +1,15 @@
-#ifndef TRAX_SEARCH_H_
-#define TRAX_SEARCH_H_
+// Copyright (C) 2016 Tetsui Ohkubo.
+
+#ifndef SEARCH_H_
+#define SEARCH_H_
 
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
 #include <unordered_map>
 
-#include "trax.h"
+#include "./trax.h"
 
 //
 // Evaluators
@@ -54,7 +58,7 @@ class LeafAverageEvaluator  {
     int64_t numerator = 0;
     int64_t denominator = 0;
 
-    for (auto&& move : position.GenerateMoves()) {
+    for (Move move : position.GenerateMoves()) {
       Position next_position;
       if (!position.DoMove(move, &next_position)) {
         // This is illegal move.
@@ -85,7 +89,7 @@ class LeafAverageEvaluator  {
   static std::string name() { return "LeafAverageEvaluator"; }
 };
 
-const static int kNumMonteCarloTrial = 100;
+static const int kNumMonteCarloTrial = 100;
 
 class MonteCarloEvaluator {
  public:
@@ -193,7 +197,7 @@ struct TranspositionTableEntry {
 template <typename Evaluator>
 class NegaMaxSearcher : public Searcher {
  public:
-  NegaMaxSearcher(int max_depth) : max_depth_(max_depth) {
+  explicit NegaMaxSearcher(int max_depth) : max_depth_(max_depth) {
   }
 
   virtual Move SearchBestMove(const Position& position);
@@ -207,11 +211,11 @@ class NegaMaxSearcher : public Searcher {
 
  private:
   int NegaMax(const Position& position,
-              int depth, int alpha=-kInf, int beta=kInf);
+              int depth, int alpha = -kInf, int beta = kInf);
 
   int max_depth_;
   std::unordered_map<PositionHash,
                      TranspositionTableEntry> transposition_table_;
 };
 
-#endif // TRAX_SEARCH_H_
+#endif  // SEARCH_H_

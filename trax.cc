@@ -1,6 +1,8 @@
 // Copyright (C) 2016 Tetsui Ohkubo.
 
-#include "trax.h"
+#include "./trax.h"
+
+#include <gflags/gflags.h>
 
 #include <algorithm>
 #include <iomanip>
@@ -9,8 +11,8 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 
-#include "gflags/gflags.h"
 
 DEFINE_bool(enable_pretty_dump, true,
             "Position::Dump() will return pretty colored boards.");
@@ -24,17 +26,17 @@ DEFINE_string(player_id, "PR",
             "Contest issued player ID.");
 
 
-uint32_t Random() { 
+uint32_t Random() {
   // TODO(tetsui): Make it thread safe and remove static.
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
-  static uint32_t w = 88675123; 
+  static uint32_t w = 88675123;
   uint32_t t;
 
   t = x ^ (x << 11);
   x = y; y = z; z = w;
-  return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8)); 
+  return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
 using NeighborKey = uint32_t;
@@ -66,7 +68,7 @@ void GeneratePossiblePiecesTable() {
               j_top == PIECE_EMPTY &&
               k_left == PIECE_EMPTY &&
               l_bottom == PIECE_EMPTY) {
-            // If all the neighboring pieces are empty then empty piece is 
+            // If all the neighboring pieces are empty then empty piece is
             // the only legal piece.
           } else {
             const char *neighbors[4] = {
@@ -83,7 +85,7 @@ void GeneratePossiblePiecesTable() {
               bool valid = true;
               for (int n = 0; n < 4; ++n) {
                 // If the neighboring cell isn't empty,
-                // and the color of the shared edges are different, 
+                // and the color of the shared edges are different,
                 // then the candidate is invalid piece placement.
                 if (neighbors[n][0] != '_' &&
                     candidate[n] != neighbors[n][(n + 2) & 3]) {
@@ -217,7 +219,7 @@ Move::Move(const std::string& trax_notation, const Position& previous_position)
     goto fail;
   }
 
-  // If this is the first move, then the color is limited. 
+  // If this is the first move, then the color is limited.
   if (previous_position.max_x() == 0 && previous_position.max_y() == 0) {
     if (*it == '/') {
       piece = PIECE_RWWR;
@@ -587,7 +589,7 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
   }
 
   // Fill winner flags based on the position state.
-  for (auto&& coordinate : winner_flag_checkpoints) {
+  for (std::pair<int, int>& coordinate : winner_flag_checkpoints) {
     FillWinnerFlags(coordinate.first, coordinate.second);
   }
 

@@ -28,18 +28,21 @@ search.o: search.cc search.h trax.h
 perft.o: perft.cc perft.h trax.h
 
 gtest-all.o: vendor/googletest/gtest/gtest-all.cc
-	$(CXX) -c $^ $(CXXFLAGS) -o $@
+	$(CXX) -std=c++03 -c $^ $(CXXFLAGS) -o $@
 
 gflags.o: vendor/gflags/gflags.cc
-	$(CXX) -c $^ -o $@
+	$(CXX) -std=c++03 -c $^ -o $@
 
 gflags_completions.o: vendor/gflags/gflags_completions.cc
-	$(CXX) -c $^ -o $@
+	$(CXX) -std=c++03 -c $^ -o $@
 
 gflags_reporting.o: vendor/gflags/gflags_reporting.cc
-	$(CXX) -c $^ -o $@
+	$(CXX) -std=c++03 -c $^ -o $@
 
 clean:
 	rm -f *.o trax trax_test
 
-.PHONY: all test clean
+lint:
+	cpplint *.cc *.h
+
+.PHONY: all test clean lint

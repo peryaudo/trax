@@ -1,11 +1,12 @@
-#include "perft.h"
+// Copyright (C) 2016 Tetsui Ohkubo.
+
+#include "./perft.h"
 
 #ifdef __MACH__
 #include <mach/mach_time.h>
 #endif
 
-#include "gflags/gflags.h"
-#include "trax.h"
+#include "./trax.h"
 
 // Enumerate all possible positions within the given depth.
 int Perft(const Position& position, int depth) {
@@ -16,7 +17,7 @@ int Perft(const Position& position, int depth) {
 
   int total_positions = 0;
 
-  for (auto&& move : position.GenerateMoves()) {
+  for (Move move : position.GenerateMoves()) {
     Position next_position;
     if (!position.DoMove(move, &next_position)) {
       // The move was illegal.
