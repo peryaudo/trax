@@ -500,6 +500,10 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
   // Thus, we have to enumerate all of them first.
   std::vector<std::pair<int, int>> winner_flag_checkpoints;
 
+  // Surprisingly this has really huge impact on performance.
+  // Larger than 8 seems not very effective.
+  winner_flag_checkpoints.reserve(8);
+
   winner_flag_checkpoints.emplace_back(move_x, move_y);
 
   std::queue<std::pair<int, int>> possible_queue;
@@ -539,7 +543,7 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
       return false;
     }
 
-    // One sastisfies the condition is forced play.
+    // This is forced play.
     const bool is_forced_play = g_forced_play_table.count(
         EncodeNeighborKey(
           at(x + kDx[0], y + kDy[0]),
@@ -547,32 +551,37 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
           at(x + kDx[2], y + kDy[2]),
           at(x + kDx[3], y + kDy[3])));
 
-    if (is_forced_play) {
-      for (int i = 1; i < NUM_PIECES; ++i) {
-        if (!pieces.test(i)) {
-          continue;
-        }
+    if (!is_forced_play) {
+      continue;
+    }
 
+    assert(piece.count() == 1);
+
+    for (int i = 1; i < NUM_PIECES; ++i) {
+      if (pieces.test(i)) {
+        // Place the forced piece.
         at(x, y) = static_cast<Piece>(i);
-
-        winner_flag_checkpoints.emplace_back(x, y);
-
-        // Add neighboring cells to the queue as new forced play candidates.
-        for (int j = 0; j < 4; ++j) {
-          const int nx = x + kDx[j];
-          const int ny = y + kDy[j];
-
-          // Forced plays should not happen outside the current board region.
-          // Therefore checking inside [0, max_x) [0, max_y) is enough.
-          if (nx < 0 || ny < 0 || nx >= max_x_ || ny >= max_y_) {
-            continue;
-          }
-
-          if (at(nx, ny) == PIECE_EMPTY) {
-            possible_queue.emplace(nx, ny);
-          }
-        }
         break;
+      }
+    }
+
+    // Add the coordinate to winner flag checkpoints, because
+    // it may constitute new loop or victory line.
+    winner_flag_checkpoints.emplace_back(x, y);
+
+    // Add neighboring cells to the queue as new forced play candidates.
+    for (int j = 0; j < 4; ++j) {
+      const int nx = x + kDx[j];
+      const int ny = y + kDy[j];
+
+      // Forced plays should not happen outside the current board region.
+      // Therefore checking inside [0, max_x) [0, max_y) is enough.
+      if (nx < 0 || ny < 0 || nx >= max_x_ || ny >= max_y_) {
+        continue;
+      }
+
+      if (at(nx, ny) == PIECE_EMPTY) {
+        possible_queue.emplace(nx, ny);
       }
     }
   }
