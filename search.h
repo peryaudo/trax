@@ -12,7 +12,16 @@ class NoneEvaluator {
   // or more simply, you are red inside the method if red_to_move() == true.
   // Larger value is better.
   static int Evaluate(const Position& position) {
-    return 0;
+    if (position.red_to_move()) {
+      // I'm red.
+      // winner() > 0 if red wins.
+      return kInf * position.winner();
+    } else {
+      // I'm white.
+      // winner() > 0 if red wins.
+      // Flip the sign.
+      return kInf * -position.winner();
+    }
   }
 };
 
