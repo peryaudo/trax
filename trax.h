@@ -130,9 +130,12 @@ struct Move {
 
   std::string notation() const;
 
-  int x;
-  int y;
-  Piece piece;
+  // Use bit field so that Move struct will fit into 4 bytes.
+  // I'm not sure if it is very effective but at least it's not harmful and
+  // slight performance improvement in perft is achieved.
+  int x : 14;
+  int y : 14;
+  Piece piece : 4;
 };
 
 // Move with score.

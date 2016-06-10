@@ -88,6 +88,8 @@ int main(int argc, char *argv[]) {
     ShowPerft(FLAGS_depth);
   } else {
     google::ShowUsageWithFlags(argv[0]);
+    std::cerr << std::endl;
+    std::cerr << "Move struct size: " << sizeof(Move) << std::endl;
   }
 
   return 0;
