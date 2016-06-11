@@ -279,9 +279,9 @@ class Position {
   }
 
   // Length of the longest red line.
-  int red_longest() { return red_longest_; }
+  int red_longest() const { return red_longest_; }
   // Length of the longest white line.
-  int white_longest() { return white_longest_; }
+  int white_longest() const { return white_longest_; }
 
  private:
   // Fill forced play pieces. Return true if placements are successful,

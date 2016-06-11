@@ -45,6 +45,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new SimpleSearcher<MonteCarloEvaluator>();
   } else if (name == "simple-ec") {
     return new SimpleSearcher<EdgeColorEvaluator>();
+  } else if (name == "simple-ll") {
+    return new SimpleSearcher<LongestLineEvaluator>();
   } else if (name == "negamax0-la") {
     return new NegaMaxSearcher<LeafAverageEvaluator>(0);
   } else if (name == "negamax1-la") {
@@ -65,6 +67,14 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<EdgeColorEvaluator>(3);
   } else if (name == "negamax4-ec") {
     return new NegaMaxSearcher<EdgeColorEvaluator>(4);
+  } else if (name == "negamax0-ll") {
+    return new NegaMaxSearcher<LongestLineEvaluator>(0);
+  } else if (name == "negamax1-ll") {
+    return new NegaMaxSearcher<LongestLineEvaluator>(1);
+  } else if (name == "negamax2-ll") {
+    return new NegaMaxSearcher<LongestLineEvaluator>(2);
+  } else if (name == "negamax3-ll") {
+    return new NegaMaxSearcher<LongestLineEvaluator>(3);
   } else {
     std::cerr << "cannot find searcher with name " << name << std::endl;
     exit(EXIT_FAILURE);

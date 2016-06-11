@@ -216,6 +216,33 @@ class EdgeColorEvaluator {
   static std::string name() { return "EdgeColorEvaluator"; }
 };
 
+// Evaluate position by its longest line of the color.
+class LongestLineEvaluator {
+ public:
+  static int Evaluate(const Position& position) {
+    if (position.finished()) {
+      if (position.red_to_move()) {
+        // I'm red.
+        // winner() > 0 if red wins.
+        return kInf * position.winner();
+      } else {
+        // I'm white.
+        // winner() > 0 if red wins.
+        // Flip the sign.
+        return kInf * -position.winner();
+      }
+    }
+
+    const int score = position.red_longest() - position.white_longest();
+    if (position.red_to_move()) {
+      return score;
+    } else {
+      return -score;
+    }
+  }
+
+  static std::string name() { return "LongestLineEvaluator"; }
+};
 
 //
 // Searchers
