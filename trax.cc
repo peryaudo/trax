@@ -561,10 +561,12 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
       continue;
     }
 
-    assert(piece.count() == 1);
+    assert(pieces.count() == 2);
 
     for (int i = 1; i < NUM_PIECES; ++i) {
       if (pieces.test(i)) {
+        assert(at(x, y) == PIECE_EMPTY);
+
         // Place the forced piece.
         at(x, y) = static_cast<Piece>(i);
         break;
@@ -601,6 +603,8 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
 }
 
 void Position::FillWinnerFlags(int x, int y) {
+  assert(at(x, y) != PIECE_EMPTY);
+
   if (!red_winner_ && TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) {
     red_winner_ = true;
   }
@@ -636,6 +640,7 @@ void Position::FillWinnerFlags(int x, int y) {
 bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
                                       bool red_line) {
   assert(at(start_x, start_y) != PIECE_EMPTY);
+  assert(0 <= start_x && start_x < max_x_ && 0 <= start_y && start_y < max_y_);
 
   const char traced_color = red_line ? 'R' : 'W';
 
@@ -669,12 +674,16 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
     int y = start_y + kDy[i];
     int previous_direction = (i + 2) & 3;
 
+    assert(-2 <= x && x < max_x_ + 2 && -2 <= y && y < max_y_ + 2);
+
     // Trace the line until it hits an empty cell.
     while (at(x, y) != PIECE_EMPTY) {
       if (x == start_x && y == start_y) {
         // This is loop.
         return true;
       }
+
+      assert(0 <= x && x < max_x_ && 0 <= y && y < max_y_);
 
       ++line_length;
 
@@ -691,6 +700,7 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
 
       x += kDx[next_direction];
       y += kDy[next_direction];
+
       previous_direction = (next_direction + 2) & 3;
     }
   }

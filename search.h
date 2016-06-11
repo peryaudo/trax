@@ -128,6 +128,7 @@ class MonteCarloEvaluator {
       int step_count = 0;
 
       while (step_count < 10 && !position.finished()) {
+#if 1
         Position next_position;
 
         std::vector<Move> moves = position.GenerateMoves();
@@ -135,7 +136,7 @@ class MonteCarloEvaluator {
         for (int i = 0; i < moves.size(); ++i) {
           Move move = moves[Random() % moves.size()];
           if (position.DoMove(move, &next_position)) {
-            // The move is illegal.
+            // The move is legal.
             legal = true;
             break;
           }
@@ -144,7 +145,34 @@ class MonteCarloEvaluator {
         if (!legal) {
           break;
         }
+#else
+        std::vector<ScoredMove> moves;
+        int best_score = -kInf;
+        for (Move move : position.GenerateMoves()) {
+          Position next_position;
+          if (!position.DoMove(move, &next_position)) {
+            // The move is illegal.
+            continue;
+          }
+          const int score = -LeafAverageEvaluator::Evaluate(next_position);
+          best_score = std::max(best_score, score);
+          moves.emplace_back(score, move);
+        }
 
+        std::vector<Move> best_moves;
+        for (ScoredMove& move : moves) {
+          if (move.score == best_score) {
+            best_moves.push_back(move);
+          }
+        }
+
+        assert(best_moves.size() > 0);
+
+        // Should always be legal.
+        Position next_position;
+        position.DoMove(best_moves[Random() % best_moves.size()],
+                             &next_position);
+#endif
         position.Swap(&next_position);
 
         ++step_count;
@@ -272,6 +300,7 @@ class CombinedEvaluator {
       return score;
     }
 
+#if 1
     int denom = 1;
 
     if (position.max_x() <= 4 && position.max_y() <= 4) {
@@ -280,6 +309,9 @@ class CombinedEvaluator {
     }
 
     return score / denom;
+#else
+    return (6 * score + 4 * MonteCarloEvaluator::Evaluate(position)) / 10;
+#endif
   }
 
   static std::string name() { return "CombinedEvaluator"; }

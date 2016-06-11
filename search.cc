@@ -52,7 +52,6 @@ Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
     const int score = -Evaluator::Evaluate(next_position);
 #if 0
     std::cerr << score << " " << move.notation() << std::endl;
-    std::cerr << std::endl;
 #endif
     best_score = std::max(best_score, score);
     moves.emplace_back(score, move);
