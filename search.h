@@ -125,13 +125,29 @@ class MonteCarloEvaluator {
         continue;
       }
 
-      while (!position.finished()) {
+      int step_count = 0;
+
+      while (step_count < 10 && !position.finished()) {
         Position next_position;
 
         std::vector<Move> moves = position.GenerateMoves();
-        Move move = moves[Random() % moves.size()];
-        position.DoMove(move, &next_position);
+        bool legal = false;
+        for (int i = 0; i < moves.size(); ++i) {
+          Move move = moves[Random() % moves.size()];
+          if (position.DoMove(move, &next_position)) {
+            // The move is illegal.
+            legal = true;
+            break;
+          }
+        }
+
+        if (!legal) {
+          break;
+        }
+
         position.Swap(&next_position);
+
+        ++step_count;
       }
 
       winner_sum += position.winner();
