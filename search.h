@@ -15,6 +15,7 @@
 // Evaluators
 //
 
+// Evaluator that only returns zero except for finished positions.
 class NoneEvaluator {
  public:
   // Evaluate the position, from the perspective of position.red_to_move().
@@ -36,6 +37,7 @@ class NoneEvaluator {
   static std::string name() { return "NoneEvaluator"; }
 };
 
+// Evaluator that averages the leaves score of NoneEvaluator.
 class LeafAverageEvaluator  {
  public:
   // Evaluate the position, from the perspective of position.red_to_move().
@@ -91,6 +93,8 @@ class LeafAverageEvaluator  {
 
 extern int g_num_monte_carlo_trial;
 
+// Evaluator that uses primitive Monte Carlo method to evaluate the position.
+// You can change the number of time to sample by --num_monte_carlo_trial.
 class MonteCarloEvaluator {
  public:
   static int Evaluate(const Position& initial_position) {
