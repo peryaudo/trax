@@ -49,7 +49,6 @@ TEST(PositionTest, WinByHorizontalVictoryLineSimple) {
   ASSERT_EQ(1, position.winner());
 }
 
-
 TEST(PositionTest, NotHorizontalVictoryLineSimple) {
   Position position;
   SupplyNotations({"@0+", "B1+", "C1+", "D1+", "E1+", "F1+", "G1+", "H1\\"},
@@ -121,7 +120,7 @@ TEST(PositionTest, NotHorizontalVictoryLineRealWorld1) {
 
 TEST(PositionTest, NotHorizontalVictoryLineRealWorld2) {
   Position position;
-  // Same but different order.
+  // Same as NotHorizontalVictoryLineRealWorld2 but in different order.
   SupplyNotations({"@0+", "A2+", "B1+", "A3/", "A4+", "B4+", "B5\\",
                    "C1\\", "@1+", "@1/", "A2/", "C0/", "@2\\", "C1\\",
                    "B0/", "G5\\", "F7/",
@@ -129,6 +128,22 @@ TEST(PositionTest, NotHorizontalVictoryLineRealWorld2) {
                    "B5\\", "A2\\", "@3/"}, &position);
   ASSERT_TRUE(position.finished());
   ASSERT_EQ(-1, position.winner());
+}
+
+TEST(PositionTest, LongestLines1) {
+  Position position;
+  SupplyNotations({"@0+", "B1+", "C1+", "B0+", "C1+"}, &position);
+  ASSERT_FALSE(position.finished());
+  ASSERT_EQ(3, position.red_longest());
+  ASSERT_EQ(2, position.white_longest());
+}
+
+TEST(PositionTest, LongestLines2) {
+  Position position;
+  SupplyNotations({"@0+", "B1+", "B0+", "B0/"}, &position);
+  ASSERT_FALSE(position.finished());
+  ASSERT_EQ(2, position.red_longest());
+  ASSERT_EQ(3, position.white_longest());
 }
 
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {

@@ -44,5 +44,6 @@ clean:
 
 lint:
 	cpplint *.cc *.h
+	cloc *.cc *.h
 
 .PHONY: all test clean lint

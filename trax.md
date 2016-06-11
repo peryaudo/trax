@@ -21,6 +21,12 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
 やっぱりモンテカルロ探索はあんまりうまくいかない戦略なのかなと思う。
 UCTは楽しそうなのでそのうち実装してみてもいいけど、
 
+Timer(int timeout_ms=800)
+bool Timer::Check()
+void Timer::IncrementNodeCounter()
+int Timer::nps()
+
+
 ### やるべき
 
 * TranspositoinTable版のPerftを実装
@@ -53,7 +59,8 @@ UCTは楽しそうなのでそのうち実装してみてもいいけど、
 オセロの例:
 https://skatgame.net/mburo/ps/glem.pdf
 
-  * 自分の色のもののうち、最長のLineの長さ(TraceVictoryLineOrLoopのリファクタと相性が悪いかも)
+  * 自分の色のもののうち、最長のLineの長さ
+    * TraceVictoryLineOrLoopのリファクタと相性が悪いかも、と思ってたけど大丈夫です。全然余裕です。
 
   * それを置いたことでの盤面のサイズ
     * Evidence: 探索空間を狭くするほうに誘導できるので探索速度が上がり有利になる

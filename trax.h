@@ -176,7 +176,9 @@ class Position {
       , max_y_(0)
       , red_to_move_(false)  // White places first.
       , red_winner_(false)
-      , white_winner_(false) {
+      , white_winner_(false)
+      , red_longest_(0)
+      , white_longest_(0) {
   }
 
   // Disable copy and assign.
@@ -232,6 +234,8 @@ class Position {
     std::swap(red_to_move_, to->red_to_move_);
     std::swap(red_winner_, to->red_winner_);
     std::swap(white_winner_, to->white_winner_);
+    std::swap(red_longest_, to->red_longest_);
+    std::swap(white_longest_, to->white_longest_);
   }
 
   // Debug output.
@@ -274,6 +278,11 @@ class Position {
     return static_cast<int>(red_winner_) - static_cast<int>(white_winner_);
   }
 
+  // Length of the longest red line.
+  int red_longest() { return red_longest_; }
+  // Length of the longest white line.
+  int white_longest() { return white_longest_; }
+
  private:
   // Fill forced play pieces. Return true if placements are successful,
   // i.e. the position is still legal after forced plays.
@@ -314,6 +323,9 @@ class Position {
 
   bool red_winner_;
   bool white_winner_;
+
+  int red_longest_;
+  int white_longest_;
 };
 
 class Searcher {

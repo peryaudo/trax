@@ -350,6 +350,10 @@ bool Position::DoMove(Move move, Position *next_position) const {
   // Flip the side to move.
   next_position->red_to_move_ = !red_to_move_;
 
+  // Inherit the longest line length.
+  next_position->red_longest_ = red_longest_;
+  next_position->white_longest_ = white_longest_;
+
   // Extend the field width and height if it is required by the move.
   next_position->max_x_ = max_x_;
   next_position->max_y_ = max_y_;
@@ -635,6 +639,8 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
 
   const char traced_color = red_line ? 'R' : 'W';
 
+  int line_length = 1;
+
   // See also: definition of kDx[] and kDy[]
   //                    x           y  x  y
   const int edges[4] = {max_x_ - 1, 0, 0, max_y_ - 1};
@@ -670,6 +676,8 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
         return true;
       }
 
+      ++line_length;
+
       const int xy[2] = {x, y};
 
       // Continue tracing the line.
@@ -685,6 +693,12 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
       y += kDy[next_direction];
       previous_direction = (next_direction + 2) & 3;
     }
+  }
+
+  if (red_line) {
+    red_longest_ = std::max(red_longest_, line_length);
+  } else {
+    white_longest_ = std::max(white_longest_, line_length);
   }
 
   // If the victory line is enabled i.e. the axis is longer than 8 or not.
