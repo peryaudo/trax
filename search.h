@@ -149,6 +149,73 @@ class MonteCarloEvaluator {
   static std::string name() { return "MonteCarloEvaluator"; }
 };
 
+// Evaluate position by number of external facing color of the player.
+// NegaMax<EdgeColorEvaluator>(depth=2)
+class EdgeColorEvaluator {
+ public:
+  static int Evaluate(const Position& position) {
+    if (position.finished()) {
+      if (position.red_to_move()) {
+        // I'm red.
+        // winner() > 0 if red wins.
+        return kInf * position.winner();
+      } else {
+        // I'm white.
+        // winner() > 0 if red wins.
+        // Flip the sign.
+        return kInf * -position.winner();
+      }
+    }
+
+    int red = 0;
+    int white = 0;
+
+    for (int i_x = 0; i_x < position.max_x(); ++i_x) {
+      for (int j_y = 0; j_y < position.max_y(); ++j_y) {
+        if (position.at(i_x, j_y) == PIECE_EMPTY) {
+          continue;
+        }
+
+        for (int k = 0; k < 4; ++k) {
+          const int nx = i_x + kDx[k];
+          const int ny = j_y + kDy[k];
+          if (position.at(nx, ny) != PIECE_EMPTY) {
+            continue;
+          }
+
+          if (kPieceColors[position.at(i_x, j_y)][k] == 'R') {
+            ++red;
+          } else {
+            ++white;
+          }
+        }
+      }
+    }
+
+    if (red + white == 0) {
+      return 0;
+    }
+
+    // --self --white=negamax1-ec --red=negamax1-la --silent --num_games=20
+
+    // white(NegaMaxSearcher<EdgeColorEvaluator>(max_depth=1)): 2
+    // red(NegaMaxSearcher<LeafAverageEvaluator>(max_depth=1)): 17
+    const int score = red - white;
+
+    // white(NegaMaxSearcher<EdgeColorEvaluator>(max_depth=1)): 1
+    // red(NegaMaxSearcher<LeafAverageEvaluator>(max_depth=1)): 14
+    // const int score = kInf * (red - white) / (red + white);
+
+    if (position.red_to_move()) {
+      return score;
+    } else {
+      return -score;
+    }
+  }
+
+  static std::string name() { return "EdgeColorEvaluator"; }
+};
+
 
 //
 // Searchers

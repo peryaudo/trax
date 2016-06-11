@@ -204,6 +204,9 @@ template Move SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(
 template Move SimpleSearcher<MonteCarloEvaluator>::SearchBestMove(
     const Position& position);
 
+template Move SimpleSearcher<EdgeColorEvaluator>::SearchBestMove(
+    const Position& position);
+
 template Move NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(
     const Position& position);
 template int NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(
@@ -212,4 +215,9 @@ template int NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(
 template Move NegaMaxSearcher<MonteCarloEvaluator>::SearchBestMove(
     const Position& position);
 template int NegaMaxSearcher<MonteCarloEvaluator>::NegaMax(
+    const Position& position, int depth, int alpha, int beta);
+
+template Move NegaMaxSearcher<EdgeColorEvaluator>::SearchBestMove(
+    const Position& position);
+template int NegaMaxSearcher<EdgeColorEvaluator>::NegaMax(
     const Position& position, int depth, int alpha, int beta);

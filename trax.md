@@ -2,12 +2,14 @@
 
 ## 短期目標
 
-- [ ] NegaMax(depth=1)より強くしていく
+- [ ] NegaMax<LeafAverageEvaluator>(depth=1)より強くしていく
 
 ## 状況
 
 * モンテカルロを実装した
   * NegaMax<MonteCarloEvaluator>(depth=1) ＞ Simple<LeafAverageEvaluator>くらいはある
+* EdgeColorEvaluator実装したけど効果は今ひとつ
+  * ちゃんとdepth=3＞depth=2になってるのはえらいけどdepth=4は3より弱い・・・
 * 評価関数がスケールしない
 * フレームワーク部がいま一つ遅い気がする（毎ステップnewしてるのを含む）
   * StateInfoの導入とDoMoveの差分更新
@@ -51,8 +53,6 @@ UCTは楽しそうなのでそのうち実装してみてもいいけど、
 オセロの例:
 https://skatgame.net/mburo/ps/glem.pdf
 
-  * 外接する辺のうち自分と同じ色の辺の数
-    * Evidence: Victory Lineの作りやすさ
   * 自分の色のもののうち、最長のLineの長さ(TraceVictoryLineOrLoopのリファクタと相性が悪いかも)
 
   * それを置いたことでの盤面のサイズ
