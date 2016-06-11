@@ -12,6 +12,78 @@
 #include "./trax.h"
 
 //
+// Searchers
+//
+
+// Searcher that randomly selects any legal moves.
+class RandomSearcher : public Searcher {
+ public:
+  virtual Move SearchBestMove(const Position& position);
+
+  virtual std::string name() { return "RandomSearcher"; }
+};
+
+// Searcher that directly selects the best move determined by the evaluator.
+template <typename Evaluator>
+class SimpleSearcher : public Searcher {
+ public:
+  virtual Move SearchBestMove(const Position& position);
+
+  virtual std::string name() {
+    return "SimpleSearcher<" + Evaluator::name() + ">";
+  }
+};
+
+// Transposition Table boundary flags for combination with alpha-beta pruning.
+enum TranspositionTableBound {
+  TRANSPOSITION_TABLE_LOWER_BOUND,
+  TRANSPOSITION_TABLE_UPPER_BOUND,
+  TRANSPOSITION_TABLE_EXACT
+};
+
+// Entry of Transposition Table.
+//
+// See also:
+//
+// https://en.wikipedia.org/wiki/Negamax
+// #Negamax_with_alpha_beta_pruning_and_transposition_tables
+//
+// https://groups.google.com/forum/#!msg/
+// rec.games.chess.computer/p8GbiiLjp0o/81vZ3czsthIJ
+struct TranspositionTableEntry {
+  int score;
+  int depth;
+  TranspositionTableBound bound;
+  PositionHash hash_b;
+};
+
+// Searcher that selects the best move by using the given evaluator and NegaMax
+// search with Alpha-Beta pruning.
+template <typename Evaluator>
+class NegaMaxSearcher : public Searcher {
+ public:
+  explicit NegaMaxSearcher(int max_depth) : max_depth_(max_depth) {
+  }
+
+  virtual Move SearchBestMove(const Position& position);
+
+  virtual std::string name() {
+    std::stringstream name;
+    name << "NegaMaxSearcher<" << Evaluator::name()
+      << ">(max_depth=" << max_depth_ << ")";
+    return name.str();
+  }
+
+ private:
+  int NegaMax(const Position& position,
+              int depth, int alpha = -kInf, int beta = kInf);
+
+  int max_depth_;
+  std::unordered_map<PositionHash,
+                     TranspositionTableEntry> transposition_table_;
+};
+
+//
 // Evaluators
 //
 
@@ -128,7 +200,7 @@ class MonteCarloEvaluator {
       int step_count = 0;
 
       while (step_count < 10 && !position.finished()) {
-#if 1
+#if 0
         Position next_position;
 
         std::vector<Move> moves = position.GenerateMoves();
@@ -146,32 +218,9 @@ class MonteCarloEvaluator {
           break;
         }
 #else
-        std::vector<ScoredMove> moves;
-        int best_score = -kInf;
-        for (Move move : position.GenerateMoves()) {
-          Position next_position;
-          if (!position.DoMove(move, &next_position)) {
-            // The move is illegal.
-            continue;
-          }
-          const int score = -LeafAverageEvaluator::Evaluate(next_position);
-          best_score = std::max(best_score, score);
-          moves.emplace_back(score, move);
-        }
-
-        std::vector<Move> best_moves;
-        for (ScoredMove& move : moves) {
-          if (move.score == best_score) {
-            best_moves.push_back(move);
-          }
-        }
-
-        assert(best_moves.size() > 0);
-
-        // Should always be legal.
+        SimpleSearcher<LeafAverageEvaluator> searcher;
         Position next_position;
-        position.DoMove(best_moves[Random() % best_moves.size()],
-                             &next_position);
+        position.DoMove(searcher.SearchBestMove(position), &next_position);
 #endif
         position.Swap(&next_position);
 
@@ -315,78 +364,6 @@ class CombinedEvaluator {
   }
 
   static std::string name() { return "CombinedEvaluator"; }
-};
-
-//
-// Searchers
-//
-
-// Searcher that randomly selects any legal moves.
-class RandomSearcher : public Searcher {
- public:
-  virtual Move SearchBestMove(const Position& position);
-
-  virtual std::string name() { return "RandomSearcher"; }
-};
-
-// Searcher that directly selects the best move determined by the evaluator.
-template <typename Evaluator>
-class SimpleSearcher : public Searcher {
- public:
-  virtual Move SearchBestMove(const Position& position);
-
-  virtual std::string name() {
-    return "SimpleSearcher<" + Evaluator::name() + ">";
-  }
-};
-
-// Transposition Table boundary flags for combination with alpha-beta pruning.
-enum TranspositionTableBound {
-  TRANSPOSITION_TABLE_LOWER_BOUND,
-  TRANSPOSITION_TABLE_UPPER_BOUND,
-  TRANSPOSITION_TABLE_EXACT
-};
-
-// Entry of Transposition Table.
-//
-// See also:
-//
-// https://en.wikipedia.org/wiki/Negamax
-// #Negamax_with_alpha_beta_pruning_and_transposition_tables
-//
-// https://groups.google.com/forum/#!msg/
-// rec.games.chess.computer/p8GbiiLjp0o/81vZ3czsthIJ
-struct TranspositionTableEntry {
-  int score;
-  int depth;
-  TranspositionTableBound bound;
-  PositionHash hash_b;
-};
-
-// Searcher that selects the best move by using the given evaluator and NegaMax
-// search with Alpha-Beta pruning.
-template <typename Evaluator>
-class NegaMaxSearcher : public Searcher {
- public:
-  explicit NegaMaxSearcher(int max_depth) : max_depth_(max_depth) {
-  }
-
-  virtual Move SearchBestMove(const Position& position);
-
-  virtual std::string name() {
-    std::stringstream name;
-    name << "NegaMaxSearcher<" << Evaluator::name()
-      << ">(max_depth=" << max_depth_ << ")";
-    return name.str();
-  }
-
- private:
-  int NegaMax(const Position& position,
-              int depth, int alpha = -kInf, int beta = kInf);
-
-  int max_depth_;
-  std::unordered_map<PositionHash,
-                     TranspositionTableEntry> transposition_table_;
 };
 
 #endif  // SEARCH_H_
