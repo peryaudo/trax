@@ -244,6 +244,32 @@ class LongestLineEvaluator {
   static std::string name() { return "LongestLineEvaluator"; }
 };
 
+class CombinedEvaluator {
+ public:
+  static int Evaluate(const Position& position) {
+    int score = LeafAverageEvaluator::Evaluate(position);
+    if (score == kInf || score == -kInf)
+      return score;
+
+    int denom = 1;
+
+    if (position.max_x() <= 2 || position.max_y() <= 2) {
+      score += EdgeColorEvaluator::Evaluate(position);
+      ++denom;
+    }
+
+    if ((5 <= position.max_x() && position.max_x() <= 7) &&
+        (5 <= position.max_y() && position.max_y() <= 7)) {
+      score += LongestLineEvaluator::Evaluate(position);
+      ++denom;
+    }
+
+    return score / denom;
+  }
+
+  static std::string name() { return "CombinedEvaluator"; }
+};
+
 //
 // Searchers
 //
