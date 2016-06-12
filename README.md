@@ -54,7 +54,9 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
 * 強くなりそうな評価関数の特徴量を他のゲームを参考にもっとちゃんと考える
   * このへんを全部読む
   http://sealsoft.jp/thell/learning.pdf
+  https://skatgame.net/mburo/ps/improve.pdf
   https://skatgame.net/mburo/ps/glem.pdf
+  http://www.kitsunemimi.org/vsotha/algorithm.html
   http://d.hatena.ne.jp/LS3600/archive
   http://d.hatena.ne.jp/hiyokoshogi/archive
   http://yaneuraou.yaneu.com/
@@ -65,11 +67,36 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
   Traxは手数は増えすぎなんだけど、局所性が強いはずなので盤面4分割とかを使えば相当探索をサボれるはず。
   というのがオセロ/チェス/将棋/囲碁?とかと異なる良い性質
 
+家帰るまで今日のコーディングはしない
+
 * 統計を取れるようにする。victory line勝利かloop勝利か
 * PerftにTranspositoinTableを入れる。TranspositoinTableをクラスに分離する。
 * コメント棋譜を読み込めるようにする
 
-* df-pnについて勉強する？
+* NoneEvaluatorでdepth=5>4>3>2>1が成り立っていることを検証し、
+  深くすると弱くなる現象がLeafAverageEvaluatorのヒューリスティクス由来であることを示す
+  これが成り立たなかったらNegaMaxがバグっている公算がそれなりに高い。
+
+* Lobbybotと戦わせてみる。 http://www.traxgame.com/shop_download.php
+
+このへんが全部終わるまでSearcher/Evaluator部のコーディングは止める
+
+* （df-pnについて勉強する？）
+
+* bool Move::Parse(const std::string& notation)つくってコンストラクタやめる
+  * TraxClientでプレイヤーが変なとこ置いても落ちないようにする（あそびやすく）
+
+* --best-move
+  (computer playerの白赤)
+  N
+  1番目のtrax notation
+  ...
+  n番目の,,
+
+  をstdinから取ってstdoutにbest moveのtrax notationだけを返すモードを実装する
+
+* で、golangでtrax-daemon実装してwebで遊べるようにする
+  * ユーザーは毎回上のこれまでの棋譜をサーバーに送信
 
 ### 今はどうでもいい
 
@@ -80,9 +107,9 @@ Common pattern that NegaMax-NegaMax self play generates and miserably fail
 This is due to that both player cannot see any good hands within their search depth and they try to keep tie.
 
 * タイマ実装
-  Timer(int timeout_ms=800)
-  bool Timer::Check()
-  void Timer::IncrementNodeCounter()
+  Timer(int timeout_ms=800) -1でCheckが常にfalseを返すように これを実行した時間を起点にする。
+  bool Timer::Check() 時間を過ぎたらtrueを返す
+  void Timer::IncrementNodeCounter() Searchの基底部て呼ぶ
   int Timer::nps()
 * フレームワーク部がいま一つ遅い気がする
   * と思ったけど将棋とかに比べると単純な分普通にnps出てる。まだnps出せるのはいいことだけど…
@@ -105,6 +132,10 @@ This is due to that both player cannot see any good hands within their search de
 * 大会用デーモンで動くこと確認
 
 ## ネタ
+
+パスベースで盤面持つとか言ってる論文が多いけど盤面舐めるだけで大量の分岐ミス吐いていくって正直やばすぎなんだよなあ
+ぜってー効率的じゃないと思うんだけど………
+ひろいちだいのヤツは評価すら取ってないから論外としてテヘラン大のヤツもmapベース実装と比較してそうだしなあ
 
 ### 評価関数につかえそうなもの（古）
 
