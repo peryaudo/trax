@@ -10,20 +10,20 @@ Trax AI、雰囲気としては、オセロAIが一番近いと思ってるん�
 ということから類推すると、盤面をそのままニューラルネットワークにぶち込むより、
 logistelloのようにパターンを見出して、線形回帰したほうが強いということになる。
 
+## 中期目標
+
+- [ ] NegaMax<LeafAverageEvaluator>(depth=1)より強い評価関数を作る
+
 ## 短期目標
 
-- [ ] NegaMax<LeafAverageEvaluator>(depth=1)より強くしていく
+- [ ] 周辺ツール類を整備する
+- [ ] 他ゲームの評価関数の手法をよくよく検討する
+- [ ] 考えた評価関数を少しずつ実証していく
 
 ## 状況
 
-モンテカルロ法自体をこれ以上いじるのはやめて、いい評価関数探しやったほうがいい気がする。
-
-GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(depth=2)戦とかを見てると）
-やっぱりモンテカルロ探索はあんまりうまくいかない戦略なのかなと思う。
-
-モンテカルロ+評価関数とかも試したけど全然よくなりませんでした。
-
-* 評価関数がスケールしない（深くしてもつよくならない）
+* NegaMax<LeafAverageEvaluator>(depth=1)がむちゃくちゃ強くて全然超えられない。
+* 周辺ツールの整備と他AIとの対戦などの検証とともにKPP風評価関数を実装する
 
 ## 評価関数の設計
 
@@ -31,23 +31,27 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
 
 ラインの評価関数は、
 * 端点間から端点までの外周距離（外側にピースを置いていって何ピースで繋げるか）
+  * マンハッタン距離で近似可能
 * 端点から端点までの長さ
 * 端点接している2面が正反対向きか
 * 端点接している2面が同じ向きか
 * こういうのを定義して、 
    <-------->
-      /------\  
-      \-\       
-  /-----/       
+      /------\ A
+      \-\      |
+  /-----/      V
   * その長さ
-  * 2面が正反対向きか
-  * 2面が同じ向きか
+    (これらはバグってる版のTraceVictoryLineOrLoopが抽出していた特徴を意識)
 などを特徴量に使える。これらの係数を将棋のように学習させる。
 
 あるいは、これ自体をディープラーニングで学習させる発展も考えられる。
 線を差分列にして、正規化し、RNNやLSTMを使って形の「良さ」を学習させる。
 
 すべての線に同じ係数を適用しながら学習させていくわけで、ある種の畳み込みとも考えられる
+
+ラインの総数が盤面によって違うので、どうそこを正規化するのか、
+後半になるにつれて値が大きくなってしまっていいのか問題を解決しないといけない？
+ノンタッチでもどうにかなる？
 
 ## ToDo
 
@@ -74,16 +78,24 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
 
   将棋に比べると全然浅くしか読めないけどそもそも人間の強い人達のプレイも将棋に比べるとはるかに速く終局する
 
-家帰るまで今日のコーディングはしない
-
 * 統計を取れるようにする。victory line勝利かloop勝利か
+* 大体他ゲーが平均何手で終局するかも調べてTraxについて序盤中盤終盤を定義する
 * PerftにTranspositoinTableを入れる。TranspositoinTableをクラスに分離する。
 * コメント棋譜を読み込めるようにする
 
 * Lobbybotと戦わせてみる。 http://www.traxgame.com/shop_download.php
 
-このへんが全部終わるまでSearcher/Evaluator部のコーディングは止める
+* タイマ実装
+  Timer(int timeout_ms=800) -1でCheckが常にfalseを返すように これを実行した時間を起点にする。
+  bool Timer::Check() 時間を過ぎたらtrueを返す
+  void Timer::IncrementNodeCounter() Searchの基底部て呼ぶ
+  int Timer::nps()
 
+* TranspositoinTable版のPerftを実装
+* 普通の探索部のほうにnpsカウンタの実装
+  http://d.hatena.ne.jp/LS3600/20090919/1253319013
+* floodgate風レーティングをつけてくれるStartTournamentを実装
+  トーナメントをしてRを出すコードを書かないといけない…
 
 * bool Move::Parse(const std::string& notation)つくってコンストラクタやめる
   * TraxClientでプレイヤーが変なとこ置いても落ちないようにする（あそびやすく）
@@ -104,28 +116,16 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
 
 * Evaluateのインターフェイス自体を差分更新に対応させることは可能？
 
+* 評価関数とCommented棋譜の「一致率」を取る
+
+* 大会用デーモンで動くこと確認
+
 ### 今はどうでもいい
 
-@0+ A2+ @1+ B0/ B0/ B0/ A1/ @1/ A0/
-
-Common pattern that NegaMax-NegaMax self play generates and miserably fail
-
-This is due to that both player cannot see any good hands within their search depth and they try to keep tie.
-
-* タイマ実装
-  Timer(int timeout_ms=800) -1でCheckが常にfalseを返すように これを実行した時間を起点にする。
-  bool Timer::Check() 時間を過ぎたらtrueを返す
-  void Timer::IncrementNodeCounter() Searchの基底部て呼ぶ
-  int Timer::nps()
 * フレームワーク部がいま一つ遅い気がする
   * と思ったけど将棋とかに比べると単純な分普通にnps出てる。まだnps出せるのはいいことだけど…
   * StateInfoの導入とDoMoveの差分更新
   * FillForcedPiecesのDFS実装
-* TranspositoinTable版のPerftを実装
-* 普通の探索部のほうにnpsカウンタの実装
-  http://d.hatena.ne.jp/LS3600/20090919/1253319013
-* floodgate風レーティングをつけてくれるStartTournamentを実装
-  トーナメントをしてRを出すコードを書かないといけない…
 * 反復深化と時間制限の実装・マルチスレッド化→スケールする評価関数が作れてからね…
   * 秒数制限を守るのに使うような関数群をSearcherのベースクラス作ってそこに書いておく
     それでどのSearcherも共通ルーチン使ってできるように
@@ -135,11 +135,14 @@ This is due to that both player cannot see any good hands within their search de
   * NegaMaxに反復深化入れる
   * マルチスレッド対応
 * モンテカルロ木・UCT実装してみる
-* 大会用デーモンで動くこと確認
 
 * （df-pnについて勉強する？→全然強くならないらしい http://yaneuraou.yaneu.com/2014/12/14/%E3%82%84%E3%81%AD%E3%81%86%E3%82%89%E7%8E%8B%E3%81%AE%E9%96%8B%E7%99%BA%E3%81%AE%E6%AD%A9%E3%81%BF2014%E5%B9%B4%E3%81%BE%E3%81%A7/）
 
-* 評価関数とCommented棋譜の「一致率」を取る
+* 静止探索ってなに？
+
+* @0+ A2+ @1+ B0/ B0/ B0/ A1/ @1/ A0/
+  NegaMax-NegaMaxでよくこけるパターン→水平線効果そのもの
+
 
 ## ネタ
 
@@ -297,17 +300,24 @@ http://algoogle.hadrori.jp/algorithm/rolling-hash.html
 
 ヒットした線番号一覧はさすがにvectorに入れても大丈夫だと信じている。
 
+### モンテカルロについて
+
+モンテカルロ法自体をこれ以上いじるのはやめて、いい評価関数探しやったほうがいい気がする。
+
+GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(depth=2)戦とかを見てると）
+やっぱりモンテカルロ探索はあんまりうまくいかない戦略なのかなと思う。
+
+モンテカルロ+評価関数とかも試したけど全然よくなりませんでした。
+
+GPS将棋マンによるTrax評
+http://www.slideshare.net/shogotakeuchi/ss-62415546
 
 ## ぼくのせんりゃく（古）
 
 
 ある方向から置くと連鎖させられてある方向から置くと連鎖させられないやつとかある
 
-外側に向いてる自分の色の面とか評価関数にできるな
-
 GPUはDeep Learning使わない限り使い所ないなあ
-
-しかも肝心のモンテカルロ木探索はTrax向きではないみたいだし…
 
 案外囲碁AIよりも将棋AIのアプローチを真似たほうがいいっぽい？
 
@@ -324,23 +334,6 @@ n手先までの状態数がどれくらいに膨れ上がるのかとか
 さらに、棋譜が全然手に入らないという特徴もある
 
 わりとやねうら王みたいな感じでフレームワーク部を切り出して複数戦略書いて自己対戦させて…とかしたほうがいいのか…？
-
-GPS将棋マンによるTrax評
-http://www.slideshare.net/shogotakeuchi/ss-62415546
-
-合法手が増えてくって言ってるけど、Traxも案外連鎖があるので一定？
-というか、違う合法手に見えて実は本当に同じ手というのが存在しうる。
-という作者の誤解がもしあれば、アルファベータ探索が案外いけるハズ。
-
-この辺の数字間隔がつかめねえ〜
-
-あとマスがでかくなってくのをどう管理すればいいかもどうZobrist Hashingすればいいかも分からないし
-
-* MinMax探索型なのか
-* MCTS型なのか
-* あるいはこの2つを混ぜられるもんなのか
-
-
 
 Deep Learningで評価関数作ってMinMax案外正しい気もするけど確実に手で作れる評価関数以上のものをアレできる必要があるんだよな
 
