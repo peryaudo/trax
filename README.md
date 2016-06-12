@@ -47,6 +47,8 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
 あるいは、これ自体をディープラーニングで学習させる発展も考えられる。
 線を差分列にして、正規化し、RNNやLSTMを使って形の「良さ」を学習させる。
 
+すべての線に同じ係数を適用しながら学習させていくわけで、ある種の畳み込みとも考えられる
+
 ## ToDo
 
 ### やるべき
@@ -62,6 +64,7 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
   http://yaneuraou.yaneu.com/
   http://yaneuraou.yaneu.com/yaneuraou_mini/
   http://yaneuraou.yaneu.com/stockfish%E5%AE%8C%E5%85%A8%E8%A7%A3%E6%9E%90/
+  http://link.springer.com/chapter/10.1007%2F978-3-540-40031-8_2#page-1
 
   オセロのPerft: http://www.aartbik.com/MISC/reversi.html
 
@@ -76,10 +79,6 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
 * 統計を取れるようにする。victory line勝利かloop勝利か
 * PerftにTranspositoinTableを入れる。TranspositoinTableをクラスに分離する。
 * コメント棋譜を読み込めるようにする
-
-* NoneEvaluatorでdepth=5>4>3>2>1が成り立っていることを検証し、
-  深くすると弱くなる現象がLeafAverageEvaluatorのヒューリスティクス由来であることを示す
-  これが成り立たなかったらNegaMaxがバグっている公算がそれなりに高い。
 
 * Lobbybotと戦わせてみる。 http://www.traxgame.com/shop_download.php
 
@@ -205,6 +204,11 @@ SimpleSearcherだと簡単なループ防衛すら危うくなるからdepth=1�
 Dumpの下に評価関数を書くってテク
 
 LeafAverageEvaluatorは序盤向けの評価関数だと言える
+
+* NoneEvaluatorでdepth=5>4>3>2>1が成り立っていることを検証し、
+  深くすると弱くなる現象がLeafAverageEvaluatorのヒューリスティクス由来であることを示す
+  -> That was true. But depth>=4 is impractical due to its huge memory footprint (more than 8GB),
+     and also negamax1-la is stronger than negamax4-na actually!
 
 ### Positionの高速化？
 

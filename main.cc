@@ -85,6 +85,16 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<CombinedEvaluator>(2);
   } else if (name == "negamax3-cb") {
     return new NegaMaxSearcher<CombinedEvaluator>(3);
+  } else if (name == "negamax0-na") {
+    return new NegaMaxSearcher<NoneEvaluator>(0);
+  } else if (name == "negamax1-na") {
+    return new NegaMaxSearcher<NoneEvaluator>(1);
+  } else if (name == "negamax2-na") {
+    return new NegaMaxSearcher<NoneEvaluator>(2);
+  } else if (name == "negamax3-na") {
+    return new NegaMaxSearcher<NoneEvaluator>(3);
+  } else if (name == "negamax4-na") {
+    return new NegaMaxSearcher<NoneEvaluator>(4);
   } else {
     std::cerr << "cannot find searcher with name " << name << std::endl;
     exit(EXIT_FAILURE);
