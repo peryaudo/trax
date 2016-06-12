@@ -1,30 +1,77 @@
 # Trax
 
+Trax AI、雰囲気としては、オセロAIが一番近いと思ってるんだよなあ。
+
+均一なピース。
+ゲーム木が末広がりであり、αβ探索向き。
+だけど将棋のKPPのように比較的自明に見えてくる評価関数のフィーチャというものが無い。
+一見モンテカルロ木探索向けに見えるが、ゲーム木の形状上αβ探索のほうが強い。
+
+ということから類推すると、盤面をそのままニューラルネットワークにぶち込むより、
+logistelloのようにパターンを見出して、線形回帰したほうが強いということになる。
+
 ## 短期目標
 
 - [ ] NegaMax<LeafAverageEvaluator>(depth=1)より強くしていく
 
 ## 状況
 
-* モンテカルロを実装した
-  * NegaMax<MonteCarloEvaluator>(depth=1) ＞ Simple<LeafAverageEvaluator>くらいはある
-* EdgeColorEvaluator実装したけど効果は今ひとつ
-  * ちゃんとdepth=3＞depth=2になってるのはえらいけどdepth=4は3より弱い・・・
-* 評価関数がスケールしない
-* フレームワーク部がいま一つ遅い気がする（毎ステップnewしてるのを含む）
-  * StateInfoの導入とDoMoveの差分更新
-  * FillForcedPiecesのDFS実装
-
-## ToDo
+モンテカルロ法自体をこれ以上いじるのはやめて、いい評価関数探しやったほうがいい気がする。
 
 GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(depth=2)戦とかを見てると）
 やっぱりモンテカルロ探索はあんまりうまくいかない戦略なのかなと思う。
-UCTは楽しそうなのでそのうち実装してみてもいいけど、
 
-Timer(int timeout_ms=800)
-bool Timer::Check()
-void Timer::IncrementNodeCounter()
-int Timer::nps()
+モンテカルロ+評価関数とかも試したけど全然よくなりませんでした。
+
+* 評価関数がスケールしない（深くしてもつよくならない）
+
+## 評価関数の設計
+
+ラインごとに分離して、スコアリングし、それを足す（将棋のKPPみたいな感じ）。
+
+ラインの評価関数は、
+* 端点間から端点までの外周距離（外側にピースを置いていって何ピースで繋げるか）
+* 端点から端点までの長さ
+* 端点接している2面が正反対向きか
+* 端点接している2面が同じ向きか
+* こういうのを定義して、 
+   <-------->
+      /------\  
+      \-\       
+  /-----/       
+  * その長さ
+  * 2面が正反対向きか
+  * 2面が同じ向きか
+などを特徴量に使える。これらの係数を将棋のように学習させる。
+
+あるいは、これ自体をディープラーニングで学習させる発展も考えられる。
+線を差分列にして、正規化し、RNNやLSTMを使って形の「良さ」を学習させる。
+
+## ToDo
+
+### やるべき
+
+* 強くなりそうな評価関数の特徴量を他のゲームを参考にもっとちゃんと考える
+  * このへんを全部読む
+  http://sealsoft.jp/thell/learning.pdf
+  https://skatgame.net/mburo/ps/glem.pdf
+  http://d.hatena.ne.jp/LS3600/archive
+  http://d.hatena.ne.jp/hiyokoshogi/archive
+  http://yaneuraou.yaneu.com/
+
+  オセロのPerft: http://www.aartbik.com/MISC/reversi.html
+
+  オセロ、案外手数増えないな…そりゃ深く読めるわけだ
+  Traxは手数は増えすぎなんだけど、局所性が強いはずなので盤面4分割とかを使えば相当探索をサボれるはず。
+  というのがオセロ/チェス/将棋/囲碁?とかと異なる良い性質
+
+* 統計を取れるようにする。victory line勝利かloop勝利か
+* PerftにTranspositoinTableを入れる。TranspositoinTableをクラスに分離する。
+* コメント棋譜を読み込めるようにする
+
+* df-pnについて勉強する？
+
+### 今はどうでもいい
 
 @0+ A2+ @1+ B0/ B0/ B0/ A1/ @1/ A0/
 
@@ -32,16 +79,20 @@ Common pattern that NegaMax-NegaMax self play generates and miserably fail
 
 This is due to that both player cannot see any good hands within their search depth and they try to keep tie.
 
-### やるべき
-
+* タイマ実装
+  Timer(int timeout_ms=800)
+  bool Timer::Check()
+  void Timer::IncrementNodeCounter()
+  int Timer::nps()
+* フレームワーク部がいま一つ遅い気がする
+  * と思ったけど将棋とかに比べると単純な分普通にnps出てる。まだnps出せるのはいいことだけど…
+  * StateInfoの導入とDoMoveの差分更新
+  * FillForcedPiecesのDFS実装
 * TranspositoinTable版のPerftを実装
 * 普通の探索部のほうにnpsカウンタの実装
   http://d.hatena.ne.jp/LS3600/20090919/1253319013
 * floodgate風レーティングをつけてくれるStartTournamentを実装
   トーナメントをしてRを出すコードを書かないといけない…
-
-### どうでもいい
-
 * 反復深化と時間制限の実装・マルチスレッド化→スケールする評価関数が作れてからね…
   * 秒数制限を守るのに使うような関数群をSearcherのベースクラス作ってそこに書いておく
     それでどのSearcherも共通ルーチン使ってできるように
@@ -55,8 +106,7 @@ This is due to that both player cannot see any good hands within their search de
 
 ## ネタ
 
-
-### 評価関数につかえそうなもの
+### 評価関数につかえそうなもの（古）
 
 中盤が弱いはず。序盤と終盤は強いはずだけど終盤は読みが足らないかも
 →詰めルーチン的なのがあるとやっぱりいいのかも
@@ -123,6 +173,9 @@ LeafAverageEvaluatorは序盤向けの評価関数だと言える
 Position、DoMoveでは新しいオブジェクトを生成するしかないと思っていたが、
 案外普通にDoMove, UndoMove, StateInfo体制できそう
 
+* StateInfoの導入とDoMoveの差分更新
+* FillForcedPiecesのDFS実装
+
 最初からある程度でかめのboard_を確保して、ForcedPlayが起こったマスの座標をStateInfoで覚える
 ForcedPlayが起こるマスが1ステップあたり64は大体ぜってーこえないため
 超えた時のためにStateInfoにLinkedList的に次のStateInfoEntry?みたいなヤツへのポインタはつけとく。そっちは普通にnewしてデストラクタではdeleteする。けど普段は絶対つかわれないって算段。
@@ -134,7 +187,14 @@ red_winner, white_winnerはStateInfoに入れておけばよい。
 でかめの板をはみ出したら、そこではさらにでかい板を確保して、そこに全部コピーしてから再開する
 戻る時は縮小しない
 
+
 やるとしてもmargin_みたいな変数を管理してat()内で足さないといけないのだけが難点だな…
+
+
+さらに、同様に合法手の生成もプログレッシブにできる。
+これで合法手生成のコストがO(盤面サイズ)からO(log 合法手)に落ちる。
+ってかこれは簡単だけど盤面コピーコストのほうが絶対でかいからやってなかっただけ
+今でもオーダー上はライントレースのほうがコスト高だし実際やってみないとわからん
 
 ### 置換表
 
