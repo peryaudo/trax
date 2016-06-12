@@ -60,12 +60,16 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
   http://d.hatena.ne.jp/LS3600/archive
   http://d.hatena.ne.jp/hiyokoshogi/archive
   http://yaneuraou.yaneu.com/
+  http://yaneuraou.yaneu.com/yaneuraou_mini/
+  http://yaneuraou.yaneu.com/stockfish%E5%AE%8C%E5%85%A8%E8%A7%A3%E6%9E%90/
 
   オセロのPerft: http://www.aartbik.com/MISC/reversi.html
 
   オセロ、案外手数増えないな…そりゃ深く読めるわけだ
   Traxは手数は増えすぎなんだけど、局所性が強いはずなので盤面4分割とかを使えば相当探索をサボれるはず。
   というのがオセロ/チェス/将棋/囲碁?とかと異なる良い性質
+
+  将棋に比べると全然浅くしか読めないけどそもそも人間の強い人達のプレイも将棋に比べるとはるかに速く終局する
 
 家帰るまで今日のコーディングはしない
 
@@ -81,7 +85,6 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
 
 このへんが全部終わるまでSearcher/Evaluator部のコーディングは止める
 
-* （df-pnについて勉強する？）
 
 * bool Move::Parse(const std::string& notation)つくってコンストラクタやめる
   * TraxClientでプレイヤーが変なとこ置いても落ちないようにする（あそびやすく）
@@ -97,6 +100,10 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
 
 * で、golangでtrax-daemon実装してwebで遊べるようにする
   * ユーザーは毎回上のこれまでの棋譜をサーバーに送信
+
+* 多分定石も入れたほうがいいんだろうな…
+
+* Evaluateのインターフェイス自体を差分更新に対応させることは可能？
 
 ### 今はどうでもいい
 
@@ -130,6 +137,10 @@ This is due to that both player cannot see any good hands within their search de
   * マルチスレッド対応
 * モンテカルロ木・UCT実装してみる
 * 大会用デーモンで動くこと確認
+
+* （df-pnについて勉強する？→全然強くならないらしい http://yaneuraou.yaneu.com/2014/12/14/%E3%82%84%E3%81%AD%E3%81%86%E3%82%89%E7%8E%8B%E3%81%AE%E9%96%8B%E7%99%BA%E3%81%AE%E6%AD%A9%E3%81%BF2014%E5%B9%B4%E3%81%BE%E3%81%A7/）
+
+* 評価関数とCommented棋譜の「一致率」を取る
 
 ## ネタ
 
