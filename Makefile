@@ -2,11 +2,11 @@ CXX = g++
 
 # Release
 CXXFLAGS = -std=c++11 -Wall -Wno-unused-const-variable -Ivendor/googletest -Ivendor/gflags -O3 -DNDEBUG
-LDFLAGS = -O3
+LDFLAGS = -O3 -lpthread
 
 # Debug
 # CXXFLAGS = -std=c++11 -Wall -Wno-unused-const-variable -Wno-tautological-constant-out-of-range-compare -Ivendor/googletest -Ivendor/gflags -O1 -g -fsanitize=address #-pg -DNDEBUG
-# LDFLAGS = -O1 -fsanitize=address -fno-omit-frame-pointer #-pg -DNDEBUG
+# LDFLAGS = -O1 -fsanitize=address -fno-omit-frame-pointer -lpthread #-pg -DNDEBUG
 
 trax: main.o trax.o search.o gflags.o gflags_completions.o gflags_reporting.o perft.o
 	$(CXX) $^ $(LDFLAGS) -o $@

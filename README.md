@@ -25,6 +25,70 @@ logistelloのようにパターンを見出して、線形回帰したほうが�
 * NegaMax<LeafAverageEvaluator>(depth=1)がむちゃくちゃ強くて全然超えられない。
 * 周辺ツールの整備と他AIとの対戦などの検証とともにKPP風評価関数を実装する
 
+## ToDo
+
+### やるべき
+
+* 自己対戦で生成された棋譜と外から読み込んだ棋譜を区別せずに扱えるデータ構造があるといいなあ
+
+* 大体他ゲーが平均何手で終局するかも調べてTraxについて序盤中盤終盤を定義する
+* PerftにTranspositoinTableを入れる。TranspositoinTableをクラスに分離する。
+
+* Lobbybotと戦わせてみる。 http://www.traxgame.com/shop_download.php
+
+* タイマ実装
+  Timer(int timeout_ms=800) -1でCheckが常にfalseを返すように これを実行した時間を起点にする。
+  bool Timer::Check() 時間を過ぎたらtrueを返す
+  void Timer::IncrementNodeCounter() Searchの基底部て呼ぶ
+  int Timer::nps()
+
+* TranspositoinTable版のPerftを実装
+* 普通の探索部のほうにnpsカウンタの実装
+  http://d.hatena.ne.jp/LS3600/20090919/1253319013
+* floodgate風レーティングをつけてくれるStartTournamentを実装
+  トーナメントをしてRを出すコードを書かないといけない…
+
+* --best-move
+  (computer playerの白赤)
+  N
+  1番目のtrax notation
+  ...
+  n番目の,,
+
+  をstdinから取ってstdoutにbest moveのtrax notationだけを返すモードを実装する
+
+* で、golangでtrax-daemon実装してwebで遊べるようにする
+  * ユーザーは毎回上のこれまでの棋譜をサーバーに送信
+
+* 多分定石も入れたほうがいいんだろうな…
+
+* Evaluateのインターフェイス自体を差分更新に対応させることは可能？
+
+* 大会用デーモンで動くこと確認
+
+### 今はどうでもいい
+
+* フレームワーク部がいま一つ遅い気がする
+  * と思ったけど将棋とかに比べると単純な分普通にnps出てる。まだnps出せるのはいいことだけど…
+  * StateInfoの導入とDoMoveの差分更新
+  * FillForcedPiecesのDFS実装
+* 反復深化と時間制限の実装・マルチスレッド化→スケールする評価関数が作れてからね…
+  * 秒数制限を守るのに使うような関数群をSearcherのベースクラス作ってそこに書いておく
+    それでどのSearcherも共通ルーチン使ってできるように
+    n回ループの内側きたらnanosec取得
+    前回からの時間で次のnの値を調整
+    0.8秒すぎたら店じまい
+  * NegaMaxに反復深化入れる
+  * マルチスレッド対応
+* モンテカルロ木・UCT実装してみる
+
+* （df-pnについて勉強する？→全然強くならないらしい http://yaneuraou.yaneu.com/2014/12/14/%E3%82%84%E3%81%AD%E3%81%86%E3%82%89%E7%8E%8B%E3%81%AE%E9%96%8B%E7%99%BA%E3%81%AE%E6%AD%A9%E3%81%BF2014%E5%B9%B4%E3%81%BE%E3%81%A7/）
+
+* 静止探索ってなに？
+
+* @0+ A2+ @1+ B0/ B0/ B0/ A1/ @1/ A0/
+  NegaMax-NegaMaxでよくこけるパターン→水平線効果そのもの
+
 ## 評価関数の設計
 
 ラインごとに分離して、スコアリングし、それを足す（将棋のKPPみたいな感じ）。
@@ -72,11 +136,7 @@ logistelloのようにパターンを見出して、線形回帰したほうが�
 本数で割ったほうが良いのかなあよくわからん
 
 
-## ToDo
-
-### やるべき
-
-* 自己対戦で生成された棋譜と外から読み込んだ棋譜を区別せずに扱えるデータ構造があるといいなあ
+## 資料
 
 * 強くなりそうな評価関数の特徴量を他のゲームを参考にもっとちゃんと考える
   * このへんを全部読む
@@ -105,66 +165,6 @@ logistelloのようにパターンを見出して、線形回帰したほうが�
 
   将棋に比べると全然浅くしか読めないけどそもそも人間の強い人達のプレイも将棋に比べるとはるかに速く終局する
 
-* 大体他ゲーが平均何手で終局するかも調べてTraxについて序盤中盤終盤を定義する
-* PerftにTranspositoinTableを入れる。TranspositoinTableをクラスに分離する。
-
-* Lobbybotと戦わせてみる。 http://www.traxgame.com/shop_download.php
-
-* タイマ実装
-  Timer(int timeout_ms=800) -1でCheckが常にfalseを返すように これを実行した時間を起点にする。
-  bool Timer::Check() 時間を過ぎたらtrueを返す
-  void Timer::IncrementNodeCounter() Searchの基底部て呼ぶ
-  int Timer::nps()
-
-* TranspositoinTable版のPerftを実装
-* 普通の探索部のほうにnpsカウンタの実装
-  http://d.hatena.ne.jp/LS3600/20090919/1253319013
-* floodgate風レーティングをつけてくれるStartTournamentを実装
-  トーナメントをしてRを出すコードを書かないといけない…
-
-* bool Move::Parse(const std::string& notation)つくってコンストラクタやめる
-  * TraxClientでプレイヤーが変なとこ置いても落ちないようにする（あそびやすく）
-
-* --best-move
-  (computer playerの白赤)
-  N
-  1番目のtrax notation
-  ...
-  n番目の,,
-
-  をstdinから取ってstdoutにbest moveのtrax notationだけを返すモードを実装する
-
-* で、golangでtrax-daemon実装してwebで遊べるようにする
-  * ユーザーは毎回上のこれまでの棋譜をサーバーに送信
-
-* 多分定石も入れたほうがいいんだろうな…
-
-* Evaluateのインターフェイス自体を差分更新に対応させることは可能？
-
-* 大会用デーモンで動くこと確認
-
-### 今はどうでもいい
-
-* フレームワーク部がいま一つ遅い気がする
-  * と思ったけど将棋とかに比べると単純な分普通にnps出てる。まだnps出せるのはいいことだけど…
-  * StateInfoの導入とDoMoveの差分更新
-  * FillForcedPiecesのDFS実装
-* 反復深化と時間制限の実装・マルチスレッド化→スケールする評価関数が作れてからね…
-  * 秒数制限を守るのに使うような関数群をSearcherのベースクラス作ってそこに書いておく
-    それでどのSearcherも共通ルーチン使ってできるように
-    n回ループの内側きたらnanosec取得
-    前回からの時間で次のnの値を調整
-    0.8秒すぎたら店じまい
-  * NegaMaxに反復深化入れる
-  * マルチスレッド対応
-* モンテカルロ木・UCT実装してみる
-
-* （df-pnについて勉強する？→全然強くならないらしい http://yaneuraou.yaneu.com/2014/12/14/%E3%82%84%E3%81%AD%E3%81%86%E3%82%89%E7%8E%8B%E3%81%AE%E9%96%8B%E7%99%BA%E3%81%AE%E6%AD%A9%E3%81%BF2014%E5%B9%B4%E3%81%BE%E3%81%A7/）
-
-* 静止探索ってなに？
-
-* @0+ A2+ @1+ B0/ B0/ B0/ A1/ @1/ A0/
-  NegaMax-NegaMaxでよくこけるパターン→水平線効果そのもの
 
 
 ## ネタ
@@ -172,6 +172,8 @@ logistelloのようにパターンを見出して、線形回帰したほうが�
 パスベースで盤面持つとか言ってる論文が多いけど盤面舐めるだけで大量の分岐ミス吐いていくって正直やばすぎなんだよなあ
 ぜってー効率的じゃないと思うんだけど………
 ひろいちだいのヤツは評価すら取ってないから論外としてテヘラン大のヤツもmapベース実装と比較してそうだしなあ
+
+
 
 ### 評価関数につかえそうなもの（古）
 

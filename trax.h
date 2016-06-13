@@ -10,6 +10,7 @@
 #include <iostream>
 #include <queue>
 #include <string>
+#include <utility>
 #include <vector>
 
 // Infinite.
@@ -119,9 +120,8 @@ struct Move {
   Move() : x(0), y(0), piece(PIECE_EMPTY) {
   }
 
-  // Constructor to create a move from Trax notation.
-  // Board position is required because Trax notation is not enough to
-  // determine the piece's color.
+  // Constructor that internally calls Parse().
+  // It immediately quits the program instead of returning error.
   Move(const std::string& trax_notation, const Position& previous_position);
 
   // Constructor to create a move from coordinate and the piece kind.
@@ -132,6 +132,14 @@ struct Move {
     assert(-1 <= x && -1 <= y);
   }
 
+  // Parse a move from Trax notation.
+  // Board position is required because Trax notation is not enough to
+  // determine the piece's color.
+  // Return true if the parsing is successful.
+  bool Parse(const std::string& trax_notation,
+             const Position& previous_position);
+
+  // Return Trax notation of the move.
   std::string notation() const;
 
   // Use bit field so that Move struct will fit into 4 bytes.

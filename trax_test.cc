@@ -152,7 +152,12 @@ TEST(PerftTest, PerftReturnsCorrectNumberIn4) {
 
 TEST(RandomSearcherTest, OneTime) {
   RandomSearcher random_searcher;
-  StartSelfGame(&random_searcher, &random_searcher, /* verbose = */ false);
+  bool has_loop;
+  bool has_victory_line;
+  StartSelfGame(&random_searcher, &random_searcher,
+                /* verbose = */ false,
+                &has_loop,
+                &has_victory_line);
 }
 
 TEST(RandomSearcherTest, MultiTime) {

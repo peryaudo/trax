@@ -186,14 +186,22 @@ void GenerateForcedPlayTable() {
   }
 }
 
-Move::Move(const std::string& trax_notation, const Position& previous_position)
-    : x(0)
-    , y(0)
-    , piece(PIECE_EMPTY) {
+
+Move::Move(const std::string& trax_notation,
+           const Position& previous_position)
+    : x(0), y(0), piece(PIECE_EMPTY) {
+  if (!Parse(trax_notation, previous_position)) {
+    std::cerr << "cannot parse trax notation" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+}
+
+bool Move::Parse(const std::string& trax_notation,
+                 const Position& previous_position) {
   auto it = trax_notation.begin();
 
   if (it == trax_notation.end()) {
-    goto fail;
+    return false;
   }
 
   if (*it == '@') {
@@ -205,7 +213,7 @@ Move::Move(const std::string& trax_notation, const Position& previous_position)
   ++it;
 
   if (it == trax_notation.end()) {
-    goto fail;
+    return false;
   }
 
   y = 0;
@@ -217,7 +225,7 @@ Move::Move(const std::string& trax_notation, const Position& previous_position)
   --y;
 
   if (it == trax_notation.end()) {
-    goto fail;
+    return false;
   }
 
   // If this is the first move, then the color is limited.
@@ -227,7 +235,7 @@ Move::Move(const std::string& trax_notation, const Position& previous_position)
     } else if (*it == '+') {
       piece = PIECE_RWRW;
     } else {
-      goto fail;
+      return false;
     }
   } else {
     PieceSet candidates = previous_position.GetPossiblePieces(x, y);
@@ -243,21 +251,16 @@ Move::Move(const std::string& trax_notation, const Position& previous_position)
       }
     }
     if (piece == PIECE_EMPTY) {
-      goto fail;
+      return false;
     }
   }
 
   ++it;
   if (it != trax_notation.end()) {
-    goto fail;
+    return false;
   }
-  return;
 
-fail:
-  std::cerr << "cannot parse trax notation" << std::endl;
-  std::cerr << '"' << trax_notation << '"'
-    << " position: " << (it - trax_notation.begin()) << std::endl;
-  exit(EXIT_FAILURE);
+  return true;
 }
 
 std::string Move::notation() const {
