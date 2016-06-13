@@ -489,6 +489,9 @@ void Position::Dump() const {
     } else {
       std::cerr << "tie";
     }
+    std::cerr << " has_loop = " << (has_loop_ ? "true" : "false");
+    std::cerr
+      << ", has_victory_line = " << (has_victory_line_ ? "true" : "false");
     std::cerr << std::endl;
   } else {
     std::cerr << ", finished = false";
@@ -681,6 +684,7 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
     while (at(x, y) != PIECE_EMPTY) {
       if (x == start_x && y == start_y) {
         // This is loop.
+        has_loop_ = true;
         return true;
       }
 
@@ -718,6 +722,7 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
   for (int i = 0; i < 2; ++i) {
     if (victory_line_enabled[i] && hits[i] && hits[(i + 2) & 3]) {
       // This is victory line.
+      has_victory_line_ = true;
       return true;
     }
   }
@@ -727,7 +732,8 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
 
 // Return true if red is the winner.
 int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
-                  bool verbose) {
+                  bool verbose,
+                  bool* has_loop, bool* has_victory_line) {
   assert(white_searcher != nullptr && red_searcher != nullptr);
   Position position;
 
@@ -769,6 +775,9 @@ int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
     std::cerr << result << " in total " << step << " steps. " << std::endl;
   }
 
+  *has_loop = position.has_loop();
+  *has_victory_line = position.has_victory_line();
+
   return position.winner();
 }
 
@@ -777,26 +786,40 @@ void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
   std::cerr
     << "white: " << white_searcher->name()
     << " red: " << red_searcher->name() << std::endl;
-  int white = 0, red = 0;
+
+  int white = 0;
+  int red = 0;
+
+  int loop_count = 0;
+  int victory_line_count = 0;
+
   for (int i = 0; i < num_games; ++i) {
-    const int result = StartSelfGame(white_searcher, red_searcher, verbose);
+    bool has_loop = false;
+    bool has_victory_line = false;
+    const int result = StartSelfGame(white_searcher, red_searcher, verbose,
+                                     &has_loop, &has_victory_line);
     if (result > 0) {
       ++red;
     } else if (result < 0) {
       ++white;
     }
 
-    if (verbose) {
+    if (has_loop) {
+      ++loop_count;
+    }
+    if (has_victory_line) {
+      ++victory_line_count;
+    }
+
+    if (verbose || i == num_games - 1) {
       std::cerr
         << "white(" << white_searcher->name() << "): " << white << " "
         << "red(" << red_searcher->name() << "): " << red << " "
-        << (white * 100.0 / (white + red)) << "%" << std::endl;
+        << (white * 100.0 / (white + red)) << "% "
+        << "loop: " << loop_count << " "
+        << "victory line: " << victory_line_count << std::endl;
     }
   }
-  std::cerr
-    << "white(" << white_searcher->name() << "): " << white << " "
-    << "red(" << red_searcher->name() << "): " << red << " "
-    << (white * 100.0 / (white + red)) << "%" << std::endl;
 }
 
 void StartTraxClient(Searcher* searcher) {
@@ -993,21 +1016,19 @@ void DumpCommentedGame(const CommentedGame& game) {
 }
 
 void CountMatchingMoves(const Game& game, Searcher *searcher,
-                        int *numerator, int *denominator) {
+                        int *numerator, int *denominator,
+                        int *loop_count, int *victory_line_count) {
   Position position;
 
+  /*
   ++*denominator;
 
   if (searcher->SearchBestMove(position).notation() == game[0]) {
     ++*numerator;
   }
+  */
 
-  for (int i = 0; i + 1 < game.size(); ++i) {
-    if (game[i + 1] == "Resign" ||
-        game[i + 1] == "win" ||
-        game[i + 1] == "Time") {
-      break;
-    }
+  for (int i = 0; i < game.size(); ++i) {
     Move move(game[i], position);
     Position next_position;
     if (!position.DoMove(move, &next_position)) {
@@ -1017,6 +1038,22 @@ void CountMatchingMoves(const Game& game, Searcher *searcher,
 
     position.Swap(&next_position);
     position.Dump();
+
+    if (position.finished()) {
+      if (position.has_loop()) {
+        ++*loop_count;
+      }
+      if (position.has_victory_line()) {
+        ++*victory_line_count;
+      }
+    }
+
+    if (i + 1 >= game.size() ||
+        game[i + 1] == "Resign" ||
+        game[i + 1] == "win" ||
+        game[i + 1] == "Time") {
+      break;
+    }
 
     ++*denominator;
 

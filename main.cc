@@ -150,15 +150,34 @@ int main(int argc, char *argv[]) {
 
     std::vector<CommentedGame> games =
       ParseCommentedGames(FLAGS_commented_games);
+
     int numerator = 0;
     int denominator = 0;
+    int loop_count = 0;
+    int victory_line_count = 0;
     for (CommentedGame& game : games) {
-      CountMatchingMoves(game.moves, player, &numerator, &denominator);
+      CountMatchingMoves(game.moves, player,
+                         &numerator, &denominator,
+                         &loop_count, &victory_line_count);
     }
 
     double accuracy = numerator * 100.0 / denominator;
 
-    std::cerr << "Accuracy: " << accuracy << std::endl;
+    int resigns_count = 0;
+    for (CommentedGame& game : games) {
+      if (game.moves.back() == "Resign" ||
+          game.moves.back() == "win" ||
+          game.moves.back() == "time") {
+        ++resigns_count;
+      }
+    }
+
+    std::cerr << "Total: " << games.size() << std::endl;
+    std::cerr << "Resigns: " << resigns_count << std::endl;
+    std::cerr << "Loop: " << loop_count << std::endl;
+    std::cerr << "Victory Line: " << victory_line_count << std::endl;
+    std::cerr << "Accuracy: " << accuracy
+      << "(" << numerator << "/" << denominator << ")" << std::endl;
 
     delete player;
   } else {

@@ -178,7 +178,9 @@ class Position {
       , red_winner_(false)
       , white_winner_(false)
       , red_longest_(0)
-      , white_longest_(0) {
+      , white_longest_(0)
+      , has_loop_(false)
+      , has_victory_line_(false) {
   }
 
   // Disable copy and assign.
@@ -236,6 +238,8 @@ class Position {
     std::swap(white_winner_, to->white_winner_);
     std::swap(red_longest_, to->red_longest_);
     std::swap(white_longest_, to->white_longest_);
+    std::swap(has_loop_, to->has_loop_);
+    std::swap(has_victory_line_, to->has_victory_line_);
   }
 
   // Debug output.
@@ -283,6 +287,9 @@ class Position {
   // Length of the longest white line.
   int white_longest() const { return white_longest_; }
 
+  bool has_loop() const { return has_loop_; }
+  bool has_victory_line() const { return has_victory_line_; }
+
  private:
   // Fill forced play pieces. Return true if placements are successful,
   // i.e. the position is still legal after forced plays.
@@ -326,6 +333,9 @@ class Position {
 
   int red_longest_;
   int white_longest_;
+
+  bool has_loop_;
+  bool has_victory_line_;
 };
 
 class Searcher {
@@ -348,7 +358,8 @@ class Searcher {
 // Return -1 if white is the winner.
 // Return 0 if the game is tie.
 int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
-                  bool verbose = false);
+                  bool verbose,
+                  bool* has_loop, bool* has_victory_line);
 
 void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
                             int num_games, bool verbose = false);
@@ -371,6 +382,7 @@ std::vector<CommentedGame> ParseCommentedGames(const std::string& filename);
 void DumpCommentedGame(const CommentedGame& game);
 
 void CountMatchingMoves(const Game& game, Searcher *searcher,
-                        int *numerator, int *denominator);
+                        int *numerator, int *denominator,
+                        int *loop_count, int *victory_line_count);
 
 #endif  // TRAX_H_
