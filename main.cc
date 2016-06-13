@@ -30,9 +30,11 @@ DEFINE_string(contest_player, "negamax1-la",
 
 DEFINE_bool(silent, false, "Self play silently.");
 
-
 DEFINE_int32(num_monte_carlo_trial, 100, "Number of Monte Carlo sampling.");
 
+DEFINE_string(commented_games,
+              "vendor/commented/Comment.txt",
+              "File name of commented game data");
 
 namespace {
 
@@ -123,6 +125,15 @@ int main(int argc, char *argv[]) {
   }
 
   g_num_monte_carlo_trial = FLAGS_num_monte_carlo_trial;
+
+  if (!FLAGS_commented_games.empty()) {
+    std::vector<CommentedGame> games =
+      ParseCommentedGames(FLAGS_commented_games);
+    for (CommentedGame& game : games) {
+      DumpCommentedGame(game);
+    }
+    return 0;
+  }
 
   if (FLAGS_client) {
     // Contest client.

@@ -40,7 +40,7 @@ logistelloのようにパターンを見出して、線形回帰したほうが�
       /------\ A
       \-\      |
   /-----/      V
-  * その長さ
+  * その長さ(の最大値？)
     (これらはバグってる版のTraceVictoryLineOrLoopが抽出していた特徴を意識)
 などを特徴量に使える。これらの係数を将棋のように学習させる。
 
@@ -53,9 +53,25 @@ logistelloのようにパターンを見出して、線形回帰したほうが�
 後半になるにつれて値が大きくなってしまっていいのか問題を解決しないといけない？
 ノンタッチでもどうにかなる？
 
+はい、でですね
+勝率=f(特徴)なる関数を学習させるとします
+
+線形和にしとけば、w_1(ライン1の特徴1 + ライン2の特徴2 ...) + w_1 (..) ...
+みたいになって依然普通に最小二乗法の最急降下法できる
+
+// あるいはw_1(... )の...の中をプーリング層を意識して、最大値か最小値のみ取るようにしちゃっても良い？
+
+
+元の、左右が繋がっている赤の本数、みたいな因子を拾い取れる設計にしないとね
+でも今拾えてる気がする。
+
+本数で割ったほうが良いのかなあよくわからん
+
+
 ## ToDo
 
 ### やるべき
+
 
 * 強くなりそうな評価関数の特徴量を他のゲームを参考にもっとちゃんと考える
   * このへんを全部読む
@@ -70,6 +86,12 @@ logistelloのようにパターンを見出して、線形回帰したほうが�
   http://yaneuraou.yaneu.com/stockfish%E5%AE%8C%E5%85%A8%E8%A7%A3%E6%9E%90/
   http://link.springer.com/chapter/10.1007%2F978-3-540-40031-8_2#page-1
 
+  http://shogo82148.github.io/homepage/memo/algorithm/least-squares-method/
+
+  http://www.logos.ic.i.u-tokyo.ac.jp/~yano/PDF/evo-bonanza.pdf
+
+  http://yaneuraou.yaneu.com/2015/11/19/%E4%BD%95%E6%95%85%E3%80%81%E6%BF%80%E6%8C%87%E3%81%AFsgd%E3%82%92%E4%BD%BF%E3%82%8F%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F%E3%81%AE%E3%81%A7%E3%81%99%E3%81%8B%EF%BC%9F/
+
   オセロのPerft: http://www.aartbik.com/MISC/reversi.html
 
   オセロ、案外手数増えないな…そりゃ深く読めるわけだ
@@ -79,9 +101,9 @@ logistelloのようにパターンを見出して、線形回帰したほうが�
   将棋に比べると全然浅くしか読めないけどそもそも人間の強い人達のプレイも将棋に比べるとはるかに速く終局する
 
 * 統計を取れるようにする。victory line勝利かloop勝利か
+  * Position::has_loop Position::has_victory_line
 * 大体他ゲーが平均何手で終局するかも調べてTraxについて序盤中盤終盤を定義する
 * PerftにTranspositoinTableを入れる。TranspositoinTableをクラスに分離する。
-* コメント棋譜を読み込めるようにする
 
 * Lobbybotと戦わせてみる。 http://www.traxgame.com/shop_download.php
 
@@ -311,6 +333,10 @@ GPS将棋の人のスライドを見ると（＋NM<MCE>(depth=3) vs NM<LAE>(dept
 
 GPS将棋マンによるTrax評
 http://www.slideshare.net/shogotakeuchi/ss-62415546
+
+
+モンテカルロとLeafAverageEvaluatorの組み合わせ、LeafAverageEvaluatorがかなりクオリティの高いスコアを提供してくれて、
+水平線効果が起こってるときのみモンテカルロの出番がくるから、絶対にLeafAverageEvaluatorのスコアをつぶさないような重み、例えば/ 10000した値とかをLeafAverageEvaluator==0の時に返せば強くなったりしないか
 
 ## ぼくのせんりゃく（古）
 

@@ -356,5 +356,18 @@ void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
 // Start Trax client which connects through stdin / stdout.
 void StartTraxClient(Searcher* searcher);
 
-#endif  // TRAX_H_
+using Game = std::vector<std::string>;
 
+// Game with commentary.
+// High quality commented game data can be obtained from
+// http://www.traxgame.com/games_comment.php .
+struct CommentedGame {
+  Game moves;
+  std::vector<std::string> comments;
+};
+
+std::vector<CommentedGame> ParseCommentedGames(const std::string& filename);
+
+void DumpCommentedGame(const CommentedGame& game);
+
+#endif  // TRAX_H_

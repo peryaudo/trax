@@ -5,6 +5,7 @@
 #include <gflags/gflags.h>
 
 #include <algorithm>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -900,5 +901,93 @@ void StartTraxClient(Searcher* searcher) {
     }
   } else {
     std::cerr << "The game is unfinished." << std::endl;
+  }
+}
+
+std::vector<CommentedGame> ParseCommentedGames(const std::string& filename) {
+  std::ifstream ifs(filename);
+
+  std::string line;
+
+  std::vector<CommentedGame> games;
+  CommentedGame game;
+
+  std::string game_kind;
+
+  while (std::getline(ifs, line)) {
+    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+    line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
+
+    if (line[0] == '#') {
+      if (!game.moves.empty()) {
+        if (game_kind == "Trax") {
+          games.push_back(game);
+        }
+        game = CommentedGame();
+      }
+      continue;
+    }
+
+    if (line == "8x8 Trax" || line == "Loop Trax" || line == "Trax") {
+      game_kind = line;
+      continue;
+    }
+
+    if (line.size() < 7) {
+      continue;
+    }
+
+    // 0123456789012
+    //   1 @0/   ; comment  
+    if (line[0] == ' ' && '0' <= line[2] && line[2] <= '9') {
+      std::string move;
+      move = line.substr(4, 6);
+      move.erase(std::remove(move.begin(), move.end(), ' '), move.end());
+      game.moves.push_back(move);
+      game.comments.push_back("");
+    }
+
+    if (line.size() < 11) {
+      continue;
+    }
+
+    if (line[10] == ';') {
+      game.comments.back() += line.substr(11) + "\n";
+    }
+    if (line[11] == ';') {
+      game.comments.back() += line.substr(11) + "\n";
+    }
+  }
+
+  if (!game.moves.empty()) {
+    if (game_kind == "Trax") {
+      games.push_back(game);
+    }
+  }
+  return games;
+}
+
+void DumpCommentedGame(const CommentedGame& game) {
+  Position position;
+  for (int i = 0; i < game.moves.size(); ++i) {
+    const std::string& move_notation = game.moves[i];
+    const std::string& comment = game.comments[i];
+
+    if (move_notation == "Resign" ||
+        move_notation == "win" ||
+        move_notation == "Time") {
+      // Resign.
+      break;
+    }
+
+    Move move(move_notation, position);
+    Position next_position;
+    if (!position.DoMove(move, &next_position)) {
+      std::cerr << "illegal move in commented game" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    position.Swap(&next_position);
+    position.Dump();
+    std::cerr << comment << std::endl;
   }
 }
