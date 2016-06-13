@@ -150,11 +150,10 @@ int main(int argc, char *argv[]) {
 
     std::vector<CommentedGame> games =
       ParseCommentedGames(FLAGS_commented_games);
-    double numerator = 0.0;
-    double denominator = 0.0;
+    int numerator = 0;
+    int denominator = 0;
     for (CommentedGame& game : games) {
-      numerator += CountMatchingMoves(game.moves, player);
-      denominator += game.moves.size();
+      CountMatchingMoves(game.moves, player, &numerator, &denominator);
     }
 
     double accuracy = numerator * 100.0 / denominator;

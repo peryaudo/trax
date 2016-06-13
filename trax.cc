@@ -992,30 +992,37 @@ void DumpCommentedGame(const CommentedGame& game) {
   }
 }
 
-int CountMatchingMoves(const Game& game, Searcher *searcher) {
-  int matched_count = 0;
-
+void CountMatchingMoves(const Game& game, Searcher *searcher,
+                        int *numerator, int *denominator) {
   Position position;
 
+  ++*denominator;
+
   if (searcher->SearchBestMove(position).notation() == game[0]) {
-    ++matched_count;
+    ++*numerator;
   }
 
   for (int i = 0; i + 1 < game.size(); ++i) {
+    if (game[i + 1] == "Resign" ||
+        game[i + 1] == "win" ||
+        game[i + 1] == "Time") {
+      break;
+    }
     Move move(game[i], position);
     Position next_position;
     if (!position.DoMove(move, &next_position)) {
       std::cerr << "illegal move in game" << std::endl;
       exit(EXIT_FAILURE);
     }
-    position.Swap(&next_position);
 
+    position.Swap(&next_position);
     position.Dump();
+
+    ++*denominator;
 
     Move best_move = searcher->SearchBestMove(position);
     if (best_move.notation() == game[i + 1]) {
-      ++matched_count;
+      ++*numerator;
     }
   }
-  return matched_count;
 }
