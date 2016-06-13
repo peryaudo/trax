@@ -144,6 +144,11 @@ void ReadAndFindBestMove(Searcher* searcher) {
     position.Swap(&next_position);
   }
 
+  if (position.finished()) {
+    // Otherwise SearchBestMove may crash! Reported by takiyu. (thx!)
+    return;
+  }
+
   Move best_move = searcher->SearchBestMove(position);
   std::cout << best_move.notation();
 }
