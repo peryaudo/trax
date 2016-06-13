@@ -22,6 +22,9 @@ DEFINE_bool(best_move, false,
             " and return the best move in trax notation."
             " Expected to be used for trax-daemon.");
 
+DEFINE_bool(show_position, false,
+            "Ad hoc solution not to implement game rules inside trax-daemon.");
+
 DEFINE_int32(seed, 0, "Random seed.");
 
 DEFINE_int32(depth, 1, "Perft depth.");
@@ -125,7 +128,40 @@ void ReadAndFindBestMove(Searcher* searcher) {
   Position position;
   for (const std::string& move_notation : moves_notation) {
     Move move;
-    if (!move.Parse(move_notation)) {
+    if (!move.Parse(move_notation, position)) {
+      std::cerr
+        << "Illegal move. Please go back and try another." << std::endl;
+      exit(EXIT_FAILURE);
+    }
+
+    Position next_position;
+    if (!position.DoMove(move, &next_position)) {
+      std::cerr
+        << "Illegal move. Please go back and try another." << std::endl;
+      exit(EXIT_FAILURE);
+    }
+
+    position.Swap(&next_position);
+  }
+
+  Move best_move = searcher->SearchBestMove(position);
+  std::cout << best_move.notation();
+}
+
+// See the description of the corresponding flag.
+void ShowPosition() {
+  int num_moves = 0;
+  std::cin >> num_moves;
+
+  std::vector<std::string> moves_notation(num_moves);
+  for (std::string& move_notation : moves_notation) {
+    std::cin >> move_notation;
+  }
+
+  Position position;
+  for (const std::string& move_notation : moves_notation) {
+    Move move;
+    if (!move.Parse(move_notation, position)) {
       exit(EXIT_FAILURE);
     }
 
@@ -137,8 +173,22 @@ void ReadAndFindBestMove(Searcher* searcher) {
     position.Swap(&next_position);
   }
 
-  Move best_move = searcher->SearchBestMove(position);
-  std::cout << best_move.notation();
+  if (position.finished()) {
+    std::cout << position.winner() << std::endl;
+  } else {
+    std::cout << std::endl;
+  }
+
+  for (int i_y = -1; i_y < position.max_y() + 1; ++i_y) {
+    for (int j_x = -1; j_x < position.max_x() + 1; ++j_x) {
+      std::cout << static_cast<const Position &>(position).at(j_x, i_y);
+      if (j_x == position.max_x()) {
+        std::cout << std::endl;
+      } else {
+        std::cout << " ";
+      }
+    }
+  }
 }
 
 }  // namespace
@@ -219,6 +269,8 @@ int main(int argc, char *argv[]) {
     Searcher *player = GetSearcherFromName(FLAGS_contest_player);
     ReadAndFindBestMove(player);
     delete player;
+  } else if (FLAGS_show_position) {
+    ShowPosition();
   } else {
     google::ShowUsageWithFlags(argv[0]);
     std::cerr << std::endl;
