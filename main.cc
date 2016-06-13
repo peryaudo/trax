@@ -15,6 +15,8 @@ DEFINE_bool(self, false, "Run self play.");
 
 DEFINE_bool(perft, false, "Run perft.");
 
+DEFINE_bool(accuracy, false, "Measure accuracy against human game log.");
+
 DEFINE_int32(seed, 0, "Random seed.");
 
 DEFINE_int32(depth, 1, "Perft depth.");
@@ -126,15 +128,6 @@ int main(int argc, char *argv[]) {
 
   g_num_monte_carlo_trial = FLAGS_num_monte_carlo_trial;
 
-  if (!FLAGS_commented_games.empty()) {
-    std::vector<CommentedGame> games =
-      ParseCommentedGames(FLAGS_commented_games);
-    for (CommentedGame& game : games) {
-      DumpCommentedGame(game);
-    }
-    return 0;
-  }
-
   if (FLAGS_client) {
     // Contest client.
     Searcher *player = GetSearcherFromName(FLAGS_contest_player);
@@ -152,6 +145,23 @@ int main(int argc, char *argv[]) {
     // Do perft (performance testing by counting all the possible moves
     // within the given depth.)
     ShowPerft(FLAGS_depth);
+  } else if (FLAGS_accuracy) {
+    Searcher *player = GetSearcherFromName(FLAGS_contest_player);
+
+    std::vector<CommentedGame> games =
+      ParseCommentedGames(FLAGS_commented_games);
+    double numerator = 0.0;
+    double denominator = 0.0;
+    for (CommentedGame& game : games) {
+      numerator += CountMatchingMoves(game.moves, player);
+      denominator += game.moves.size();
+    }
+
+    double accuracy = numerator * 100.0 / denominator;
+
+    std::cerr << "Accuracy: " << accuracy << std::endl;
+
+    delete player;
   } else {
     google::ShowUsageWithFlags(argv[0]);
     std::cerr << std::endl;

@@ -370,4 +370,6 @@ std::vector<CommentedGame> ParseCommentedGames(const std::string& filename);
 
 void DumpCommentedGame(const CommentedGame& game);
 
+int CountMatchingMoves(const Game& game, Searcher *searcher);
+
 #endif  // TRAX_H_

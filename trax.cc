@@ -938,7 +938,7 @@ std::vector<CommentedGame> ParseCommentedGames(const std::string& filename) {
     }
 
     // 0123456789012
-    //   1 @0/   ; comment  
+    //   1 @0/   ; comment
     if (line[0] == ' ' && '0' <= line[2] && line[2] <= '9') {
       std::string move;
       move = line.substr(4, 6);
@@ -990,4 +990,32 @@ void DumpCommentedGame(const CommentedGame& game) {
     position.Dump();
     std::cerr << comment << std::endl;
   }
+}
+
+int CountMatchingMoves(const Game& game, Searcher *searcher) {
+  int matched_count = 0;
+
+  Position position;
+
+  if (searcher->SearchBestMove(position).notation() == game[0]) {
+    ++matched_count;
+  }
+
+  for (int i = 0; i + 1 < game.size(); ++i) {
+    Move move(game[i], position);
+    Position next_position;
+    if (!position.DoMove(move, &next_position)) {
+      std::cerr << "illegal move in game" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    position.Swap(&next_position);
+
+    position.Dump();
+
+    Move best_move = searcher->SearchBestMove(position);
+    if (best_move.notation() == game[i + 1]) {
+      ++matched_count;
+    }
+  }
+  return matched_count;
 }
