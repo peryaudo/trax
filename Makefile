@@ -2,7 +2,7 @@ CXX = g++
 
 # Release
 CXXFLAGS = -std=c++11 -Wall -Wno-unused-const-variable -Ivendor/googletest -Ivendor/gflags -O3 -DNDEBUG
-LDFLAGS = -O3 -lpthread
+LDFLAGS = -O3 -lpthread -static
 
 # Debug
 # CXXFLAGS = -std=c++11 -Wall -Wno-unused-const-variable -Wno-tautological-constant-out-of-range-compare -Ivendor/googletest -Ivendor/gflags -O1 -g -fsanitize=address #-pg -DNDEBUG
