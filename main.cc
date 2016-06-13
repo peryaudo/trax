@@ -17,6 +17,11 @@ DEFINE_bool(perft, false, "Run perft.");
 
 DEFINE_bool(accuracy, false, "Measure accuracy against human game log.");
 
+DEFINE_bool(best_move, false,
+            "Get the current board configuration from stdin"
+            " and return the best move in trax notation."
+            " Expected to be used for trax-daemon.");
+
 DEFINE_int32(seed, 0, "Random seed.");
 
 DEFINE_int32(depth, 1, "Perft depth.");
@@ -106,6 +111,36 @@ Searcher *GetSearcherFromName(const std::string& name) {
   }
 }
 
+// Read current board configuration from stdin and return the best move to
+// stdout.
+void ReadAndFindBestMove(Searcher* searcher) {
+  int num_moves = 0;
+  std::cin >> num_moves;
+
+  std::vector<std::string> moves_notation(num_moves);
+  for (std::string& move_notation : moves_notation) {
+    std::cin >> move_notation;
+  }
+
+  Position position;
+  for (const std::string& move_notation : moves_notation) {
+    Move move;
+    if (!move.Parse(move_notation)) {
+      exit(EXIT_FAILURE);
+    }
+
+    Position next_position;
+    if (!position.DoMove(move, &next_position)) {
+      exit(EXIT_FAILURE);
+    }
+
+    position.Swap(&next_position);
+  }
+
+  Move best_move = searcher->SearchBestMove(position);
+  std::cout << best_move.notation();
+}
+
 }  // namespace
 
 int main(int argc, char *argv[]) {
@@ -179,6 +214,10 @@ int main(int argc, char *argv[]) {
     std::cerr << "Accuracy: " << accuracy
       << "(" << numerator << "/" << denominator << ")" << std::endl;
 
+    delete player;
+  } else if (FLAGS_best_move) {
+    Searcher *player = GetSearcherFromName(FLAGS_contest_player);
+    ReadAndFindBestMove(player);
     delete player;
   } else {
     google::ShowUsageWithFlags(argv[0]);

@@ -48,15 +48,6 @@ logistelloのようにパターンを見出して、線形回帰したほうが�
 * floodgate風レーティングをつけてくれるStartTournamentを実装
   トーナメントをしてRを出すコードを書かないといけない…
 
-* --best-move
-  (computer playerの白赤)
-  N
-  1番目のtrax notation
-  ...
-  n番目の,,
-
-  をstdinから取ってstdoutにbest moveのtrax notationだけを返すモードを実装する
-
 * で、golangでtrax-daemon実装してwebで遊べるようにする
   * ユーザーは毎回上のこれまでの棋譜をサーバーに送信
 
