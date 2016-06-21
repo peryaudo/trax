@@ -62,8 +62,6 @@ void GeneratePossiblePiecesTable() {
       for (int k_left = 0; k_left < NUM_PIECES; ++k_left) {
         for (int l_bottom = 0; l_bottom < NUM_PIECES; ++l_bottom) {
           PieceSet pieces;
-          // Empty piece is always legal.
-          pieces.set(PIECE_EMPTY);
 
           if (i_right == PIECE_EMPTY &&
               j_top == PIECE_EMPTY &&
@@ -71,6 +69,7 @@ void GeneratePossiblePiecesTable() {
               l_bottom == PIECE_EMPTY) {
             // If all the neighboring pieces are empty then empty piece is
             // the only legal piece.
+            pieces.set(PIECE_EMPTY);
           } else {
             const char *neighbors[4] = {
               kPieceColors[i_right],
@@ -99,10 +98,19 @@ void GeneratePossiblePiecesTable() {
                 pieces.set(m_candidate);
               }
             }
+
+            // If it is possible to place at least one kind of non-empty pieces
+            // then it would also legal to remain empty.
+            // Otherwise, the placement is illegal at all.
+            if (pieces.count() > 0) {
+              pieces.set(PIECE_EMPTY);
+            }
           }
 
-          g_possible_pieces_table[
-            EncodeNeighborKey(i_right, j_top, k_left, l_bottom)] = pieces;
+          if (pieces.count() > 0) {
+            g_possible_pieces_table[
+              EncodeNeighborKey(i_right, j_top, k_left, l_bottom)] = pieces;
+          }
         }
       }
     }

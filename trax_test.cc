@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "./perft.h"
@@ -19,6 +20,21 @@ void SupplyNotations(const std::vector<std::string>& notations,
     // Comment out to use for debug.
     // position->Dump();
   }
+}
+
+using NeighborKey = uint32_t;
+extern NeighborKey EncodeNeighborKey(int right, int top, int left, int bottom);
+extern std::unordered_map<NeighborKey, PieceSet> g_possible_pieces_table;
+
+TEST(PossiblePieceTest, NoHitForInvalidPlace) {
+  //  /
+  // / +
+  //  /
+  NeighborKey key = EncodeNeighborKey(PIECE_WRWR,
+                                      PIECE_WRRW,
+                                      PIECE_RWWR,
+                                      PIECE_RWWR);
+  ASSERT_EQ(0, g_possible_pieces_table.count(key));
 }
 
 TEST(MoveTest, PutInitialPiece) {
@@ -144,6 +160,19 @@ TEST(PositionTest, LongestLines2) {
   ASSERT_FALSE(position.finished());
   ASSERT_EQ(2, position.red_longest());
   ASSERT_EQ(3, position.white_longest());
+}
+
+TEST(PositionTest, ForcedPlays) {
+  Position position;
+  SupplyNotations(
+      {"@0+", "B1/", "C1/", "A2/", "A3+", "A4/", "B4+", "C4/"}, &position);
+
+  Move illegal_move("C3/", position);
+  Move legal_move("C3+", position);
+
+  Position next_position;
+  ASSERT_FALSE(position.DoMove(illegal_move, &next_position));
+  ASSERT_TRUE(position.DoMove(legal_move, &next_position));
 }
 
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {
