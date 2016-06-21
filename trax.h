@@ -282,7 +282,7 @@ class Position {
 
   // Return 1 if red is the winner.
   // Return -1 if white is the winner.
-  // Return 0 if the game is tie.
+  // Return 0 if the game is draw (only happens in 8x8Trax.)
   //
   // It always return 0 if finished is not yet true, but the method is
   // not supposed to be used for checking if the game is finished.
@@ -366,7 +366,7 @@ class Searcher {
 
 // Return 1 if red is the winner.
 // Return -1 if white is the winner.
-// Return 0 if the game is tie.
+// Return 0 if the game is draw (only happens in 8x8Trax.)
 int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
                   bool verbose,
                   bool* has_loop, bool* has_victory_line);

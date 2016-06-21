@@ -113,15 +113,6 @@ TEST(PositionTest, NotVerticalVictoryLineSimple) {
   ASSERT_FALSE(position.finished());
 }
 
-TEST(PositionTest, Tie) {
-  Position position;
-  SupplyNotations({"@0+", "B1\\", "B2/", "A2+", "A3/", "A0\\",
-                   "@3+", "@3\\", "B2+"},
-                  &position);
-  ASSERT_TRUE(position.finished());
-  ASSERT_EQ(0, position.winner());
-}
-
 TEST(PositionTest, NotHorizontalVictoryLineRealWorld1) {
   Position position;
   // Found wild on the way of debugging transposition table.
@@ -173,6 +164,33 @@ TEST(PositionTest, ForcedPlays) {
   Position next_position;
   ASSERT_FALSE(position.DoMove(illegal_move, &next_position));
   ASSERT_TRUE(position.DoMove(legal_move, &next_position));
+}
+
+TEST(PositionTest, VictoryIsLastPlayers1) {
+  // There's no such thing like tie or draw in unlimited Trax (8x8Trax does.)
+  // See http://www.traxgame.com/about_faq.php for detail.
+  //   Q. What happens if we both win on the same turn?
+  //   A. This is a win for the player who made the move (see the rules).
+  //
+  // (Reported by @snuke_. Thanks!)
+
+  Position position;
+  SupplyNotations({"@0+", "B1\\", "B2/", "A2+", "A3/", "A0\\",
+                   "@3+", "@3\\", "B2+"},
+                  &position);
+  ASSERT_TRUE(position.finished());
+  ASSERT_EQ(-1, position.winner());
+}
+
+TEST(PositionTest, VictoryIsLastPlayers2) {
+  Position position;
+  SupplyNotations(
+      {"@0+", "A0+", "B2\\", "A3+", "@2\\", "D2\\", "E2\\", "A0/", "D2+",
+       "@1\\", "A0\\", "C1+", "@2+", "E0/", "F3+", "G2\\", "H5\\", "F7/",
+       "G8+", "G1/", "E7/"},
+      &position);
+  ASSERT_TRUE(position.finished());
+  ASSERT_EQ(-1, position.winner());
 }
 
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {

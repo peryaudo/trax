@@ -498,7 +498,7 @@ void Position::Dump() const {
     } else if (winner() < 0) {
       std::cerr << "white";
     } else {
-      std::cerr << "tie";
+      std::cerr << "draw";
     }
     std::cerr << " has_loop = " << (has_loop_ ? "true" : "false");
     std::cerr
@@ -614,23 +614,19 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
     FillWinnerFlags(coordinate.first, coordinate.second);
   }
 
-  return true;
-}
-
-void Position::FillWinnerFlags(int x, int y) {
-  assert(at(x, y) != PIECE_EMPTY);
-
-  if (!red_winner_ && TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) {
-    red_winner_ = true;
-  }
-
-  if (!white_winner_ && TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) {
-    white_winner_ = true;
+  if (red_winner_ && white_winner_) {
+    // This is a win for the player who made the last move.
+    // See http://www.traxgame.com/about_faq.php for detail.
+    if (red_to_move_) {
+      red_winner_ = false;
+    } else {
+      white_winner_ = false;
+    }
   }
 
   if (FLAGS_trax8x8 && !finished() && max_x_ >= 8 && max_y_ >= 8) {
     // For 8x8 Trax, if region is filled without any victory lines or loops,
-    // the game is considered tie.
+    // the game is considered draw.
 
     bool all_filled = true;
     for (int i_x = 0; i_x < max_x_; ++i_x) {
@@ -649,6 +645,20 @@ void Position::FillWinnerFlags(int x, int y) {
       red_winner_ = true;
       white_winner_ = true;
     }
+  }
+
+  return true;
+}
+
+void Position::FillWinnerFlags(int x, int y) {
+  assert(at(x, y) != PIECE_EMPTY);
+
+  if (!red_winner_ && TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) {
+    red_winner_ = true;
+  }
+
+  if (!white_winner_ && TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) {
+    white_winner_ = true;
   }
 }
 
@@ -931,7 +941,7 @@ void StartTraxClient(Searcher* searcher) {
     } else if (winner < 0) {
       std::cerr << "The opponent won..." << std::endl;
     } else {
-      std::cerr << "The game was tie." << std::endl;
+      std::cerr << "The game was draw." << std::endl;
     }
   } else {
     std::cerr << "The game is unfinished." << std::endl;
