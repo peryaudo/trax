@@ -193,6 +193,33 @@ TEST(PositionTest, VictoryIsLastPlayers2) {
   ASSERT_EQ(-1, position.winner());
 }
 
+TEST(PositionTest, NotHorizontalVictoryLineBecauesNotRightmost) {
+  // Based on the example here:
+  // http://lut.eee.u-ryukyu.ac.jp/traxjp/rules.html
+
+  Position position;
+  SupplyNotations(
+      {"@0/", "B1\\", "C1/", "D1+", "E1\\", "F1\\", "G1/", "A2/", "B2+", 
+       "C2\\", "D2\\", "E2\\", "F2+", "G2+", "H2/", "A3\\", "B3\\", "C3+", 
+       "D3/", "E3/", "F3\\", "G3/", "H3+", 
+       "I3/", "H1/"},
+       &position);
+  ASSERT_FALSE(position.finished());
+}
+
+TEST(PositionTest, WinByHorizontalVictoryLineBecauesRightmost) {
+  // Ditto.
+  Position position;
+  SupplyNotations(
+      {"@0/", "B1\\", "C1/", "D1+", "E1\\", "F1\\", "G1/", "A2/", "B2+", 
+       "C2\\", "D2\\", "E2\\", "F2+", "G2+", "H2/", "A3\\", "B3\\", "C3+", 
+       "D3/", "E3/", "F3\\", "G3/", "H3+", 
+       "H1/"},
+       &position);
+  ASSERT_TRUE(position.finished());
+  ASSERT_EQ(1, position.winner());
+}
+
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {
   ASSERT_EQ(246888, Perft(5));
 }
@@ -213,11 +240,6 @@ TEST(RandomSearcherTest, MultiTime) {
                          /* num_games = */ 100, /* verbose = */ false);
 }
 
-
-
-// TODO(tetsui): Write test to check not victory line example here:
-// http://lut.eee.u-ryukyu.ac.jp/traxjp/rules.html
-
 // TODO(tetsui): Supply some real game data for unit test, like:
 // http://www.traxgame.com/games_archives.php?pid=162
 
@@ -226,9 +248,6 @@ TEST(RandomSearcherTest, MultiTime) {
 
 // TODO(tetsui): Do StartTraxClient() test? Do we have any stdin / stdout test
 // facility?
-
-
-// TODO(tetsui): Write test for ScoreFinishedPosition()
 
 int main(int argc, char *argv[]) {
   // Otherwise Position::GetPossiblePieces() doesn't work.
