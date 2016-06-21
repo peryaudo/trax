@@ -34,7 +34,7 @@ void GenerateTrackDirectionTable();
 void GenerateForcedPlayTable();
 
 // Piece kinds. It includes color information so it is more specific than
-// Trax notation. The alphabets after the prefix specifies colors on the edges
+// Trax notation. The alphabets after the prefix specify colors on the edges
 // in anti-clockwise order from the rightmost one.
 enum Piece {
   PIECE_EMPTY = 0,
@@ -115,7 +115,7 @@ static const char kLargePieceNotations[][3][32] = {
 
 class Position;
 
-// Hold a move.
+// Express a move.
 struct Move {
   Move() : x(0), y(0), piece(PIECE_EMPTY) {
   }
@@ -346,6 +346,8 @@ class Position {
   bool has_victory_line_;
 };
 
+// Base abstract class for searchers.
+// The interface may be subject to change.
 class Searcher {
  public:
   // Return the best move from the position, from the perspective of
