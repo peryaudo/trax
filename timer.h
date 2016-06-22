@@ -10,6 +10,8 @@
 const static uint64_t kNanosecondsToMilliseconds = 1000000;
 const static uint64_t kNanosecondsToSeconds = 1000000000;
 
+// TODO(tetsui): Implement using clock_gettime(CLOCK_MONOTONIC) for Linux
+
 class Timer {
  public:
   // Check() will always return false (the timer will never expire)
@@ -30,13 +32,11 @@ class Timer {
     current_time_ = begin_time_;
   }
 
-  // TODO(peryaudo): ForceCheckTimeout? or (bool force = false) ?
-
   // Return true if the timer is expired.
   // For first several calls it always checks the realtime clock and after that
   // it tries to reduce call to once in 100ms to eliminate context switching
   // overhead.
-  bool CheckTimeout() {
+  bool CheckTimeout(bool force = false) {
     if (current_time_ - begin_time_ >
         static_cast<uint64_t>(timeout_ms_) * kNanosecondsToMilliseconds) {
       return true;
@@ -44,7 +44,7 @@ class Timer {
 
     ++check_count_;
 
-    if (check_count_ > 10 && check_count_ < check_count_target_) {
+    if (!force && check_count_ > 10 && check_count_ < check_count_target_) {
       return false;
     }
 
