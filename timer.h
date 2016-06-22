@@ -22,7 +22,9 @@ class Timer {
       , check_count_target_(0)
       , node_count_(0) {
 #ifdef __MACH__
-    begin_time_ = mach_absolute_time();
+    mach_timebase_info_data_t base;
+    mach_timebase_info(&base);
+    begin_time_ = mach_absolute_time() / base.denom;
 #endif
 
     current_time_ = begin_time_;
@@ -47,7 +49,9 @@ class Timer {
     }
 
 #ifdef __MACH__
-    current_time_ = mach_absolute_time();
+    mach_timebase_info_data_t base;
+    mach_timebase_info(&base);
+    current_time_ = mach_absolute_time() / base.denom;
 #endif
 
     check_count_target_ = (check_count_ +
