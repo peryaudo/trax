@@ -7,8 +7,8 @@
 #include <mach/mach_time.h>
 #endif
 
-const static uint64_t kNanosecondsToMilliseconds = 1000000;
-const static uint64_t kNanosecondsToSeconds = 1000000000;
+static const uint64_t kNanosecondsToMilliseconds = 1000000;
+static const uint64_t kNanosecondsToSeconds = 1000000000;
 
 // TODO(tetsui): Implement using clock_gettime(CLOCK_MONOTONIC) for Linux
 
@@ -17,7 +17,7 @@ class Timer {
   // Check() will always return false (the timer will never expire)
   // by setting timeout_ms negative.
   // The timer will start right after the constructor is called.
-  Timer(int timeout_ms = -1)
+  explicit Timer(int timeout_ms = -1)
       : timeout_ms_(timeout_ms)
       , begin_time_(0)
       , check_count_(0)
