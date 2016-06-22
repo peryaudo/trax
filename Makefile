@@ -17,7 +17,7 @@ test: trax_test
 trax_test: trax_test.o trax.o search.o gtest-all.o gflags.o gflags_completions.o gflags_reporting.o perft.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
-trax_test.o: trax_test.cc trax.h
+trax_test.o: trax_test.cc trax.h timer.h
 
 trax.o: trax.cc trax.h
 

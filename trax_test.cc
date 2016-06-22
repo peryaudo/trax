@@ -9,6 +9,7 @@
 
 #include "./perft.h"
 #include "./search.h"
+#include "./timer.h"
 #include "./trax.h"
 
 void SupplyNotations(const std::vector<std::string>& notations,
@@ -222,6 +223,16 @@ TEST(PositionTest, WinByHorizontalVictoryLineBecauesRightmost) {
 
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {
   ASSERT_EQ(246888, Perft(5));
+}
+
+TEST(TimerTest, Measure800Ms) {
+  for (int i = 0; i < 10; ++i) {
+    Timer timer(800);
+    while (!timer.CheckTimeout()) {
+    }
+    ASSERT_LE(800, timer.elapsed_ms());
+    ASSERT_GE(870, timer.elapsed_ms());
+  }
 }
 
 TEST(RandomSearcherTest, OneTime) {
