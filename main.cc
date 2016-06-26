@@ -17,6 +17,8 @@ DEFINE_bool(perft, false, "Run perft.");
 
 DEFINE_bool(accuracy, false, "Measure accuracy against human game log.");
 
+DEFINE_bool(dump_factors, false, "Dump factors for human game log.");
+
 DEFINE_bool(best_move, false,
             "Get the current board configuration from stdin"
             " and return the best move in trax notation."
@@ -269,6 +271,47 @@ int main(int argc, char *argv[]) {
       << "(" << numerator << "/" << denominator << ")" << std::endl;
 
     delete searcher;
+  } else if (FLAGS_dump_factors) {
+    std::vector<Game> games;
+    ParseCommentedGames(FLAGS_commented_games, &games);
+
+    std::cout << "step,winner,endpoint_factor,edge_factor" << std::endl;
+
+    for (Game& game : games) {
+      Position position;
+      for (int i = 0; i < game.num_moves(); ++i) {
+        Position next_position;
+        Move move = game.moves[i];
+        bool success = position.DoMove(move, &next_position);
+        if (!success) {
+          std::cerr << "something went wrong!" << std::endl;
+          exit(EXIT_FAILURE);
+        }
+        position.Swap(&next_position);
+
+        double endpoint_factor = 0.0;
+        double edge_factor = 0.0;
+        std::vector<Line> lines;
+        position.EnumerateLines(&lines);
+        for (Line& line : lines) {
+          double endpoint = 1.0 / (1.0 + line.endpoint_distance);
+          double edge = (1.0 / (1.0 + line.edge_distances[0]) +
+                         1.0 / (1.0 + line.edge_distances[1]));
+          if (!line.is_red) {
+            endpoint *= -1.0;
+            edge *= -1.0;
+          }
+          endpoint_factor += endpoint;
+          edge_factor += edge;
+        }
+
+        std::cout
+          << i << ","
+          << game.winner << ","
+          << endpoint_factor << ","
+          << edge_factor << std::endl;
+      }
+    }
   } else if (FLAGS_best_move) {
     Searcher *player = GetSearcherFromName(FLAGS_contest_player);
     ReadAndFindBestMove(player);
