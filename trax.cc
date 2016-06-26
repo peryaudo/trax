@@ -16,6 +16,8 @@
 #include <unordered_set>
 #include <utility>
 
+#include "./timer.h"
+
 
 DEFINE_bool(enable_pretty_dump, true,
             "Position::Dump() will return pretty colored boards.");
@@ -1045,6 +1047,8 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
   Position position;
 
   for (int step = 0; !position.finished(); ++step) {
+    Timer overall_timer(/* timeout_ms = */ 900);
+
     if (verbose) {
       std::cerr << "Step " << step << ": ";
     }
@@ -1072,6 +1076,12 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
       position.Dump();
       std::cerr << std::endl;
     }
+
+#if 0
+    if (overall_timer.CheckTimeout()) {
+      break;
+    }
+#endif
   }
 
   if (verbose) {
