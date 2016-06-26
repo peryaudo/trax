@@ -221,6 +221,54 @@ TEST(PositionTest, WinByHorizontalVictoryLineBecauesRightmost) {
   ASSERT_EQ(1, position.winner());
 }
 
+TEST(PositionTest, EnumerateLines1) {
+  Position position;
+  SupplyNotations({"@0+"}, &position);
+  position.Dump();
+  std::vector<Line> lines;
+  position.EnumerateLines(&lines);
+  int red_count = 0, white_count = 0;
+  for (Line& line : lines) {
+    if (line.is_red) {
+      ++red_count;
+      ASSERT_EQ(7, line.edge_distances[0]);
+      ASSERT_EQ(9, line.edge_distances[1]);
+    } else {
+      ++white_count;
+      ASSERT_EQ(9, line.edge_distances[0]);
+      ASSERT_EQ(7, line.edge_distances[1]);
+    }
+    ASSERT_EQ(4, line.endpoint_distance);
+  }
+  ASSERT_EQ(1, red_count);
+  ASSERT_EQ(1, white_count);
+}
+
+TEST(PositionTest, EnumerateLines2) {
+  Position position;
+  SupplyNotations(
+      {"@0/", "B1\\", "C1/", "D1+", "E1\\", "F1\\", "G1/", "A2/", "B2+",
+       "C2\\", "D2\\", "E2\\", "F2+", "G2+", "H2/", "A3\\", "B3\\", "C3+",
+       "D3/", "E3/", "F3\\", "G3/", "H3+",
+       "I3/", "H1/"},
+       &position);
+
+  position.Dump();
+  std::vector<Line> lines;
+  position.EnumerateLines(&lines);
+  int red_count = 0, white_count = 0;
+  for (Line& line : lines) {
+    if (line.is_red) {
+      ++red_count;
+    } else {
+      ++white_count;
+    }
+  }
+
+  ASSERT_EQ(5, red_count);
+  ASSERT_EQ(7, white_count);
+}
+
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {
   ASSERT_EQ(246888, Perft(5));
 }
@@ -255,9 +303,6 @@ TEST(ParseCommentedGameTest, Parse) {
   // $ grep ^Trax vendor/commented/Comment.txt | wc -l
   ASSERT_EQ(277, games.size());
 }
-
-// TODO(tetsui): Supply some real game data for unit test, like:
-// http://www.traxgame.com/games_archives.php?pid=162
 
 // TODO(tetsui): Do some kind of performance regression test,
 // because performance of basic operations are pretty important.

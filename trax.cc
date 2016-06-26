@@ -434,10 +434,10 @@ PieceSet Position::GetPossiblePieces(int x, int y) const {
   }
 }
 
-std::vector<Line> Position::EnumerateLines() const {
-  std::vector<Line> lines;
+void Position::EnumerateLines(std::vector<Line> *lines) const {
+  lines->clear();
   if (finished()) {
-    return lines;
+    return;
   }
 
   std::map<std::pair<int, int>, int> indexed_edges;
@@ -482,12 +482,10 @@ std::vector<Line> Position::EnumerateLines() const {
 
         Line line(endpoint_a, endpoint_b, is_red, *this, indexed_edges);
 
-        lines.push_back(line);
+        lines->push_back(line);
       }
     }
   }
-
-  return lines;
 }
 
 void Position::Dump() const {
@@ -912,14 +910,14 @@ Line::Line(const std::pair<int, int>& endpoint_a,
            const Position& position,
            const std::map<std::pair<int, int>, int>& indexed_edges)
     : is_red(is_red) {
-  int lowers[2] = {endpoint_a.first, endpoint_b.first};
-  int uppers[2] = {endpoint_a.second, endpoint_b.second};
+  int lowers[2] = {endpoint_a.first, endpoint_a.second};
+  int uppers[2] = {endpoint_b.first, endpoint_b.second};
   int maxs[2] = {std::max(position.max_x(), 8), std::max(position.max_y(), 8)};
   for (int i = 0; i < 2; ++i) {
     if (lowers[i] > uppers[i]) {
       std::swap(lowers[i], uppers[i]);
     }
-    edge_distances[i] = maxs[i] - (uppers[i] - 1) + (lowers[i] + 1);
+    edge_distances[i] = maxs[i] - 1 - (uppers[i] - 1) + (lowers[i] + 1);
   }
 
   int lower_index = indexed_edges.find(endpoint_a)->second;

@@ -278,7 +278,7 @@ class Position {
     return result;
   }
 
-  std::vector<Line> EnumerateLines() const;
+  void EnumerateLines(std::vector<Line> *lines) const;
 
   // Swap
   void Swap(Position* to) {
