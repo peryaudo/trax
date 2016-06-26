@@ -278,6 +278,9 @@ int main(int argc, char *argv[]) {
     std::cout << "step,winner,endpoint_factor,edge_factor" << std::endl;
 
     for (Game& game : games) {
+      if (game.winner == 0) {
+        continue;
+      }
       Position position;
       for (int i = 0; i < game.num_moves(); ++i) {
         Position next_position;
@@ -289,10 +292,15 @@ int main(int argc, char *argv[]) {
         }
         position.Swap(&next_position);
 
+        if (position.finished()) {
+          continue;
+        }
+
         double endpoint_factor = 0.0;
         double edge_factor = 0.0;
         std::vector<Line> lines;
         position.EnumerateLines(&lines);
+#if 1
         for (Line& line : lines) {
           double endpoint = 1.0 / (1.0 + line.endpoint_distance);
           double edge = (1.0 / (1.0 + line.edge_distances[0]) +
@@ -304,6 +312,27 @@ int main(int argc, char *argv[]) {
           endpoint_factor += endpoint;
           edge_factor += edge;
         }
+#else
+        std::vector<double> endpoints;
+        std::vector<double> edges;
+        for (Line& line : lines) {
+          double endpoint = 1.0 / (1.0 + line.endpoint_distance);
+          double edge = (1.0 / (1.0 + line.edge_distances[0]) +
+                         1.0 / (1.0 + line.edge_distances[1]));
+          if (!line.is_red) {
+            endpoint *= -1.0;
+            edge *= -1.0;
+          }
+          endpoints.push_back(endpoint);
+          edges.push_back(edge);
+        }
+        endpoint_factor =
+          *std::max_element(endpoints.begin(), endpoints.end()) +
+          *std::min_element(endpoints.begin(), endpoints.end());
+        edge_factor =
+          *std::max_element(edges.begin(), edges.end()) +
+          *std::min_element(edges.begin(), edges.end());
+#endif
 
         std::cout
           << i << ","
