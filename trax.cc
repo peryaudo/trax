@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <set>
 #include <sstream>
 #include <string>
@@ -439,6 +440,8 @@ std::vector<Line> Position::EnumerateLines() const {
     return lines;
   }
 
+  std::map<std::pair<int, int>, int> edge_clockwise, edge_anticlockwise;
+
   std::set<std::tuple<std::pair<int, int>, std::pair<int, int>, bool>> traced;
 
   for (int i_x = 0; i_x < max_x_; ++i_x) {
@@ -453,6 +456,13 @@ std::vector<Line> Position::EnumerateLines() const {
         const int ny = j_y + kDy[k];
         if (at(nx, ny) == PIECE_EMPTY) {
           is_edge = true;
+
+          if (edge_clockwise.empty() && edge_anticlockwise.empty()) {
+            TraceAndIndexEdges(nx, ny, /* clockwise = */ true,
+                               &edge_clockwise);
+            TraceAndIndexEdges(nx, ny, /* clockwise = */ false,
+                               &edge_anticlockwise);
+          }
           break;
         }
       }
@@ -473,8 +483,8 @@ std::vector<Line> Position::EnumerateLines() const {
         }
         traced.insert(make_tuple(endpoint_a, endpoint_b, is_red));
 
-        Line line(endpoint_a, endpoint_b, is_red, *this
-            /* and sets to calc endpoint distance */);
+        Line line(endpoint_a, endpoint_b, is_red, *this,
+                  edge_clockwise, edge_anticlockwise);
 
         lines.push_back(line);
       }
@@ -842,7 +852,9 @@ void Position::TraceLineToEndpoints(int x, int y, bool red_line,
 Line::Line(const std::pair<int, int>& endpoint_a,
            const std::pair<int, int>& endpoint_b,
            bool is_red,
-           const Position& position)
+           const Position& position,
+           const std::map<std::pair<int, int>, int>& edge_clockwise,
+           const std::map<std::pair<int, int>, int>& edge_anticlockwise)
     : is_red(is_red) {
   int lowers[2] = {endpoint_a.first, endpoint_b.first};
   int uppers[2] = {endpoint_a.second, endpoint_b.second};
@@ -854,9 +866,10 @@ Line::Line(const std::pair<int, int>& endpoint_a,
     edge_distances[i] = maxs[i] - (uppers[i] - 1) + (lowers[i] + 1);
   }
 
-  // TODO(tetsui): This is inaccurate.
-  endpoint_distance = (abs(endpoint_b.first - endpoint_a.first) +
-                       abs(endpoint_b.second - endpoint_a.second));
+  endpoint_distance =
+    std::max(
+        abs(edge_clockwise[endpoint_a] - edge_clockwise[endpoint_b]),
+        abs(edge_anticlockwise[endpoint_a] - edge_anticlockwise[endpoint_b]));
 }
 
 void StartTraxClient(Searcher* searcher) {

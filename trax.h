@@ -8,6 +8,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <map>
 #include <queue>
 #include <string>
 #include <utility>
@@ -194,7 +195,9 @@ struct Line {
   Line(const std::pair<int, int>& endpoint_a,
        const std::pair<int, int>& endpoint_b,
        bool is_red,
-       const Position& position);
+       const Position& position,
+       const std::map<std::pair<int, int>, int>& edge_clockwise,
+       const std::map<std::pair<int, int>, int>& edge_anticlockwise);
 
   bool is_mate() const {
     return (endpoint_distance <= 2 ||
@@ -367,6 +370,10 @@ class Position {
   void TraceLineToEndpoints(int x, int y, bool red_line,
                             std::pair<int, int> *endpoint_a,
                             std::pair<int, int> *endpoint_b) const;
+
+  void TraceAndIndexEdges(
+      int start_x, int start_y, bool clockwise,
+      std::map<std::pair<int, int>, int> *indexed_edges) const;
 
   // Reference access to board is only allowed from other instances of the
   // class.
