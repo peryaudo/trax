@@ -35,7 +35,7 @@ void ShowPerft(int max_depth) {
   for (int i_depth = 0; i_depth <= max_depth; ++i_depth) {
     Timer timer;
     const int leaves = Perft(i_depth);
-    timer.CheckTimeout(/* force = */ true);
+    timer.CheckTimeout();
     sum_leaves += leaves;
 
     std::cerr

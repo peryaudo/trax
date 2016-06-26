@@ -20,8 +20,7 @@ class Timer {
   explicit Timer(int timeout_ms = -1)
       : timeout_ms_(timeout_ms)
       , begin_time_(0)
-      , check_count_(0)
-      , check_count_target_(0)
+      , current_time_(0)
       , node_count_(0) {
 #ifdef __MACH__
     mach_timebase_info_data_t base;
@@ -33,30 +32,12 @@ class Timer {
   }
 
   // Return true if the timer is expired.
-  // For first several calls it always checks the realtime clock and after that
-  // it tries to reduce call to once in 100ms to eliminate context switching
-  // overhead.
-  bool CheckTimeout(bool force = false) {
-    if (current_time_ - begin_time_ >
-        static_cast<uint64_t>(timeout_ms_) * kNanosecondsToMilliseconds) {
-      return true;
-    }
-
-    ++check_count_;
-
-    if (!force && check_count_ > 10 && check_count_ < check_count_target_) {
-      return false;
-    }
-
+  bool CheckTimeout() {
 #ifdef __MACH__
     mach_timebase_info_data_t base;
     mach_timebase_info(&base);
     current_time_ = mach_absolute_time() / base.denom;
 #endif
-
-    check_count_target_ = (check_count_ +
-                           check_count_ * kNanosecondsToMilliseconds * 50 /
-                           (current_time_ - begin_time_));
 
     if (timeout_ms_ < 0) {
       return false;
@@ -93,8 +74,6 @@ class Timer {
   int timeout_ms_;
   uint64_t begin_time_;
   uint64_t current_time_;
-  uint64_t check_count_;
-  uint64_t check_count_target_;
   uint64_t node_count_;
 };
 
