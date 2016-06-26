@@ -199,7 +199,8 @@ Move::Move(const std::string& trax_notation,
            const Position& previous_position)
     : x(0), y(0), piece(PIECE_EMPTY) {
   if (!Parse(trax_notation, previous_position)) {
-    std::cerr << "cannot parse trax notation" << std::endl;
+    std::cerr
+      << "cannot parse trax notation \"" << trax_notation << "\"" << std::endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -751,98 +752,6 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
   return false;
 }
 
-// Return true if red is the winner.
-int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
-                  bool verbose,
-                  bool* has_loop, bool* has_victory_line) {
-  assert(white_searcher != nullptr && red_searcher != nullptr);
-  Position position;
-
-  int step = 0;
-  while (!position.finished()) {
-    if (verbose) {
-      std::cerr << "Step " << step << ": ";
-    }
-    Move best_move;
-    Position next_position;
-    bool success = false;
-
-    if (position.red_to_move()) {
-      best_move = red_searcher->SearchBestMove(position);
-    } else {
-      best_move = white_searcher->SearchBestMove(position);
-    }
-
-    success = position.DoMove(best_move, &next_position);
-    position.Swap(&next_position);
-
-    if (verbose) {
-      std::cerr << best_move.notation() << std::endl;
-      position.Dump();
-      std::cerr << std::endl;
-    }
-    ++step;
-  }
-
-  if (verbose) {
-    std::string result;
-    if (position.winner() > 0) {
-      result = "Red wins";
-    } else if (position.winner() < 0) {
-      result = "White wins";
-    } else {
-      result = "Tie";
-    }
-    std::cerr << result << " in total " << step << " steps. " << std::endl;
-  }
-
-  *has_loop = position.has_loop();
-  *has_victory_line = position.has_victory_line();
-
-  return position.winner();
-}
-
-void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
-                            int num_games, bool verbose) {
-  std::cerr
-    << "white: " << white_searcher->name()
-    << " red: " << red_searcher->name() << std::endl;
-
-  int white = 0;
-  int red = 0;
-
-  int loop_count = 0;
-  int victory_line_count = 0;
-
-  for (int i = 0; i < num_games; ++i) {
-    bool has_loop = false;
-    bool has_victory_line = false;
-    const int result = StartSelfGame(white_searcher, red_searcher, verbose,
-                                     &has_loop, &has_victory_line);
-    if (result > 0) {
-      ++red;
-    } else if (result < 0) {
-      ++white;
-    }
-
-    if (has_loop) {
-      ++loop_count;
-    }
-    if (has_victory_line) {
-      ++victory_line_count;
-    }
-
-    if (verbose || i == num_games - 1) {
-      std::cerr
-        << "white(" << white_searcher->name() << "): " << white << " "
-        << "red(" << red_searcher->name() << "): " << red << " "
-        << (white * 100.0 / (white + red)) << "% "
-        << "loop: " << loop_count << " "
-        << "victory line: " << victory_line_count << std::endl;
-    }
-  }
-}
-
 void StartTraxClient(Searcher* searcher) {
   assert(searcher != nullptr);
 
@@ -948,15 +857,110 @@ void StartTraxClient(Searcher* searcher) {
   }
 }
 
-std::vector<CommentedGame> ParseCommentedGames(const std::string& filename) {
+void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
+                   Game *game_result, bool verbose) {
+  assert(white_searcher != nullptr && red_searcher != nullptr);
+
+  game_result->Clear();
+  Position position;
+
+  for (int step = 0; !position.finished(); ++step) {
+    if (verbose) {
+      std::cerr << "Step " << step << ": ";
+    }
+    Move best_move;
+    Position next_position;
+    bool success = false;
+
+    if (position.red_to_move()) {
+      best_move = red_searcher->SearchBestMove(position);
+    } else {
+      best_move = white_searcher->SearchBestMove(position);
+    }
+
+    success = position.DoMove(best_move, &next_position);
+    if (!success) {
+      std::cerr << "searcher returned invalid move in self play." << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    position.Swap(&next_position);
+
+    game_result->moves.push_back(best_move);
+
+    if (verbose) {
+      std::cerr << best_move.notation() << std::endl;
+      position.Dump();
+      std::cerr << std::endl;
+    }
+  }
+
+  if (verbose) {
+    std::string result;
+    if (position.winner() > 0) {
+      result = "Red wins";
+    } else if (position.winner() < 0) {
+      result = "White wins";
+    } else {
+      result = "Tie";
+    }
+    std::cerr
+      << result << " in total "
+      << game_result->num_moves() << " steps. " << std::endl;
+  }
+
+  game_result->winner = position.winner();
+  game_result->winning_reason = position.winning_reason();
+}
+
+void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
+                            int num_games, bool verbose) {
+  std::cerr
+    << "white: " << white_searcher->name()
+    << " red: " << red_searcher->name() << std::endl;
+
+  int white = 0;
+  int red = 0;
+
+  int loop_count = 0;
+  int victory_line_count = 0;
+
+  for (int i = 0; i < num_games; ++i) {
+    Game game;
+    StartSelfGame(white_searcher, red_searcher, &game, verbose);
+    if (game.winner > 0) {
+      ++red;
+    } else if (game.winner < 0) {
+      ++white;
+    }
+
+    if (game.winning_reason == WINNING_REASON_LOOP) {
+      ++loop_count;
+    } else if (game.winning_reason == WINNING_REASON_LINE) {
+      ++victory_line_count;
+    }
+
+    if (verbose || i == num_games - 1) {
+      std::cerr
+        << "white(" << white_searcher->name() << "): " << white << " "
+        << "red(" << red_searcher->name() << "): " << red << " "
+        << (white * 100.0 / (white + red)) << "% "
+        << "loop: " << loop_count << " "
+        << "victory line: " << victory_line_count << std::endl;
+    }
+  }
+}
+
+void ParseCommentedGames(const std::string& filename,
+                         std::vector<Game> *games) {
+  games->clear();
+
   std::ifstream ifs(filename);
-
   std::string line;
-
-  std::vector<CommentedGame> games;
-  CommentedGame game;
-
+  Position position;
+  Game game;
   std::string game_kind;
+
+  // TODO(tetsui): This function is dirty.
 
   while (std::getline(ifs, line)) {
     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
@@ -965,14 +969,17 @@ std::vector<CommentedGame> ParseCommentedGames(const std::string& filename) {
     if (line[0] == '#') {
       if (!game.moves.empty()) {
         if (game_kind == "Trax") {
-          games.push_back(game);
+          games->push_back(game);
         }
-        game = CommentedGame();
+        game_kind = "";
+        position.Clear();
+        game.Clear();
       }
       continue;
     }
 
-    if (line == "8x8 Trax" || line == "Loop Trax" || line == "Trax") {
+    if (line == "8x8 Trax" || line == "8x8Trax" ||
+        line == "Loop Trax" || line == "Trax") {
       game_kind = line;
       continue;
     }
@@ -984,10 +991,31 @@ std::vector<CommentedGame> ParseCommentedGames(const std::string& filename) {
     // 0123456789012
     //   1 @0/   ; comment
     if (line[0] == ' ' && '0' <= line[2] && line[2] <= '9') {
-      std::string move;
-      move = line.substr(4, 6);
-      move.erase(std::remove(move.begin(), move.end(), ' '), move.end());
+      std::string notation = line.substr(4, 6);
+      notation.erase(std::remove(notation.begin(), notation.end(), ' '),
+                     notation.end());
+      notation.erase(std::remove(notation.begin(), notation.end(), ';'),
+                     notation.end());
+      notation.erase(std::remove(notation.begin(), notation.end(), ':'),
+                     notation.end());
+      if (notation == "Resign" || notation == "Time") {
+        game.winning_reason = WINNING_REASON_RESIGN;
+        // If the last player is red then white resigns so the winner is red.
+        game.winner = (game.num_moves() % 2 == 0 ? 1 : -1);
+        continue;
+      } else if (notation == "win") {
+        game.winning_reason = WINNING_REASON_RESIGN;
+        game.winner = (game.num_moves() % 2 == 0 ? -1 : 1);
+        continue;
+      }
+
+      Move move(notation, position);
       game.moves.push_back(move);
+
+      Position next_position;
+      position.DoMove(move, &next_position);
+      position.Swap(&next_position);
+
       game.comments.push_back("");
     }
 
@@ -1005,82 +1033,30 @@ std::vector<CommentedGame> ParseCommentedGames(const std::string& filename) {
 
   if (!game.moves.empty()) {
     if (game_kind == "Trax") {
-      games.push_back(game);
+      games->push_back(game);
     }
-  }
-  return games;
-}
-
-void DumpCommentedGame(const CommentedGame& game) {
-  Position position;
-  for (int i = 0; i < game.moves.size(); ++i) {
-    const std::string& move_notation = game.moves[i];
-    const std::string& comment = game.comments[i];
-
-    if (move_notation == "Resign" ||
-        move_notation == "win" ||
-        move_notation == "Time") {
-      // Resign.
-      break;
-    }
-
-    Move move(move_notation, position);
-    Position next_position;
-    if (!position.DoMove(move, &next_position)) {
-      std::cerr << "illegal move in commented game" << std::endl;
-      exit(EXIT_FAILURE);
-    }
-    position.Swap(&next_position);
-    position.Dump();
-    std::cerr << comment << std::endl;
   }
 }
 
-void CountMatchingMoves(const Game& game, Searcher *searcher,
-                        int *numerator, int *denominator,
-                        int *loop_count, int *victory_line_count) {
+int Game::CountMatchingMoves(Searcher *searcher) {
+  int match_count = 0;
+
   Position position;
+  for (Move actual_move : moves) {
+    Move best_move = searcher->SearchBestMove(position);
+    if (best_move == actual_move) {
+      ++match_count;
+    }
 
-  /*
-  ++*denominator;
-
-  if (searcher->SearchBestMove(position).notation() == game[0]) {
-    ++*numerator;
-  }
-  */
-
-  for (int i = 0; i < game.size(); ++i) {
-    Move move(game[i], position);
     Position next_position;
-    if (!position.DoMove(move, &next_position)) {
+    if (!position.DoMove(actual_move, &next_position)) {
       std::cerr << "illegal move in game" << std::endl;
       exit(EXIT_FAILURE);
     }
 
     position.Swap(&next_position);
     position.Dump();
-
-    if (position.finished()) {
-      if (position.has_loop()) {
-        ++*loop_count;
-      }
-      if (position.has_victory_line()) {
-        ++*victory_line_count;
-      }
-    }
-
-    if (i + 1 >= game.size() ||
-        game[i + 1] == "Resign" ||
-        game[i + 1] == "win" ||
-        game[i + 1] == "Time") {
-      break;
-    }
-
-    ++*denominator;
-
-    Move best_move = searcher->SearchBestMove(position);
-    if (best_move.notation() == game[i + 1]) {
-      ++*numerator;
-    }
   }
+
+  return match_count;
 }

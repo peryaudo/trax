@@ -237,18 +237,23 @@ TEST(TimerTest, Measure800Ms) {
 
 TEST(RandomSearcherTest, OneTime) {
   RandomSearcher random_searcher;
-  bool has_loop;
-  bool has_victory_line;
+  Game game;
   StartSelfGame(&random_searcher, &random_searcher,
-                /* verbose = */ false,
-                &has_loop,
-                &has_victory_line);
+                &game, /* verbose = */ false);
 }
 
 TEST(RandomSearcherTest, MultiTime) {
   RandomSearcher random_searcher;
   StartMultipleSelfGames(&random_searcher, &random_searcher,
                          /* num_games = */ 100, /* verbose = */ false);
+}
+
+TEST(ParseCommentedGameTest, Parse) {
+  std::vector<Game> games;
+  ParseCommentedGames("./vendor/commented/Comment.txt", &games);
+  // Number of games excluding 8x8 Trax and LoopTrax is 277.
+  // $ grep ^Trax vendor/commented/Comment.txt | wc -l
+  ASSERT_EQ(277, games.size());
 }
 
 // TODO(tetsui): Supply some real game data for unit test, like:

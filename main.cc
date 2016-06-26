@@ -236,31 +236,30 @@ int main(int argc, char *argv[]) {
     // within the given depth.)
     ShowPerft(FLAGS_depth);
   } else if (FLAGS_accuracy) {
-    Searcher *player = GetSearcherFromName(FLAGS_contest_player);
+    Searcher *searcher = GetSearcherFromName(FLAGS_contest_player);
 
-    std::vector<CommentedGame> games =
-      ParseCommentedGames(FLAGS_commented_games);
+    std::vector<Game> games;
+    ParseCommentedGames(FLAGS_commented_games, &games);
 
     int numerator = 0;
     int denominator = 0;
     int loop_count = 0;
     int victory_line_count = 0;
-    for (CommentedGame& game : games) {
-      CountMatchingMoves(game.moves, player,
-                         &numerator, &denominator,
-                         &loop_count, &victory_line_count);
-    }
-
-    double accuracy = numerator * 100.0 / denominator;
-
     int resigns_count = 0;
-    for (CommentedGame& game : games) {
-      if (game.moves.back() == "Resign" ||
-          game.moves.back() == "win" ||
-          game.moves.back() == "time") {
+    for (Game& game : games) {
+      numerator += game.CountMatchingMoves(searcher);
+      denominator += game.num_moves();
+
+      if (game.winning_reason == WINNING_REASON_LOOP) {
+        ++loop_count;
+      } else if (game.winning_reason == WINNING_REASON_LINE) {
+        ++victory_line_count;
+      } else if (game.winning_reason == WINNING_REASON_RESIGN) {
         ++resigns_count;
       }
     }
+
+    double accuracy = numerator * 100.0 / denominator;
 
     std::cerr << "Total: " << games.size() << std::endl;
     std::cerr << "Resigns: " << resigns_count << std::endl;
@@ -269,7 +268,7 @@ int main(int argc, char *argv[]) {
     std::cerr << "Accuracy: " << accuracy
       << "(" << numerator << "/" << denominator << ")" << std::endl;
 
-    delete player;
+    delete searcher;
   } else if (FLAGS_best_move) {
     Searcher *player = GetSearcherFromName(FLAGS_contest_player);
     ReadAndFindBestMove(player);

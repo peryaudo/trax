@@ -115,7 +115,7 @@ static const char kLargePieceNotations[][3][32] = {
 
 class Position;
 
-// Express a move.
+// Denote a move.
 struct Move {
   Move() : x(0), y(0), piece(PIECE_EMPTY) {
   }
@@ -138,6 +138,10 @@ struct Move {
   // Return true if the parsing is successful.
   bool Parse(const std::string& trax_notation,
              const Position& previous_position);
+
+  const bool operator==(const Move to) const {
+    return x == to.x && y == to.y && piece == to.piece;
+  }
 
   // Return Trax notation of the move.
   std::string notation() const;
@@ -167,6 +171,18 @@ struct ScoredMove {
   operator Move() const { return move; }
 };
 
+enum WinningReason {
+  WINNING_REASON_UNKNOWN = 0,
+  WINNING_REASON_LOOP,
+  WINNING_REASON_LINE,
+
+  // The game is draw because the board is full. Only possible in 8x8 trax.
+  WINNING_REASON_FULL,
+
+  // Only possible in human played games.
+  WINNING_REASON_RESIGN
+};
+
 // Integer hash of position. Can be used for transposition table, etc.
 // Needless to say, user must care about conflicts.
 using PositionHash = uint64_t;
@@ -174,7 +190,7 @@ using PositionHash = uint64_t;
 const PositionHash kPositionHashPrimeA = 100000007ULL;
 const PositionHash kPositionHashPrimeB = 100000037ULL;
 
-// Hold a board configuration, or Position.
+// Denote a board configuration, or Position.
 class Position {
  public:
   // Constructor to create empty Trax board.
@@ -250,6 +266,11 @@ class Position {
     std::swap(has_victory_line_, to->has_victory_line_);
   }
 
+  void Clear() {
+    Position position;
+    Swap(&position);
+  }
+
   // Debug output.
   void Dump() const;
 
@@ -295,8 +316,11 @@ class Position {
   // Length of the longest white line.
   int white_longest() const { return white_longest_; }
 
-  bool has_loop() const { return has_loop_; }
-  bool has_victory_line() const { return has_victory_line_; }
+  // TODO(tetsui): implement.
+  WinningReason winning_reason() const {
+    assert(false);
+    return WINNING_REASON_UNKNOWN;
+  }
 
  private:
   // Fill forced play pieces. Return true if placements are successful,
@@ -364,35 +388,58 @@ class Searcher {
   virtual std::string name() = 0;
 };
 
-// Return 1 if red is the winner.
-// Return -1 if white is the winner.
-// Return 0 if the game is draw (only happens in 8x8Trax.)
-int StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
-                  bool verbose,
-                  bool* has_loop, bool* has_victory_line);
+// Start Trax client which connects through stdin / stdout.
+void StartTraxClient(Searcher* searcher);
+
+// Uniformly denote both human played games and computer generated games.
+struct Game {
+  void Clear() {
+    moves.clear();
+    comments.clear();
+    winner = 0;
+    winning_reason = WINNING_REASON_UNKNOWN;
+  }
+
+  // void Dump();
+
+  // Count number of matching moves between the actual game and the searcher.
+  int CountMatchingMoves(Searcher *searcher);
+
+  // Continue the game whose WinningReason is WINNING_REASON_RESIGN using
+  // self play using the searcher and determine if the game is
+  // WINNING_REASON_LOOP or WINNING_REASON_LINE.
+  void ContinueBySearcher(Searcher *searcher);
+
+  int num_moves() { return moves.size(); }
+
+  // Moves.
+  std::vector<Move> moves;
+
+  // The size is zero if the game does not have comment,
+  // otherwise the size is the same as plays.
+  std::vector<std::string> comments;
+
+  // Return 1 if red is the winner.
+  // Return -1 if white is the winner.
+  // Return 0 if the game is draw (only happens in 8x8Trax.)
+  int winner;
+
+  // Winning reason such as loop or line.
+  WinningReason winning_reason;
+};
+
+// Start the self game between white_searcher and red_searcher and
+// return its result to game_result.
+void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
+                   Game *game_result, bool verbose = false);
 
 void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
                             int num_games, bool verbose = false);
 
-// Start Trax client which connects through stdin / stdout.
-void StartTraxClient(Searcher* searcher);
-
-using Game = std::vector<std::string>;
-
-// Game with commentary.
+// Parse commented games.
 // High quality commented game data can be obtained from
 // http://www.traxgame.com/games_comment.php .
-struct CommentedGame {
-  Game moves;
-  std::vector<std::string> comments;
-};
-
-std::vector<CommentedGame> ParseCommentedGames(const std::string& filename);
-
-void DumpCommentedGame(const CommentedGame& game);
-
-void CountMatchingMoves(const Game& game, Searcher *searcher,
-                        int *numerator, int *denominator,
-                        int *loop_count, int *victory_line_count);
+void ParseCommentedGames(const std::string& filename,
+                         std::vector<Game> *games);
 
 #endif  // TRAX_H_
