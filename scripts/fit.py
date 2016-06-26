@@ -41,4 +41,5 @@ for filename in fns:
 
     print "mse: %f" % mean_squared_error(orig, pred)
     print "sign accuracy: %f (%d/%d)" % (float(match) / (match + nomatch), match, match + nomatch)
+    print "corr: %f " % np.corrcoef(orig, pred)[0][1]
     print ""
