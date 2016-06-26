@@ -171,6 +171,7 @@ struct ScoredMove {
   operator Move() const { return move; }
 };
 
+// Reason of win.
 enum WinningReason {
   WINNING_REASON_UNKNOWN = 0,
   WINNING_REASON_LOOP,
@@ -181,6 +182,29 @@ enum WinningReason {
 
   // Only possible in human played games.
   WINNING_REASON_RESIGN
+};
+
+// Denotes decompoesed line information returned by Position::EnumerateLines().
+struct Line {
+  Line() : is_red(false), endpoint_distance(0) {
+    edge_distances[0] = 0;
+    edge_distances[1] = 0;
+  }
+
+  Line(const std::pair<int, int>& endpoint_a,
+       const std::pair<int, int>& endpoint_b,
+       bool is_red,
+       const Position& position);
+
+  bool is_mate() const {
+    return (endpoint_distance <= 2 ||
+            edge_distances[0] <= 1 ||
+            edge_distances[1] <= 1);
+  }
+
+  bool is_red;
+  int edge_distances[2];
+  int endpoint_distance;
 };
 
 // Integer hash of position. Can be used for transposition table, etc.
@@ -251,6 +275,8 @@ class Position {
     }
     return result;
   }
+
+  std::vector<Line> EnumerateLines() const;
 
   // Swap
   void Swap(Position* to) {
@@ -338,6 +364,10 @@ class Position {
   // constitutes victory line or loop, i.e. the given color wins.
   bool TraceVictoryLineOrLoop(int start_x, int start_y, bool red_line);
 
+  void TraceLineToEndpoints(int x, int y, bool red_line,
+                            std::pair<int, int> *endpoint_a,
+                            std::pair<int, int> *endpoint_b) const;
+
   // Reference access to board is only allowed from other instances of the
   // class.
   Piece& at(int x, int y) {
@@ -393,6 +423,13 @@ void StartTraxClient(Searcher* searcher);
 
 // Uniformly denote both human played games and computer generated games.
 struct Game {
+  Game()
+      : moves()
+      , comments()
+      , winner(0)
+      , winning_reason(WINNING_REASON_UNKNOWN) {
+  }
+
   void Clear() {
     moves.clear();
     comments.clear();
@@ -408,7 +445,7 @@ struct Game {
   // Continue the game whose WinningReason is WINNING_REASON_RESIGN using
   // self play using the searcher and determine if the game is
   // WINNING_REASON_LOOP or WINNING_REASON_LINE.
-  void ContinueBySearcher(Searcher *searcher);
+  // void ContinueBySearcher(Searcher *searcher);
 
   int num_moves() { return moves.size(); }
 

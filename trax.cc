@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <set>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -432,6 +433,57 @@ PieceSet Position::GetPossiblePieces(int x, int y) const {
   }
 }
 
+std::vector<Line> Position::EnumerateLines() const {
+  std::vector<Line> lines;
+  if (finished()) {
+    return lines;
+  }
+
+  std::set<std::tuple<std::pair<int, int>, std::pair<int, int>, bool>> traced;
+
+  for (int i_x = 0; i_x < max_x_; ++i_x) {
+    for (int j_y = 0; j_y < max_y_; ++j_y) {
+      if (at(i_x, j_y) == PIECE_EMPTY) {
+        continue;
+      }
+
+      bool is_edge = false;
+      for (int k = 0; k < 4; ++k) {
+        const int nx = i_x + kDx[k];
+        const int ny = j_y + kDy[k];
+        if (at(nx, ny) == PIECE_EMPTY) {
+          is_edge = true;
+          break;
+        }
+      }
+
+      if (!is_edge) {
+        continue;
+      }
+
+      for (int k_red = 0; k_red < 2; ++k_red) {
+        bool is_red = static_cast<bool>(k_red);
+        std::pair<int, int> endpoint_a, endpoint_b;
+        TraceLineToEndpoints(i_x, j_y, is_red, &endpoint_a, &endpoint_b);
+        if (endpoint_a > endpoint_b) {
+          std::swap(endpoint_a, endpoint_b);
+        }
+        if (traced.count(make_tuple(endpoint_a, endpoint_b, is_red))) {
+          continue;
+        }
+        traced.insert(make_tuple(endpoint_a, endpoint_b, is_red));
+
+        Line line(endpoint_a, endpoint_b, is_red, *this
+            /* and sets to calc endpoint distance */);
+
+        lines.push_back(line);
+      }
+    }
+  }
+
+  return lines;
+}
+
 void Position::Dump() const {
   if (board_ != nullptr) {
     if (FLAGS_enable_pretty_dump) {
@@ -750,6 +802,61 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
   }
 
   return false;
+}
+
+void Position::TraceLineToEndpoints(int x, int y, bool red_line,
+                                    std::pair<int, int> *endpoint_a,
+                                    std::pair<int, int> *endpoint_b) const {
+  const char traced_color = red_line ? 'R' : 'W';
+
+  bool first = true;
+  for (int i = 0; i < 4; ++i) {
+    Piece piece = at(x, y);
+    if (kPieceColors[piece][i] != traced_color) {
+      continue;
+    }
+
+    int nx = x + kDx[i];
+    int ny = y + kDy[i];
+    int previous_direction = (i + 2) & 3;
+    while (at(nx, ny) != PIECE_EMPTY) {
+      // Tracing the line.
+      const int next_direction =
+        g_track_direction_table[at(nx, ny)][previous_direction];
+
+      nx += kDx[next_direction];
+      ny += kDy[next_direction];
+      previous_direction = (next_direction + 2) & 3;
+    }
+
+    if (first) {
+      *endpoint_a = std::make_pair(nx, ny);
+    } else {
+      *endpoint_b = std::make_pair(nx, ny);
+    }
+
+    first = false;
+  }
+}
+
+Line::Line(const std::pair<int, int>& endpoint_a,
+           const std::pair<int, int>& endpoint_b,
+           bool is_red,
+           const Position& position)
+    : is_red(is_red) {
+  int lowers[2] = {endpoint_a.first, endpoint_b.first};
+  int uppers[2] = {endpoint_a.second, endpoint_b.second};
+  int maxs[2] = {std::max(position.max_x(), 8), std::max(position.max_y(), 8)};
+  for (int i = 0; i < 2; ++i) {
+    if (lowers[i] > uppers[i]) {
+      std::swap(lowers[i], uppers[i]);
+    }
+    edge_distances[i] = maxs[i] - (uppers[i] - 1) + (lowers[i] + 1);
+  }
+
+  // TODO(tetsui): This is inaccurate.
+  endpoint_distance = (abs(endpoint_b.first - endpoint_a.first) +
+                       abs(endpoint_b.second - endpoint_a.second));
 }
 
 void StartTraxClient(Searcher* searcher) {
