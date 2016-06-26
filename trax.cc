@@ -1196,6 +1196,10 @@ void ParseCommentedGames(const std::string& filename,
       position.DoMove(move, &next_position);
       position.Swap(&next_position);
 
+      if (position.finished()) {
+        game.winner = position.winner();
+      }
+
       game.comments.push_back("");
     }
 
