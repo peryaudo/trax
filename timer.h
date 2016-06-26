@@ -5,6 +5,8 @@
 
 #include <cstdint>
 
+#include <unistd.h>
+
 #if defined __MACH__
 #include <mach/mach_time.h>
 #elif defined _POSIX_MONOTONIC_CLOCK
