@@ -198,6 +198,14 @@ void ShowPosition() {
   }
 }
 
+double Average(const std::vector<double>& v) {
+  double ans = 0.0;
+  for (double x : v) {
+    ans += x;
+  }
+  return ans / v.size();
+}
+
 }  // namespace
 
 int main(int argc, char *argv[]) {
@@ -274,6 +282,20 @@ int main(int argc, char *argv[]) {
   } else if (FLAGS_dump_factors) {
     std::vector<Game> games;
     ParseCommentedGames(FLAGS_commented_games, &games);
+    NegaMaxSearcher<LeafAverageEvaluator> searcher(1);
+    for (Game& game : games) {
+      game.ContinueBySearcher(&searcher);
+    }
+#if 0
+    for (int i = 0; i < 1000; ++i) {
+      SimpleSearcher<LeafAverageEvaluator> searcher1;
+      SimpleSearcher<LeafAverageEvaluator> searcher2;
+      // NegaMaxSearcher<LeafAverageEvaluator> searcher2(1);
+      Game game;
+      StartSelfGame(&searcher1, &searcher2, &game, true);
+      games.push_back(game);
+    }
+#endif
 
     std::cout << "step,winner,endpoint_factor,edge_factor" << std::endl;
 
@@ -300,11 +322,13 @@ int main(int argc, char *argv[]) {
         double edge_factor = 0.0;
         std::vector<Line> lines;
         position.EnumerateLines(&lines);
-#if 1
+#if 0
         for (Line& line : lines) {
           double endpoint = 1.0 / (1.0 + line.endpoint_distance);
           double edge = (1.0 / (1.0 + line.edge_distances[0]) +
                          1.0 / (1.0 + line.edge_distances[1]));
+          // double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
+          //                        1.0 / (1.0 + line.edge_distances[1]));
           if (!line.is_red) {
             endpoint *= -1.0;
             edge *= -1.0;
@@ -312,13 +336,15 @@ int main(int argc, char *argv[]) {
           endpoint_factor += endpoint;
           edge_factor += edge;
         }
-#else
+#elif 0
         std::vector<double> endpoints;
         std::vector<double> edges;
         for (Line& line : lines) {
           double endpoint = 1.0 / (1.0 + line.endpoint_distance);
-          double edge = (1.0 / (1.0 + line.edge_distances[0]) +
-                         1.0 / (1.0 + line.edge_distances[1]));
+          // double edge = (1.0 / (1.0 + line.edge_distances[0]) +
+          //                1.0 / (1.0 + line.edge_distances[1]));
+          double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
+                                 1.0 / (1.0 + line.edge_distances[1]));
           if (!line.is_red) {
             endpoint *= -1.0;
             edge *= -1.0;
@@ -332,6 +358,29 @@ int main(int argc, char *argv[]) {
         edge_factor =
           *std::max_element(edges.begin(), edges.end()) +
           *std::min_element(edges.begin(), edges.end());
+#else
+        std::vector<double> red_endpoints, white_endpoints;
+        std::vector<double> red_edges, white_edges;
+        for (Line& line : lines) {
+          double endpoint = 1.0 / (1.0 + line.endpoint_distance);
+          // double edge = (1.0 / (1.0 + line.edge_distances[0]) +
+          //                1.0 / (1.0 + line.edge_distances[1]));
+          double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
+                                 1.0 / (1.0 + line.edge_distances[1]));
+          if (!line.is_red) {
+            endpoint *= -1.0;
+            edge *= -1.0;
+          }
+          if (line.is_red) {
+            red_endpoints.push_back(endpoint);
+            red_edges.push_back(edge);
+          } else {
+            white_endpoints.push_back(endpoint);
+            white_edges.push_back(edge);
+          }
+        }
+        endpoint_factor = Average(red_endpoints) + Average(white_endpoints);
+        edge_factor = Average(red_edges) + Average(white_edges);
 #endif
 
         std::cout

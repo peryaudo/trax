@@ -451,7 +451,7 @@ struct Game {
   // Continue the game whose WinningReason is WINNING_REASON_RESIGN using
   // self play using the searcher and determine if the game is
   // WINNING_REASON_LOOP or WINNING_REASON_LINE.
-  // void ContinueBySearcher(Searcher *searcher);
+  void ContinueBySearcher(Searcher *searcher);
 
   int num_moves() { return moves.size(); }
 

@@ -1244,3 +1244,33 @@ int Game::CountMatchingMoves(Searcher *searcher) {
 
   return match_count;
 }
+
+
+void Game::ContinueBySearcher(Searcher *searcher) {
+  Position position;
+  for (Move actual_move : moves) {
+    Position next_position;
+    if (!position.DoMove(actual_move, &next_position)) {
+      std::cerr << "illegal move in game" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+
+    position.Swap(&next_position);
+  }
+
+  while (!position.finished()) {
+    Move best_move = searcher->SearchBestMove(position);
+    moves.push_back(best_move);
+    if (!comments.empty()) {
+      comments.push_back("");
+    }
+
+    Position next_position;
+    position.DoMove(best_move, &next_position);
+    position.Swap(&next_position);
+    position.Dump();
+  }
+
+  winner = position.winner();
+  winning_reason = position.winning_reason();
+}
