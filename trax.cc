@@ -440,7 +440,7 @@ std::vector<Line> Position::EnumerateLines() const {
     return lines;
   }
 
-  std::map<std::pair<int, int>, int> edge_clockwise, edge_anticlockwise;
+  std::map<std::pair<int, int>, int> indexed_edges;
 
   std::set<std::tuple<std::pair<int, int>, std::pair<int, int>, bool>> traced;
 
@@ -457,11 +457,8 @@ std::vector<Line> Position::EnumerateLines() const {
         if (at(nx, ny) == PIECE_EMPTY) {
           is_edge = true;
 
-          if (edge_clockwise.empty() && edge_anticlockwise.empty()) {
-            TraceAndIndexEdges(nx, ny, /* clockwise = */ true,
-                               &edge_clockwise);
-            TraceAndIndexEdges(nx, ny, /* clockwise = */ false,
-                               &edge_anticlockwise);
+          if (indexed_edges.empty()) {
+            TraceAndIndexEdges(nx, ny, &indexed_edges);
           }
           break;
         }
@@ -483,8 +480,7 @@ std::vector<Line> Position::EnumerateLines() const {
         }
         traced.insert(make_tuple(endpoint_a, endpoint_b, is_red));
 
-        Line line(endpoint_a, endpoint_b, is_red, *this,
-                  edge_clockwise, edge_anticlockwise);
+        Line line(endpoint_a, endpoint_b, is_red, *this, indexed_edges);
 
         lines.push_back(line);
       }
@@ -849,12 +845,72 @@ void Position::TraceLineToEndpoints(int x, int y, bool red_line,
   }
 }
 
+void Position::TraceAndIndexEdges(
+    int start_x, int start_y,
+    std::map<std::pair<int, int>, int> *indexed_edges) const {
+  int x = start_x;
+  int y = start_y;
+  int previous_direction = -1;
+  for (int i = 0; i < 4; ++i) {
+    // Find these directions:
+    //
+    //   ->
+    // P P P
+    //
+    // or
+    //
+    //     P
+    //   ^ P
+    // P P P
+    //
+    // or
+    //
+    // > 
+    //   P P P
+    //   P
+    //   P
+    //
+    // (P are pieces.)
+    //
+    // Piece in the front is empty while piece on the right side is not empty.
+    if (at(x + kDx[i], y + kDy[i]) == PIECE_EMPTY &&
+        at(x + kDx[(i - 1 + 4) & 3],
+           y + kDy[(i - 1 + 4) & 3]) != PIECE_EMPTY) {
+      previous_direction = i;
+      break;
+    }
+  }
+
+  assert(previous_direction >= 0);
+
+  while (true) {
+    indexed_edges->insert(std::make_pair(std::make_pair(x, y),
+                                         indexed_edges->size()));
+
+    // Trace in clockwise order.
+    for (int i = -1; i < 3; ++i) {
+      const int next_direction = (previous_direction + i + 4) & 3;
+      const int nx = x + kDx[next_direction];
+      const int ny = y + kDy[next_direction];
+      if (at(nx, ny) == PIECE_EMPTY) {
+        x = nx;
+        y = ny;
+        previous_direction = next_direction;
+        break;
+      }
+    }
+
+    if (x == start_x && y == start_y) {
+      break;
+    }
+  }
+}
+
 Line::Line(const std::pair<int, int>& endpoint_a,
            const std::pair<int, int>& endpoint_b,
            bool is_red,
            const Position& position,
-           const std::map<std::pair<int, int>, int>& edge_clockwise,
-           const std::map<std::pair<int, int>, int>& edge_anticlockwise)
+           const std::map<std::pair<int, int>, int>& indexed_edges)
     : is_red(is_red) {
   int lowers[2] = {endpoint_a.first, endpoint_b.first};
   int uppers[2] = {endpoint_a.second, endpoint_b.second};
@@ -866,10 +922,16 @@ Line::Line(const std::pair<int, int>& endpoint_a,
     edge_distances[i] = maxs[i] - (uppers[i] - 1) + (lowers[i] + 1);
   }
 
+  int lower_index = indexed_edges.find(endpoint_a)->second;
+  int upper_index = indexed_edges.find(endpoint_b)->second;
+  if (lower_index > upper_index) {
+    std::swap(lower_index, upper_index);
+  }
+
   endpoint_distance =
-    std::max(
-        abs(edge_clockwise[endpoint_a] - edge_clockwise[endpoint_b]),
-        abs(edge_anticlockwise[endpoint_a] - edge_anticlockwise[endpoint_b]));
+    std::min(
+        upper_index - lower_index,
+        lower_index + static_cast<int>(indexed_edges.size()) - upper_index);
 }
 
 void StartTraxClient(Searcher* searcher) {

@@ -196,8 +196,7 @@ struct Line {
        const std::pair<int, int>& endpoint_b,
        bool is_red,
        const Position& position,
-       const std::map<std::pair<int, int>, int>& edge_clockwise,
-       const std::map<std::pair<int, int>, int>& edge_anticlockwise);
+       const std::map<std::pair<int, int>, int>& indexed_edges);
 
   bool is_mate() const {
     return (endpoint_distance <= 2 ||
@@ -372,7 +371,7 @@ class Position {
                             std::pair<int, int> *endpoint_b) const;
 
   void TraceAndIndexEdges(
-      int start_x, int start_y, bool clockwise,
+      int start_x, int start_y,
       std::map<std::pair<int, int>, int> *indexed_edges) const;
 
   // Reference access to board is only allowed from other instances of the
