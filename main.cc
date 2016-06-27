@@ -37,7 +37,7 @@ DEFINE_string(white, "simple-la", "Searcher name of white player (first)");
 
 DEFINE_string(red, "negamax1-la", "Searcher name of red player (second)");
 
-DEFINE_string(contest_player, "negamax1-la",
+DEFINE_string(contest_player, "iter10-fe",
               "Searcher name of contest client player");
 
 DEFINE_bool(silent, false, "Self play silently.");
