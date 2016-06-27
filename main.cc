@@ -73,6 +73,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<LeafAverageEvaluator>(1, true);
   } else if (name == "negamax2-la") {
     return new NegaMaxSearcher<LeafAverageEvaluator>(2);
+  } else if (name == "iter10-la") {
+    return new NegaMaxSearcher<LeafAverageEvaluator>(10, true);
   } else if (name == "negamax1-mc") {
     return new NegaMaxSearcher<MonteCarloEvaluator>(1);
   } else if (name == "negamax2-mc") {
@@ -121,6 +123,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<FactorEvaluator>(1);
   } else if (name == "iter1-fe") {
     return new NegaMaxSearcher<FactorEvaluator>(1, true);
+  } else if (name == "iter10-fe") {
+    return new NegaMaxSearcher<FactorEvaluator>(10, true);
   } else if (name == "negamax2-fe") {
     return new NegaMaxSearcher<FactorEvaluator>(2);
   } else if (name == "negamax3-fe") {
