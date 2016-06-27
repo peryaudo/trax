@@ -215,6 +215,9 @@ template Move SimpleSearcher<LongestLineEvaluator>::SearchBestMove(
 template Move SimpleSearcher<CombinedEvaluator>::SearchBestMove(
     const Position& position);
 
+template Move SimpleSearcher<FactorEvaluator>::SearchBestMove(
+    const Position& position);
+
 template Move NegaMaxSearcher<NoneEvaluator>::SearchBestMove(
     const Position& position);
 template int NegaMaxSearcher<NoneEvaluator>::NegaMax(
@@ -243,4 +246,9 @@ template int NegaMaxSearcher<LongestLineEvaluator>::NegaMax(
 template Move NegaMaxSearcher<CombinedEvaluator>::SearchBestMove(
     const Position& position);
 template int NegaMaxSearcher<CombinedEvaluator>::NegaMax(
+    const Position& position, int depth, int alpha, int beta);
+
+template Move NegaMaxSearcher<FactorEvaluator>::SearchBestMove(
+    const Position& position);
+template int NegaMaxSearcher<FactorEvaluator>::NegaMax(
     const Position& position, int depth, int alpha, int beta);

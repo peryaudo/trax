@@ -26,7 +26,7 @@ for filename in fns:
         # model = svm.SVR(kernel='rbf')
         model.fit(X_train, y_train)
 
-        # print model.coef_
+        print model.coef_
 
         origg = list(y_test)
         predd = list(model.predict(X_test))
