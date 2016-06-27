@@ -282,11 +282,11 @@ int main(int argc, char *argv[]) {
   } else if (FLAGS_dump_factors) {
     std::vector<Game> games;
     ParseCommentedGames(FLAGS_commented_games, &games);
+#if 0
     NegaMaxSearcher<LeafAverageEvaluator> searcher(1);
     for (Game& game : games) {
       game.ContinueBySearcher(&searcher);
     }
-#if 0
     for (int i = 0; i < 1000; ++i) {
       SimpleSearcher<LeafAverageEvaluator> searcher1;
       SimpleSearcher<LeafAverageEvaluator> searcher2;
@@ -322,8 +322,10 @@ int main(int argc, char *argv[]) {
         double edge_factor = 0.0;
         std::vector<Line> lines;
         position.EnumerateLines(&lines);
-#if 0
+#if 1
         for (Line& line : lines) {
+          // double endpoint = line.endpoint_distance;
+          // double edge = line.edge_distances[0] + line.edge_distances[1];
           double endpoint = 1.0 / (1.0 + line.endpoint_distance);
           double edge = (1.0 / (1.0 + line.edge_distances[0]) +
                          1.0 / (1.0 + line.edge_distances[1]));
