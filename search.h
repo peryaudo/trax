@@ -62,7 +62,10 @@ struct TranspositionTableEntry {
 template <typename Evaluator>
 class NegaMaxSearcher : public Searcher {
  public:
-  explicit NegaMaxSearcher(int max_depth) : max_depth_(max_depth) {
+  explicit NegaMaxSearcher(int max_depth, bool iterative = false)
+      : max_depth_(max_depth)
+      , current_max_depth_(0)
+      , iterative_(iterative) {
   }
 
   virtual Move SearchBestMove(const Position& position);
@@ -79,6 +82,8 @@ class NegaMaxSearcher : public Searcher {
               int depth, int alpha = -kInf, int beta = kInf);
 
   int max_depth_;
+  int current_max_depth_;
+  bool iterative_;
   std::unordered_map<PositionHash,
                      TranspositionTableEntry> transposition_table_;
 };

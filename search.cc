@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "./timer.h"
 #include "./trax.h"
 
 
@@ -73,38 +74,95 @@ template<typename Evaluator>
 Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
   assert(!position.finished());
 
-  int best_score = -kInf;
-  std::vector<ScoredMove> moves;
+  if (iterative_) {
+    Timer timer(/* timeout_ms = */ 800);
 
-  for (Move move : position.GenerateMoves()) {
-    Position next_position;
-    if (!position.DoMove(move, &next_position)) {
-      // This is illegal move.
-      continue;
+    std::vector<Move> possible_moves = position.GenerateMoves();
+
+    Move best_move;
+    for (current_max_depth_ = 0;
+         current_max_depth_ <= max_depth_; ++current_max_depth_) {
+      transposition_table_.clear();
+      int best_score = -kInf;
+      std::vector<ScoredMove> moves;
+
+      bool aborted = false;
+
+      for (Move move : possible_moves) {
+        Position next_position;
+        if (!position.DoMove(move, &next_position)) {
+          // This is illegal move.
+          continue;
+        }
+
+        // next_position.red_to_move() == !position.red_to_move() holds.
+        // NegaMax() evaluates from the perspective of next_position.
+        // Therefore, position that is good for next_position.red_to_move() is
+        // bad for position.red_to_move().
+        const int score = -NegaMax(next_position, 0);
+
+        best_score = std::max(best_score, score);
+        moves.emplace_back(score, move);
+
+        if (current_max_depth_ > 0 && timer.CheckTimeout()) {
+          aborted = true;
+          break;
+        }
+      }
+
+      if (aborted) {
+        // Drop the result of that iteration.
+        break;
+      }
+
+      std::vector<Move> best_moves;
+      for (ScoredMove& move : moves) {
+        if (move.score == best_score) {
+          best_moves.push_back(move);
+        }
+      }
+
+      assert(best_moves.size() > 0);
+      best_move = best_moves[Random() % best_moves.size()];
     }
 
-    // next_position.red_to_move() == !position.red_to_move() holds.
-    // NegaMax() evaluates from the perspective of next_position.
-    // Therefore, position that is good for next_position.red_to_move() is
-    // bad for position.red_to_move().
-    const int score = -NegaMax(next_position, 0);
+    return best_move;
+  } else {
+    current_max_depth_ = max_depth_;
 
-    best_score = std::max(best_score, score);
-    moves.emplace_back(score, move);
+    int best_score = -kInf;
+    std::vector<ScoredMove> moves;
+
+    for (Move move : position.GenerateMoves()) {
+      Position next_position;
+      if (!position.DoMove(move, &next_position)) {
+        // This is illegal move.
+        continue;
+      }
+
+      // next_position.red_to_move() == !position.red_to_move() holds.
+      // NegaMax() evaluates from the perspective of next_position.
+      // Therefore, position that is good for next_position.red_to_move() is
+      // bad for position.red_to_move().
+      const int score = -NegaMax(next_position, 0);
+
+      best_score = std::max(best_score, score);
+      moves.emplace_back(score, move);
 #if 0
-    std::cerr << score << " " << move.notation() << std::endl;
+      std::cerr << score << " " << move.notation() << std::endl;
 #endif
-  }
-
-  std::vector<Move> best_moves;
-  for (ScoredMove& move : moves) {
-    if (move.score == best_score) {
-      best_moves.push_back(move);
     }
-  }
 
-  assert(best_moves.size() > 0);
-  return best_moves[Random() % best_moves.size()];
+    std::vector<Move> best_moves;
+    for (ScoredMove& move : moves) {
+      if (move.score == best_score) {
+        best_moves.push_back(move);
+      }
+    }
+
+    assert(best_moves.size() > 0);
+    return best_moves[Random() % best_moves.size()];
+  }
 }
 
 // Score the move from the perspective of position.red_to_move().
@@ -153,7 +211,7 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
 
   int best_score = -kInf;
 
-  if (position.finished() || depth >= max_depth_) {
+  if (position.finished() || depth >= current_max_depth_) {
     // Evaluate the position, from the perspective of position.red_to_move(),
     // and this is same as NegaMax().
     // Thus, there is no need for sign flip.
