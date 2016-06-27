@@ -366,6 +366,23 @@ class CombinedEvaluator {
   static std::string name() { return "CombinedEvaluator"; }
 };
 
+
+namespace {
+
+int Average(const std::vector<int>& v) {
+  if (v.size() == 0) {
+    return 0;
+  }
+
+  int64_t ans = 0;
+  for (int x : v) {
+    ans += x;
+  }
+  return static_cast<int>(ans / static_cast<int64_t>(v.size()));
+}
+
+}  // namespace
+
 class FactorEvaluator {
  public:
   // Evaluate the position, from the perspective of position.red_to_move().
@@ -388,7 +405,38 @@ class FactorEvaluator {
     std::vector<Line> lines;
     position.EnumerateLines(&lines);
 
+#if 0
+    int red_mates = 0;
+    int white_mates = 0;
+    for (Line& line : lines) {
+      if (line.is_mate()) {
+        if (line.is_red) {
+          ++red_mates;
+        } else {
+          ++white_mates;
+        }
+      }
+    }
+
+    if (position.red_to_move()) {
+      if (red_mates > 0) {
+        return kInf / 10 * 9;
+      }
+      if (white_mates >= 2) {
+        return -kInf / 10 * 9;
+      }
+    } else {
+      if (white_mates > 0) {
+        return kInf / 10 * 9;
+      }
+      if (red_mates >= 2) {
+        return -kInf / 10 * 9;
+      }
+    }
+#endif
+
     const int unit = kInf / 100;
+#if 1
     int endpoint_factor = 0;
     int edge_factor = 0;
     for (Line& line : lines) {
@@ -405,6 +453,30 @@ class FactorEvaluator {
     }
 
     int score = endpoint_factor + (-edge_factor);
+#else
+    std::vector<int> red_endpoints, white_endpoints;
+    std::vector<int> red_edges, white_edges;
+    for (Line& line : lines) {
+      int endpoint = unit / (1 + line.endpoint_distance);
+      int edge = std::max(
+          unit / (1 + line.edge_distances[0]),
+          unit / (1 + line.edge_distances[1]));
+      if (!line.is_red) {
+        endpoint *= -1;
+        edge *= -1;
+      }
+      if (line.is_red) {
+        red_endpoints.push_back(endpoint);
+        red_edges.push_back(edge);
+      } else {
+        white_endpoints.push_back(endpoint);
+        white_edges.push_back(edge);
+      }
+    }
+    int endpoint_factor = Average(red_endpoints) + Average(white_endpoints);
+    int edge_factor = Average(red_edges) + Average(white_edges);
+    int score = 4 * endpoint_factor + 13 * edge_factor;
+#endif
 
     if (!position.red_to_move()) {
       score *= -1;
