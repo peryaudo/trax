@@ -482,6 +482,12 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
         }
         traced.insert(make_tuple(endpoint_a, endpoint_b, is_red));
 
+        if (!indexed_edges.count(endpoint_a) ||
+            !indexed_edges.count(endpoint_b)) {
+          // It is possible that the board has empty region inside.
+          // We ignore these cases for now.
+          continue;
+        }
         Line line(endpoint_a, endpoint_b, is_red, *this, indexed_edges);
 
         lines->push_back(line);
@@ -922,6 +928,8 @@ Line::Line(const std::pair<int, int>& endpoint_a,
     edge_distances[i] = maxs[i] - 1 - (uppers[i] - 1) + (lowers[i] + 1);
   }
 
+  assert(indexed_edges.find(endpoint_a) != indexed_edges.end());
+  assert(indexed_edges.find(endpoint_b) != indexed_edges.end());
   int lower_index = indexed_edges.find(endpoint_a)->second;
   int upper_index = indexed_edges.find(endpoint_b)->second;
   if (lower_index > upper_index) {

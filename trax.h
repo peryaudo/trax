@@ -346,7 +346,7 @@ class Position {
 
   // TODO(tetsui): implement.
   WinningReason winning_reason() const {
-    assert(false);
+    // assert(false);
     return WINNING_REASON_UNKNOWN;
   }
 
