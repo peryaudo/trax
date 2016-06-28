@@ -213,8 +213,7 @@ struct Line {
 // Needless to say, user must care about conflicts.
 using PositionHash = uint64_t;
 
-const PositionHash kPositionHashPrimeA = 100000007ULL;
-const PositionHash kPositionHashPrimeB = 100000037ULL;
+const PositionHash kPositionHashPrime = 100000007ULL;
 
 // Denote a board configuration, or Position.
 class Position {
@@ -261,17 +260,17 @@ class Position {
 
   // Hash current board configuration.
   // Current implementation uses simple rolling hash.
-  PositionHash Hash(PositionHash hash_prime) const {
+  PositionHash Hash() const {
     PositionHash result = 0;
     result += red_to_move_;
-    result *= hash_prime;
+    result *= kPositionHashPrime;
     result += max_x_;
-    result *= hash_prime;
+    result *= kPositionHashPrime;
     result += max_y_;
 
     for (int i_x = 0; i_x < max_x_; ++i_x) {
       for (int j_y = 0; j_y < max_y_; ++j_y) {
-        result *= hash_prime;
+        result *= kPositionHashPrime;
         result += at(i_x, j_y);
       }
     }

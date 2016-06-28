@@ -36,7 +36,7 @@ class SimpleSearcher : public Searcher {
 
 // Transposition Table boundary flags for combination with alpha-beta pruning.
 enum TranspositionTableBound {
-  TRANSPOSITION_TABLE_LOWER_BOUND,
+  TRANSPOSITION_TABLE_LOWER_BOUND = 0,
   TRANSPOSITION_TABLE_UPPER_BOUND,
   TRANSPOSITION_TABLE_EXACT
 };
@@ -51,10 +51,9 @@ enum TranspositionTableBound {
 // https://groups.google.com/forum/#!msg/
 // rec.games.chess.computer/p8GbiiLjp0o/81vZ3czsthIJ
 struct TranspositionTableEntry {
-  int score;
-  int depth;
-  TranspositionTableBound bound;
-  PositionHash hash_b;
+  int score : 32;
+  int depth : 30;
+  TranspositionTableBound bound : 2;
 };
 
 // Searcher that selects the best move by using the given evaluator and NegaMax
