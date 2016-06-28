@@ -12,9 +12,6 @@
 #include "./trax.h"
 
 
-DEFINE_bool(enable_transposition_table, true, "Enable Transposition Table.");
-
-
 int g_num_monte_carlo_trial = 100;
 
 
@@ -174,32 +171,30 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
 
   TranspositionTableEntry* entry = nullptr;
 
-  if (FLAGS_enable_transposition_table) {
-    // At that point of time, we don't care about conflicts.
-    const PositionHash hash = position.Hash();
+  // At that point of time, we don't care about conflicts.
+  const PositionHash hash = position.Hash();
 
-    auto it = transposition_table_.find(hash);
-    if (it != transposition_table_.end()) {
-      entry = &it->second;
+  auto it = transposition_table_.find(hash);
+  if (it != transposition_table_.end()) {
+    entry = &it->second;
+  }
+
+  if (entry != nullptr && entry->depth >= depth) {
+    if (entry->bound == TRANSPOSITION_TABLE_EXACT) {
+      return entry->score;
+    } else if (entry->bound == TRANSPOSITION_TABLE_LOWER_BOUND) {
+      alpha = std::max(alpha, entry->score);
+    } else if (entry->bound == TRANSPOSITION_TABLE_UPPER_BOUND) {
+      beta = std::min(beta, entry->score);
     }
 
-    if (entry != nullptr && entry->depth >= depth) {
-      if (entry->bound == TRANSPOSITION_TABLE_EXACT) {
-        return entry->score;
-      } else if (entry->bound == TRANSPOSITION_TABLE_LOWER_BOUND) {
-        alpha = std::max(alpha, entry->score);
-      } else if (entry->bound == TRANSPOSITION_TABLE_UPPER_BOUND) {
-        beta = std::min(beta, entry->score);
-      }
-
-      if (alpha >= beta) {
-        return entry->score;
-      }
+    if (alpha >= beta) {
+      return entry->score;
     }
+  }
 
-    if (entry == nullptr) {
-      entry = &transposition_table_[hash];
-    }
+  if (entry == nullptr) {
+    entry = &transposition_table_[hash];
   }
 
   assert(depth <= max_depth_);
@@ -233,18 +228,16 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
     }
   }
 
-  if (FLAGS_enable_transposition_table) {
-    assert(entry != nullptr);
+  assert(entry != nullptr);
 
-    entry->score = best_score;
-    entry->depth = depth;
-    if (best_score <= original_alpha) {
-      entry->bound = TRANSPOSITION_TABLE_UPPER_BOUND;
-    } else if (best_score >= beta) {
-      entry->bound = TRANSPOSITION_TABLE_LOWER_BOUND;
-    } else {
-      entry->bound = TRANSPOSITION_TABLE_EXACT;
-    }
+  entry->score = best_score;
+  entry->depth = depth;
+  if (best_score <= original_alpha) {
+    entry->bound = TRANSPOSITION_TABLE_UPPER_BOUND;
+  } else if (best_score >= beta) {
+    entry->bound = TRANSPOSITION_TABLE_LOWER_BOUND;
+  } else {
+    entry->bound = TRANSPOSITION_TABLE_EXACT;
   }
 
   return best_score;
