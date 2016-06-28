@@ -21,7 +21,7 @@ trax_test.o: trax_test.cc trax.h timer.h
 
 trax.o: trax.cc trax.h
 
-main.o: main.cc trax.h
+main.o: main.cc trax.h search.h perft.h
 
 search.o: search.cc search.h trax.h
 

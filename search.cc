@@ -12,9 +12,6 @@
 #include "./trax.h"
 
 
-int g_num_monte_carlo_trial = 100;
-
-
 Move RandomSearcher::SearchBestMove(const Position& position) {
   std::vector<Move> legal_moves;
   for (Move move : position.GenerateMoves()) {
@@ -247,15 +244,6 @@ template Move SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(
 template Move SimpleSearcher<MonteCarloEvaluator>::SearchBestMove(
     const Position& position);
 
-template Move SimpleSearcher<EdgeColorEvaluator>::SearchBestMove(
-    const Position& position);
-
-template Move SimpleSearcher<LongestLineEvaluator>::SearchBestMove(
-    const Position& position);
-
-template Move SimpleSearcher<CombinedEvaluator>::SearchBestMove(
-    const Position& position);
-
 template Move SimpleSearcher<FactorEvaluator>::SearchBestMove(
     const Position& position);
 
@@ -274,22 +262,159 @@ template Move NegaMaxSearcher<MonteCarloEvaluator>::SearchBestMove(
 template int NegaMaxSearcher<MonteCarloEvaluator>::NegaMax(
     const Position& position, int depth, int alpha, int beta);
 
-template Move NegaMaxSearcher<EdgeColorEvaluator>::SearchBestMove(
-    const Position& position);
-template int NegaMaxSearcher<EdgeColorEvaluator>::NegaMax(
-    const Position& position, int depth, int alpha, int beta);
-
-template Move NegaMaxSearcher<LongestLineEvaluator>::SearchBestMove(
-    const Position& position);
-template int NegaMaxSearcher<LongestLineEvaluator>::NegaMax(
-    const Position& position, int depth, int alpha, int beta);
-
-template Move NegaMaxSearcher<CombinedEvaluator>::SearchBestMove(
-    const Position& position);
-template int NegaMaxSearcher<CombinedEvaluator>::NegaMax(
-    const Position& position, int depth, int alpha, int beta);
-
 template Move NegaMaxSearcher<FactorEvaluator>::SearchBestMove(
     const Position& position);
 template int NegaMaxSearcher<FactorEvaluator>::NegaMax(
     const Position& position, int depth, int alpha, int beta);
+
+namespace {
+
+int CountEdgeColors(const Position& position) {
+  int red = 0;
+  int white = 0;
+
+  for (int i_x = 0; i_x < position.max_x(); ++i_x) {
+    for (int j_y = 0; j_y < position.max_y(); ++j_y) {
+      if (position.at(i_x, j_y) == PIECE_EMPTY) {
+        continue;
+      }
+
+      for (int k = 0; k < 4; ++k) {
+        const int nx = i_x + kDx[k];
+        const int ny = j_y + kDy[k];
+        if (position.at(nx, ny) != PIECE_EMPTY) {
+          continue;
+        }
+
+        if (kPieceColors[position.at(i_x, j_y)][k] == 'R') {
+          ++red;
+        } else {
+          ++white;
+        }
+      }
+    }
+  }
+
+  return red - white;
+}
+
+}  // namespace
+
+void GenerateFactors(const Position& position,
+                     std::vector<std::pair<std::string, double>> *factors) {
+  double leaf_average = LeafAverageEvaluator::Evaluate(position);
+  if (!position.red_to_move()) {
+    leaf_average *= -1.0;
+  }
+
+  double longest_line = position.red_longest() - position.white_longest();
+  double edge_color = CountEdgeColors(position);
+
+  std::vector<Line> lines;
+  position.EnumerateLines(&lines);
+
+  double endpoint_factor = 0.0;
+  double edge_factor = 0.0;
+  for (Line& line : lines) {
+    double endpoint = 1.0 / (1.0 + line.endpoint_distance);
+    double edge = (1.0 / (1.0 + line.edge_distances[0]) +
+        1.0 / (1.0 + line.edge_distances[1]));
+
+    if (!line.is_red) {
+      endpoint *= -1.0;
+      edge *= -1.0;
+    }
+    endpoint_factor += endpoint;
+    edge_factor += edge;
+  }
+
+  factors->emplace_back("leaf_average", leaf_average);
+  factors->emplace_back("longest_line", longest_line);
+  factors->emplace_back("edge_color", edge_color);
+  factors->emplace_back("endpoint_factor", endpoint_factor);
+  factors->emplace_back("edge_factor", edge_factor);
+}
+
+#if 0
+namespace {
+
+double Average(const std::vector<double>& v) {
+  double ans = 0.0;
+  for (double x : v) {
+    ans += x;
+  }
+  return ans / v.size();
+}
+
+}  // namespace
+
+
+double endpoint_factor = 0.0;
+double edge_factor = 0.0;
+std::vector<Line> lines;
+position.EnumerateLines(&lines);
+
+#if 1
+for (Line& line : lines) {
+  // double endpoint = line.endpoint_distance;
+  // double edge = line.edge_distances[0] + line.edge_distances[1];
+  double endpoint = 1.0 / (1.0 + line.endpoint_distance);
+  double edge = (1.0 / (1.0 + line.edge_distances[0]) +
+      1.0 / (1.0 + line.edge_distances[1]));
+  // double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
+  //                        1.0 / (1.0 + line.edge_distances[1]));
+  if (!line.is_red) {
+    endpoint *= -1.0;
+    edge *= -1.0;
+  }
+  endpoint_factor += endpoint;
+  edge_factor += edge;
+}
+#elif 0
+std::vector<double> endpoints;
+std::vector<double> edges;
+for (Line& line : lines) {
+  double endpoint = 1.0 / (1.0 + line.endpoint_distance);
+  // double edge = (1.0 / (1.0 + line.edge_distances[0]) +
+  //                1.0 / (1.0 + line.edge_distances[1]));
+  double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
+      1.0 / (1.0 + line.edge_distances[1]));
+  if (!line.is_red) {
+    endpoint *= -1.0;
+    edge *= -1.0;
+  }
+  endpoints.push_back(endpoint);
+  edges.push_back(edge);
+}
+endpoint_factor =
+*std::max_element(endpoints.begin(), endpoints.end()) +
+*std::min_element(endpoints.begin(), endpoints.end());
+edge_factor =
+*std::max_element(edges.begin(), edges.end()) +
+*std::min_element(edges.begin(), edges.end());
+#else
+std::vector<double> red_endpoints, white_endpoints;
+std::vector<double> red_edges, white_edges;
+for (Line& line : lines) {
+  double endpoint = 1.0 / (1.0 + line.endpoint_distance);
+  // double edge = (1.0 / (1.0 + line.edge_distances[0]) +
+  //                1.0 / (1.0 + line.edge_distances[1]));
+  double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
+      1.0 / (1.0 + line.edge_distances[1]));
+  if (!line.is_red) {
+    endpoint *= -1.0;
+    edge *= -1.0;
+  }
+  if (line.is_red) {
+    red_endpoints.push_back(endpoint);
+    red_edges.push_back(edge);
+  } else {
+    white_endpoints.push_back(endpoint);
+    white_edges.push_back(edge);
+  }
+}
+endpoint_factor = Average(red_endpoints) + Average(white_endpoints);
+edge_factor = Average(red_edges) + Average(white_edges);
+#endif
+
+#endif

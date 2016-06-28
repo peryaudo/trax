@@ -900,7 +900,7 @@ void Position::TraceAndIndexEdges(
     //
     // or
     //
-    // > 
+    // >
     //   P P P
     //   P
     //   P
@@ -1108,7 +1108,7 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
 
     game_result->moves.push_back(best_move);
 
-    if ( overall_timer.CheckTimeout() && FLAGS_enable_strict_timer) {
+    if (overall_timer.CheckTimeout() && FLAGS_enable_strict_timer) {
       if (!position.red_to_move()) {
         std::cerr << red_searcher->name();
       } else {

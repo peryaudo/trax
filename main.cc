@@ -55,12 +55,6 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new SimpleSearcher<LeafAverageEvaluator>();
   } else if (name == "simple-mc") {
     return new SimpleSearcher<MonteCarloEvaluator>();
-  } else if (name == "simple-ec") {
-    return new SimpleSearcher<EdgeColorEvaluator>();
-  } else if (name == "simple-cb") {
-    return new SimpleSearcher<CombinedEvaluator>();
-  } else if (name == "simple-ll") {
-    return new SimpleSearcher<LongestLineEvaluator>();
   } else if (name == "simple-fe") {
     return new SimpleSearcher<FactorEvaluator>();
   } else if (name == "negamax0-la") {
@@ -77,32 +71,6 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<MonteCarloEvaluator>(1);
   } else if (name == "negamax2-mc") {
     return new NegaMaxSearcher<MonteCarloEvaluator>(2);
-  } else if (name == "negamax0-ec") {
-    return new NegaMaxSearcher<EdgeColorEvaluator>(0);
-  } else if (name == "negamax1-ec") {
-    return new NegaMaxSearcher<EdgeColorEvaluator>(1);
-  } else if (name == "negamax2-ec") {
-    return new NegaMaxSearcher<EdgeColorEvaluator>(2);
-  } else if (name == "negamax3-ec") {
-    return new NegaMaxSearcher<EdgeColorEvaluator>(3);
-  } else if (name == "negamax4-ec") {
-    return new NegaMaxSearcher<EdgeColorEvaluator>(4);
-  } else if (name == "negamax0-ll") {
-    return new NegaMaxSearcher<LongestLineEvaluator>(0);
-  } else if (name == "negamax1-ll") {
-    return new NegaMaxSearcher<LongestLineEvaluator>(1);
-  } else if (name == "negamax2-ll") {
-    return new NegaMaxSearcher<LongestLineEvaluator>(2);
-  } else if (name == "negamax3-ll") {
-    return new NegaMaxSearcher<LongestLineEvaluator>(3);
-  } else if (name == "negamax0-cb") {
-    return new NegaMaxSearcher<CombinedEvaluator>(0);
-  } else if (name == "negamax1-cb") {
-    return new NegaMaxSearcher<CombinedEvaluator>(1);
-  } else if (name == "negamax2-cb") {
-    return new NegaMaxSearcher<CombinedEvaluator>(2);
-  } else if (name == "negamax3-cb") {
-    return new NegaMaxSearcher<CombinedEvaluator>(3);
   } else if (name == "negamax0-na") {
     return new NegaMaxSearcher<NoneEvaluator>(0);
   } else if (name == "negamax1-na") {
@@ -218,14 +186,6 @@ void ShowPosition() {
   }
 }
 
-double Average(const std::vector<double>& v) {
-  double ans = 0.0;
-  for (double x : v) {
-    ans += x;
-  }
-  return ans / v.size();
-}
-
 }  // namespace
 
 int main(int argc, char *argv[]) {
@@ -315,12 +275,14 @@ int main(int argc, char *argv[]) {
     }
 #endif
 
-    std::cout << "step,winner,endpoint_factor,edge_factor" << std::endl;
+    std::string first_line = "step,winner";
+    bool first = true;
 
     for (Game& game : games) {
       if (game.winner == 0) {
         continue;
       }
+
       Position position;
       for (int i = 0; i < game.num_moves(); ++i) {
         Position next_position;
@@ -336,78 +298,24 @@ int main(int argc, char *argv[]) {
           continue;
         }
 
-        double endpoint_factor = 0.0;
-        double edge_factor = 0.0;
-        std::vector<Line> lines;
-        position.EnumerateLines(&lines);
-#if 1
-        for (Line& line : lines) {
-          // double endpoint = line.endpoint_distance;
-          // double edge = line.edge_distances[0] + line.edge_distances[1];
-          double endpoint = 1.0 / (1.0 + line.endpoint_distance);
-          double edge = (1.0 / (1.0 + line.edge_distances[0]) +
-                         1.0 / (1.0 + line.edge_distances[1]));
-          // double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
-          //                        1.0 / (1.0 + line.edge_distances[1]));
-          if (!line.is_red) {
-            endpoint *= -1.0;
-            edge *= -1.0;
-          }
-          endpoint_factor += endpoint;
-          edge_factor += edge;
-        }
-#elif 0
-        std::vector<double> endpoints;
-        std::vector<double> edges;
-        for (Line& line : lines) {
-          double endpoint = 1.0 / (1.0 + line.endpoint_distance);
-          // double edge = (1.0 / (1.0 + line.edge_distances[0]) +
-          //                1.0 / (1.0 + line.edge_distances[1]));
-          double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
-                                 1.0 / (1.0 + line.edge_distances[1]));
-          if (!line.is_red) {
-            endpoint *= -1.0;
-            edge *= -1.0;
-          }
-          endpoints.push_back(endpoint);
-          edges.push_back(edge);
-        }
-        endpoint_factor =
-          *std::max_element(endpoints.begin(), endpoints.end()) +
-          *std::min_element(endpoints.begin(), endpoints.end());
-        edge_factor =
-          *std::max_element(edges.begin(), edges.end()) +
-          *std::min_element(edges.begin(), edges.end());
-#else
-        std::vector<double> red_endpoints, white_endpoints;
-        std::vector<double> red_edges, white_edges;
-        for (Line& line : lines) {
-          double endpoint = 1.0 / (1.0 + line.endpoint_distance);
-          // double edge = (1.0 / (1.0 + line.edge_distances[0]) +
-          //                1.0 / (1.0 + line.edge_distances[1]));
-          double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
-                                 1.0 / (1.0 + line.edge_distances[1]));
-          if (!line.is_red) {
-            endpoint *= -1.0;
-            edge *= -1.0;
-          }
-          if (line.is_red) {
-            red_endpoints.push_back(endpoint);
-            red_edges.push_back(edge);
-          } else {
-            white_endpoints.push_back(endpoint);
-            white_edges.push_back(edge);
-          }
-        }
-        endpoint_factor = Average(red_endpoints) + Average(white_endpoints);
-        edge_factor = Average(red_edges) + Average(white_edges);
-#endif
+        std::vector<std::pair<std::string, double>> factors;
+        GenerateFactors(position, &factors);
 
-        std::cout
-          << i << ","
-          << game.winner << ","
-          << endpoint_factor << ","
-          << edge_factor << std::endl;
+        if (first) {
+          for (std::pair<std::string, double>& factor : factors) {
+            first_line += "," + factor.first;
+          }
+          std::cout << first_line << std::endl;
+
+          first = false;
+        }
+
+        std::cout << i << "," << game.winner;
+        for (std::pair<std::string, double>& factor : factors) {
+          std::cout << "," << factor.second;
+        }
+
+        std::cout << std::endl;
       }
     }
   } else if (FLAGS_best_move) {

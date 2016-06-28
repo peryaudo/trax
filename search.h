@@ -73,7 +73,11 @@ class NegaMaxSearcher : public Searcher {
   virtual std::string name() {
     std::stringstream name;
     name << "NegaMaxSearcher<" << Evaluator::name()
-      << ">(max_depth=" << max_depth_ << ")";
+      << ">(max_depth=" << max_depth_;
+    if (iterative_) {
+      name << ", iterative";
+    }
+    name << ")";
     return name.str();
   }
 
@@ -239,147 +243,6 @@ class MonteCarloEvaluator {
   static std::string name() { return "MonteCarloEvaluator"; }
 };
 
-// Evaluate position by number of external facing color of the player.
-// NegaMax<EdgeColorEvaluator>(depth=2)
-class EdgeColorEvaluator {
- public:
-  static int Evaluate(const Position& position) {
-    if (position.finished()) {
-      if (position.red_to_move()) {
-        // I'm red.
-        // winner() > 0 if red wins.
-        return kInf * position.winner();
-      } else {
-        // I'm white.
-        // winner() > 0 if red wins.
-        // Flip the sign.
-        return kInf * -position.winner();
-      }
-    }
-
-    int red = 0;
-    int white = 0;
-
-    for (int i_x = 0; i_x < position.max_x(); ++i_x) {
-      for (int j_y = 0; j_y < position.max_y(); ++j_y) {
-        if (position.at(i_x, j_y) == PIECE_EMPTY) {
-          continue;
-        }
-
-        for (int k = 0; k < 4; ++k) {
-          const int nx = i_x + kDx[k];
-          const int ny = j_y + kDy[k];
-          if (position.at(nx, ny) != PIECE_EMPTY) {
-            continue;
-          }
-
-          if (kPieceColors[position.at(i_x, j_y)][k] == 'R') {
-            ++red;
-          } else {
-            ++white;
-          }
-        }
-      }
-    }
-
-    if (red + white == 0) {
-      return 0;
-    }
-
-    // --self --white=negamax1-ec --red=negamax1-la --silent --num_games=20
-
-    // white(NegaMaxSearcher<EdgeColorEvaluator>(max_depth=1)): 2
-    // red(NegaMaxSearcher<LeafAverageEvaluator>(max_depth=1)): 17
-    const int score = red - white;
-
-    // white(NegaMaxSearcher<EdgeColorEvaluator>(max_depth=1)): 1
-    // red(NegaMaxSearcher<LeafAverageEvaluator>(max_depth=1)): 14
-    // const int score = kInf * (red - white) / (red + white);
-
-    if (position.red_to_move()) {
-      return score;
-    } else {
-      return -score;
-    }
-  }
-
-  static std::string name() { return "EdgeColorEvaluator"; }
-};
-
-// Evaluate position by its longest line of the color.
-class LongestLineEvaluator {
- public:
-  static int Evaluate(const Position& position) {
-    if (position.finished()) {
-      if (position.red_to_move()) {
-        // I'm red.
-        // winner() > 0 if red wins.
-        return kInf * position.winner();
-      } else {
-        // I'm white.
-        // winner() > 0 if red wins.
-        // Flip the sign.
-        return kInf * -position.winner();
-      }
-    }
-
-    const int score = position.red_longest() - position.white_longest();
-    if (position.red_to_move()) {
-      return score;
-    } else {
-      return -score;
-    }
-  }
-
-  static std::string name() { return "LongestLineEvaluator"; }
-};
-
-// Combines multiple evaluators. Mostly the result is dump,
-// but SimpleSearcher<CombinedEvaluator> is stronger than
-// SimpleSearcher<LeafAverageEvaluator>,
-// so I believe this has at least some value in it.
-class CombinedEvaluator {
- public:
-  static int Evaluate(const Position& position) {
-    int score = LeafAverageEvaluator::Evaluate(position);
-    if (score == kInf || score == -kInf) {
-      return score;
-    }
-
-#if 1
-    int denom = 1;
-
-    if (position.max_x() <= 4 && position.max_y() <= 4) {
-      score += EdgeColorEvaluator::Evaluate(position);
-      ++denom;
-    }
-
-    return score / denom;
-#else
-    return (6 * score + 4 * MonteCarloEvaluator::Evaluate(position)) / 10;
-#endif
-  }
-
-  static std::string name() { return "CombinedEvaluator"; }
-};
-
-
-namespace {
-
-int Average(const std::vector<int>& v) {
-  if (v.size() == 0) {
-    return 0;
-  }
-
-  int64_t ans = 0;
-  for (int x : v) {
-    ans += x;
-  }
-  return static_cast<int>(ans / static_cast<int64_t>(v.size()));
-}
-
-}  // namespace
-
 class FactorEvaluator {
  public:
   // Evaluate the position, from the perspective of position.red_to_move().
@@ -433,7 +296,6 @@ class FactorEvaluator {
 #endif
 
     const int unit = kInf / 100;
-#if 1
     int endpoint_factor = 0;
     int edge_factor = 0;
     for (Line& line : lines) {
@@ -450,31 +312,6 @@ class FactorEvaluator {
     }
 
     int score = endpoint_factor + (-edge_factor);
-#else
-    std::vector<int> red_endpoints, white_endpoints;
-    std::vector<int> red_edges, white_edges;
-    for (Line& line : lines) {
-      int endpoint = unit / (1 + line.endpoint_distance);
-      int edge = std::max(
-          unit / (1 + line.edge_distances[0]),
-          unit / (1 + line.edge_distances[1]));
-      if (!line.is_red) {
-        endpoint *= -1;
-        edge *= -1;
-      }
-      if (line.is_red) {
-        red_endpoints.push_back(endpoint);
-        red_edges.push_back(edge);
-      } else {
-        white_endpoints.push_back(endpoint);
-        white_edges.push_back(edge);
-      }
-    }
-    int endpoint_factor = Average(red_endpoints) + Average(white_endpoints);
-    int edge_factor = Average(red_edges) + Average(white_edges);
-    int score = 4 * endpoint_factor + 13 * edge_factor;
-#endif
-
     if (!position.red_to_move()) {
       score *= -1;
     }
@@ -484,5 +321,8 @@ class FactorEvaluator {
 
   static std::string name() { return "FactorEvaluator"; }
 };
+
+void GenerateFactors(const Position& position,
+                     std::vector<std::pair<std::string, double>> *factors);
 
 #endif  // SEARCH_H_

@@ -3,8 +3,6 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
-#include <cstdint>
-
 #include <unistd.h>
 
 #if defined __MACH__
@@ -14,6 +12,8 @@
 #else
 #error no way to get accurate time.
 #endif
+
+#include <cstdint>
 
 static const uint64_t kNanosecondsToMilliseconds = 1000000;
 static const uint64_t kNanosecondsToSeconds = 1000000000;
@@ -53,7 +53,6 @@ uint64_t DiffAccurateTime(const TimeType& after, const TimeType& before) {
 }
 
 #endif
- 
 }  // namespace
 
 class Timer {
