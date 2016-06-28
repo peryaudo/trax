@@ -42,8 +42,6 @@ DEFINE_string(contest_player, "iter10-fe",
 
 DEFINE_bool(silent, false, "Self play silently.");
 
-DEFINE_int32(num_monte_carlo_trial, 100, "Number of Monte Carlo sampling.");
-
 DEFINE_string(commented_games,
               "vendor/commented/Comment.txt",
               "File name of commented game data");

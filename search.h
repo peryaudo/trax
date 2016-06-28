@@ -9,6 +9,7 @@
 #include <vector>
 #include <unordered_map>
 
+#include "./timer.h"
 #include "./trax.h"
 
 //
@@ -187,11 +188,13 @@ class MonteCarloEvaluator {
       }
     }
 
-    int winner_sum = 0;
+    int64_t numerator = 0;
+    int64_t denominator = 0;
 
     std::vector<Move> initial_moves = initial_position.GenerateMoves();
 
-    for (int i = 0; i < g_num_monte_carlo_trial; ++i) {
+    Timer timer(50);
+    while (!timer.CheckTimeout()) {
       Position position;
 
       // First step.
@@ -201,10 +204,7 @@ class MonteCarloEvaluator {
         continue;
       }
 
-      int step_count = 0;
-
-      while (step_count < 10 && !position.finished()) {
-#if 0
+      while (!position.finished()) {
         Position next_position;
 
         std::vector<Move> moves = position.GenerateMoves();
@@ -221,25 +221,20 @@ class MonteCarloEvaluator {
         if (!legal) {
           break;
         }
-#else
-        SimpleSearcher<LeafAverageEvaluator> searcher;
-        Position next_position;
-        position.DoMove(searcher.SearchBestMove(position), &next_position);
-#endif
-        position.Swap(&next_position);
 
-        ++step_count;
+        position.Swap(&next_position);
       }
 
-      winner_sum += position.winner();
+      numerator += position.winner();
+      ++denominator;
     }
 
     if (initial_position.red_to_move()) {
       // I'm red.
-      return kInf * winner_sum / g_num_monte_carlo_trial;
+      return static_cast<int>(kInf * numerator / denominator);
     } else {
       // I'm white.
-      return kInf * -winner_sum / g_num_monte_carlo_trial;
+      return static_cast<int>(kInf * -numerator / denominator);
     }
   }
 
