@@ -19,9 +19,11 @@ factors = [
     'endpoint_factor_max_min','sum_edge_factor_max_min',
     'max_edge_factor_max_min',
     'endpoint_factor_average','sum_edge_factor_average',
-    'max_edge_factor_average']
+    'max_edge_factor_average',
+    'shortcut']
 
 # factors = ['endpoint_factor','sum_edge_factor']
+# factors = ['sum_edge_factor_max_min','endpoint_factor_average']
 
 print "Correlation to all factors:"
 for factor in factors:
@@ -36,6 +38,7 @@ y = data['winner']
 X_train, X_test, y_train, y_test = train_test_split(X, y)
 
 model = linear_model.LinearRegression()
+# model = linear_model.LogisticRegression()
 # model = svm.SVR(kernel='rbf')
 model.fit(X_train, y_train)
 

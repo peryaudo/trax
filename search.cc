@@ -387,4 +387,36 @@ void GenerateFactors(const Position& position,
   factors->emplace_back("endpoint_factor_average", AverageColor(endpoints));
   factors->emplace_back("sum_edge_factor_average", AverageColor(sum_edges));
   factors->emplace_back("max_edge_factor_average", AverageColor(max_edges));
+
+  double shortcut = 0.0;
+
+  int red_mates = 0;
+  int white_mates = 0;
+  for (Line& line : lines) {
+    if (line.is_mate()) {
+      if (line.is_red) {
+        ++red_mates;
+      } else {
+        ++white_mates;
+      }
+    }
+  }
+
+  if (position.red_to_move()) {
+    if (red_mates > 0) {
+      shortcut = 1.0;
+    }
+    if (white_mates >= 2) {
+      shortcut = -1.0;
+    }
+  } else {
+    if (white_mates > 0) {
+      shortcut = -1.0;
+    }
+    if (red_mates >= 2) {
+      shortcut = 1.0;
+    }
+  }
+
+  factors->emplace_back("shortcut", shortcut);
 }

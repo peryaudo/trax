@@ -260,6 +260,7 @@ int main(int argc, char *argv[]) {
   } else if (FLAGS_dump_factors) {
     std::vector<Game> games;
     ParseCommentedGames(FLAGS_commented_games, &games);
+
 #if 0
     NegaMaxSearcher<LeafAverageEvaluator> searcher(1);
     for (Game& game : games) {
