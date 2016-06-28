@@ -1252,6 +1252,7 @@ void ParseCommentedGames(const std::string& filename,
 
       if (position.finished()) {
         game.winner = position.winner();
+        game.winning_reason = position.winning_reason();
       }
 
       game.comments.push_back("");
