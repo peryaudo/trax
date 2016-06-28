@@ -419,4 +419,9 @@ void GenerateFactors(const Position& position,
   }
 
   factors->emplace_back("shortcut", shortcut);
+
+  factors->emplace_back("min_edge_size",
+      std::min<double>(position.max_x(), position.max_y()));
+  factors->emplace_back("max_edge_size",
+      std::max<double>(position.max_x(), position.max_y()));
 }

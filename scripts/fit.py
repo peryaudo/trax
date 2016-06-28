@@ -1,7 +1,7 @@
 import subprocess
 import pandas as pd
 import numpy as np
-from sklearn import (svm, linear_model)
+from sklearn import (svm, linear_model, decomposition)
 from sklearn.metrics import mean_squared_error
 from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
@@ -20,20 +20,25 @@ factors = [
     'max_edge_factor_max_min',
     'endpoint_factor_average','sum_edge_factor_average',
     'max_edge_factor_average',
-    'shortcut']
+    'shortcut',
+    #'min_edge_size', 'max_edge_size',
+]
 
 # factors = ['endpoint_factor','sum_edge_factor']
 # factors = ['sum_edge_factor_max_min','endpoint_factor_average']
+factors = ['leaf_average', 'sum_edge_factor_max_min','endpoint_factor_average']
 
 print "Correlation to all factors:"
 for factor in factors:
     print "  %s: %f" % (factor,
                         np.corrcoef(data['winner'], data[factor])[0][1])
-X = data[factors]
 
-# X = data[['edge_factor']]
-# X = data[['endpoint_factor']]
+X = data[factors]
 y = data['winner']
+
+# pca = decomposition.PCA(n_components=2)
+# pca.fit(X)
+# X = pca.transform(X)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y)
 
