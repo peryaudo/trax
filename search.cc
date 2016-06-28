@@ -145,9 +145,6 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
 
       best_score = std::max(best_score, score);
       moves.emplace_back(score, move);
-#if 0
-      std::cerr << score << " " << move.notation() << std::endl;
-#endif
     }
 
     std::vector<Move> best_moves;

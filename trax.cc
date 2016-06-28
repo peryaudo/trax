@@ -1108,7 +1108,7 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
 
     game_result->moves.push_back(best_move);
 
-    if (FLAGS_enable_strict_timer && overall_timer.CheckTimeout()) {
+    if ( overall_timer.CheckTimeout() && FLAGS_enable_strict_timer) {
       if (!position.red_to_move()) {
         std::cerr << red_searcher->name();
       } else {
@@ -1122,6 +1122,8 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
     if (verbose) {
       std::cerr << best_move.notation() << std::endl;
       position.Dump();
+      std::cerr
+        << "Elapsed time: " << overall_timer.elapsed_ms() << "ms" << std::endl;
       std::cerr << std::endl;
     }
   }
