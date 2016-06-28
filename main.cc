@@ -246,8 +246,6 @@ int main(int argc, char *argv[]) {
     Random();
   }
 
-  g_num_monte_carlo_trial = FLAGS_num_monte_carlo_trial;
-
   if (FLAGS_client) {
     // Contest client.
     Searcher *player = GetSearcherFromName(FLAGS_contest_player);

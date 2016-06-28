@@ -25,6 +25,9 @@ DEFINE_bool(enable_pretty_dump, true,
 DEFINE_bool(enable_strict_notation, true,
             "Exit immediately if Trax::notation() fail.");
 
+DEFINE_bool(enable_strict_timer, true,
+            "Exit immediately if the searcher violates time constraint.");
+
 DEFINE_bool(trax8x8, false, "Run as 8x8 Trax.");
 
 DEFINE_string(player_id, "PR",
@@ -1111,11 +1114,16 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
       std::cerr << std::endl;
     }
 
-#if 0
-    if (overall_timer.CheckTimeout()) {
-      break;
+    if (FLAGS_enable_strict_timer && overall_timer.CheckTimeout()) {
+      if (!position.red_to_move()) {
+        std::cerr << red_searcher->name();
+      } else {
+        std::cerr << white_searcher->name();
+      }
+      std::cerr << " violated time constraint "
+        << "(elapsed: " << overall_timer.elapsed_ms() << ")" << std::endl;
+      exit(EXIT_FAILURE);
     }
-#endif
   }
 
   if (verbose) {

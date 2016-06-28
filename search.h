@@ -168,8 +168,6 @@ class LeafAverageEvaluator  {
   static std::string name() { return "LeafAverageEvaluator"; }
 };
 
-extern int g_num_monte_carlo_trial;
-
 // Evaluator that uses primitive Monte Carlo method to evaluate the position.
 // You can change the number of time to sample by --num_monte_carlo_trial.
 class MonteCarloEvaluator {
