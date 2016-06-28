@@ -28,6 +28,13 @@ factors = [
 # factors = ['sum_edge_factor_max_min','endpoint_factor_average']
 factors = ['leaf_average', 'sum_edge_factor_max_min','endpoint_factor_average']
 
+# plt.hist(data[data.winner > 0]['sum_edge_factor_max_min'], label=">0", color="red", alpha=0.5)
+# plt.hist(data[data.winner < 0]['sum_edge_factor_max_min'], label="<0", color="blue", alpha=0.5)
+# plt.show()
+# plt.hist(data[data.winner > 0]['endpoint_factor_average'], label=">0", color="red", alpha=0.5)
+# plt.hist(data[data.winner < 0]['endpoint_factor_average'], label="<0", color="blue", alpha=0.5)
+# plt.show()
+
 print "Correlation to all factors:"
 for factor in factors:
     print "  %s: %f" % (factor,
