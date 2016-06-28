@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <numeric>
 
 #include "./timer.h"
 #include "./trax.h"
@@ -298,6 +299,29 @@ int CountEdgeColors(const Position& position) {
   return red - white;
 }
 
+double AverageColor(const std::vector<double>& v) {
+  double red_numerator = 0.0;
+  double white_numerator = 0.0;
+  int red_denominator = 0;
+  int white_denominator = 0;
+  for (double x : v) {
+    if (x > 0) {
+      red_numerator += x;
+      ++red_denominator;
+    } else {
+      white_numerator += x;
+      ++white_denominator;
+    }
+  }
+  if (red_denominator > 0) {
+    red_numerator /= red_denominator;
+  }
+  if (white_denominator > 0) {
+    white_numerator /= white_denominator;
+  }
+  return red_numerator + white_numerator;
+}
+
 }  // namespace
 
 void GenerateFactors(const Position& position,
@@ -312,109 +336,55 @@ void GenerateFactors(const Position& position,
 
   std::vector<Line> lines;
   position.EnumerateLines(&lines);
+  if (lines.size() == 0) {
+    std::cerr << "gah!";
+    exit(EXIT_FAILURE);
+  }
 
-  double endpoint_factor = 0.0;
-  double edge_factor = 0.0;
+  std::vector<double> endpoints;
+  std::vector<double> sum_edges;
+  std::vector<double> max_edges;
+
   for (Line& line : lines) {
     double endpoint = 1.0 / (1.0 + line.endpoint_distance);
-    double edge = (1.0 / (1.0 + line.edge_distances[0]) +
+    double sum_edge = (1.0 / (1.0 + line.edge_distances[0]) +
+        1.0 / (1.0 + line.edge_distances[1]));
+    double max_edge = std::max(
+        1.0 / (1.0 + line.edge_distances[0]),
         1.0 / (1.0 + line.edge_distances[1]));
 
     if (!line.is_red) {
       endpoint *= -1.0;
-      edge *= -1.0;
+      sum_edge *= -1.0;
+      max_edge *= -1.0;
     }
-    endpoint_factor += endpoint;
-    edge_factor += edge;
+    endpoints.push_back(endpoint);
+    sum_edges.push_back(sum_edge);
+    max_edges.push_back(max_edge);
   }
 
   factors->emplace_back("leaf_average", leaf_average);
   factors->emplace_back("longest_line", longest_line);
   factors->emplace_back("edge_color", edge_color);
-  factors->emplace_back("endpoint_factor", endpoint_factor);
-  factors->emplace_back("edge_factor", edge_factor);
+
+  factors->emplace_back("endpoint_factor",
+      std::accumulate(endpoints.begin(), endpoints.end(), 0.0));
+  factors->emplace_back("sum_edge_factor",
+      std::accumulate(sum_edges.begin(), sum_edges.end(), 0.0));
+  factors->emplace_back("max_edge_factor",
+      std::accumulate(max_edges.begin(), max_edges.end(), 0.0));
+
+  factors->emplace_back("endpoint_factor_max_min",
+      *std::max_element(endpoints.begin(), endpoints.end()) +
+      *std::min_element(endpoints.begin(), endpoints.end()));
+  factors->emplace_back("sum_edge_factor_max_min",
+      *std::max_element(sum_edges.begin(), sum_edges.end()) +
+      *std::min_element(sum_edges.begin(), sum_edges.end()));
+  factors->emplace_back("max_edge_factor_max_min",
+      *std::max_element(max_edges.begin(), max_edges.end()) +
+      *std::min_element(max_edges.begin(), max_edges.end()));
+
+  factors->emplace_back("endpoint_factor_average", AverageColor(endpoints));
+  factors->emplace_back("sum_edge_factor_average", AverageColor(sum_edges));
+  factors->emplace_back("max_edge_factor_average", AverageColor(max_edges));
 }
-
-#if 0
-namespace {
-
-double Average(const std::vector<double>& v) {
-  double ans = 0.0;
-  for (double x : v) {
-    ans += x;
-  }
-  return ans / v.size();
-}
-
-}  // namespace
-
-
-double endpoint_factor = 0.0;
-double edge_factor = 0.0;
-std::vector<Line> lines;
-position.EnumerateLines(&lines);
-
-#if 1
-for (Line& line : lines) {
-  // double endpoint = line.endpoint_distance;
-  // double edge = line.edge_distances[0] + line.edge_distances[1];
-  double endpoint = 1.0 / (1.0 + line.endpoint_distance);
-  double edge = (1.0 / (1.0 + line.edge_distances[0]) +
-      1.0 / (1.0 + line.edge_distances[1]));
-  // double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
-  //                        1.0 / (1.0 + line.edge_distances[1]));
-  if (!line.is_red) {
-    endpoint *= -1.0;
-    edge *= -1.0;
-  }
-  endpoint_factor += endpoint;
-  edge_factor += edge;
-}
-#elif 0
-std::vector<double> endpoints;
-std::vector<double> edges;
-for (Line& line : lines) {
-  double endpoint = 1.0 / (1.0 + line.endpoint_distance);
-  // double edge = (1.0 / (1.0 + line.edge_distances[0]) +
-  //                1.0 / (1.0 + line.edge_distances[1]));
-  double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
-      1.0 / (1.0 + line.edge_distances[1]));
-  if (!line.is_red) {
-    endpoint *= -1.0;
-    edge *= -1.0;
-  }
-  endpoints.push_back(endpoint);
-  edges.push_back(edge);
-}
-endpoint_factor =
-*std::max_element(endpoints.begin(), endpoints.end()) +
-*std::min_element(endpoints.begin(), endpoints.end());
-edge_factor =
-*std::max_element(edges.begin(), edges.end()) +
-*std::min_element(edges.begin(), edges.end());
-#else
-std::vector<double> red_endpoints, white_endpoints;
-std::vector<double> red_edges, white_edges;
-for (Line& line : lines) {
-  double endpoint = 1.0 / (1.0 + line.endpoint_distance);
-  // double edge = (1.0 / (1.0 + line.edge_distances[0]) +
-  //                1.0 / (1.0 + line.edge_distances[1]));
-  double edge = std::max(1.0 / (1.0 + line.edge_distances[0]),
-      1.0 / (1.0 + line.edge_distances[1]));
-  if (!line.is_red) {
-    endpoint *= -1.0;
-    edge *= -1.0;
-  }
-  if (line.is_red) {
-    red_endpoints.push_back(endpoint);
-    red_edges.push_back(edge);
-  } else {
-    white_endpoints.push_back(endpoint);
-    white_edges.push_back(edge);
-  }
-}
-endpoint_factor = Average(red_endpoints) + Average(white_endpoints);
-edge_factor = Average(red_edges) + Average(white_edges);
-#endif
-
-#endif
