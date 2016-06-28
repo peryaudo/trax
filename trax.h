@@ -229,8 +229,8 @@ class Position {
       , white_winner_(false)
       , red_longest_(0)
       , white_longest_(0)
-      , has_loop_(false)
-      , has_victory_line_(false) {
+      , red_winning_reason_(WINNING_REASON_UNKNOWN)
+      , white_winning_reason_(WINNING_REASON_UNKNOWN) {
   }
 
   // Disable copy and assign.
@@ -290,8 +290,8 @@ class Position {
     std::swap(white_winner_, to->white_winner_);
     std::swap(red_longest_, to->red_longest_);
     std::swap(white_longest_, to->white_longest_);
-    std::swap(has_loop_, to->has_loop_);
-    std::swap(has_victory_line_, to->has_victory_line_);
+    std::swap(red_winning_reason_, to->red_winning_reason_);
+    std::swap(white_winning_reason_, to->white_winning_reason_);
   }
 
   void Clear() {
@@ -344,10 +344,16 @@ class Position {
   // Length of the longest white line.
   int white_longest() const { return white_longest_; }
 
-  // TODO(tetsui): implement.
   WinningReason winning_reason() const {
-    // assert(false);
-    return WINNING_REASON_UNKNOWN;
+    if (!finished()) {
+      return WINNING_REASON_UNKNOWN;
+    }
+
+    if (winner() >= 0) {
+      return red_winning_reason_;
+    } else {
+      return white_winning_reason_;
+    }
   }
 
  private:
@@ -402,8 +408,8 @@ class Position {
   int red_longest_;
   int white_longest_;
 
-  bool has_loop_;
-  bool has_victory_line_;
+  WinningReason red_winning_reason_;
+  WinningReason white_winning_reason_;
 };
 
 // Base abstract class for searchers.

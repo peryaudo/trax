@@ -565,9 +565,24 @@ void Position::Dump() const {
     } else {
       std::cerr << "draw";
     }
-    std::cerr << " has_loop = " << (has_loop_ ? "true" : "false");
-    std::cerr
-      << ", has_victory_line = " << (has_victory_line_ ? "true" : "false");
+    std::cerr << ", winning_reason = ";
+    switch (winning_reason()) {
+      case WINNING_REASON_UNKNOWN:
+        std::cerr << "UNKNOWN";
+        break;
+      case WINNING_REASON_LOOP:
+        std::cerr << "LOOP";
+        break;
+      case WINNING_REASON_LINE:
+        std::cerr << "LINE";
+        break;
+      case WINNING_REASON_FULL:
+        std::cerr << "FULL";
+        break;
+      case WINNING_REASON_RESIGN:
+        std::cerr << "RESIGN";
+        break;
+    }
     std::cerr << std::endl;
   } else {
     std::cerr << ", finished = false";
@@ -709,6 +724,9 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
     if (all_filled) {
       red_winner_ = true;
       white_winner_ = true;
+
+      red_winning_reason_ = WINNING_REASON_FULL;
+      white_winning_reason_ = WINNING_REASON_FULL;
     }
   }
 
@@ -770,7 +788,11 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
     while (at(x, y) != PIECE_EMPTY) {
       if (x == start_x && y == start_y) {
         // This is loop.
-        has_loop_ = true;
+        if (red_line) {
+          red_winning_reason_ = WINNING_REASON_LOOP;
+        } else {
+          white_winning_reason_ = WINNING_REASON_LOOP;
+        }
         return true;
       }
 
@@ -808,7 +830,11 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
   for (int i = 0; i < 2; ++i) {
     if (victory_line_enabled[i] && hits[i] && hits[(i + 2) & 3]) {
       // This is victory line.
-      has_victory_line_ = true;
+      if (red_line) {
+        red_winning_reason_ = WINNING_REASON_LINE;
+      } else {
+        white_winning_reason_ = WINNING_REASON_LINE;
+      }
       return true;
     }
   }

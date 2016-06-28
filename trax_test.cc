@@ -56,6 +56,7 @@ TEST(PositionTest, TriggerForcedPlayAndWinByLoop) {
   SupplyNotations({"@0/", "B1\\", "A2\\"}, &position);
   ASSERT_TRUE(position.finished());
   ASSERT_EQ(1, position.winner());
+  ASSERT_EQ(WINNING_REASON_LOOP, position.winning_reason());
 }
 
 TEST(PositionTest, WinByHorizontalVictoryLineSimple) {
@@ -64,6 +65,7 @@ TEST(PositionTest, WinByHorizontalVictoryLineSimple) {
                   &position);
   ASSERT_TRUE(position.finished());
   ASSERT_EQ(1, position.winner());
+  ASSERT_EQ(WINNING_REASON_LINE, position.winning_reason());
 }
 
 TEST(PositionTest, NotHorizontalVictoryLineSimple) {
@@ -80,6 +82,7 @@ TEST(PositionTest, WinByHorizontalVictoryLineComplex1) {
                   &position);
   ASSERT_TRUE(position.finished());
   ASSERT_EQ(1, position.winner());
+  ASSERT_EQ(WINNING_REASON_LINE, position.winning_reason());
 }
 
 TEST(PositionTest, WinByHorizontalVictoryLineComplex2) {
@@ -89,6 +92,7 @@ TEST(PositionTest, WinByHorizontalVictoryLineComplex2) {
                   &position);
   ASSERT_TRUE(position.finished());
   ASSERT_EQ(1, position.winner());
+  ASSERT_EQ(WINNING_REASON_LINE, position.winning_reason());
 }
 
 TEST(PositionTest, NotHorizontalVictoryLineComplex) {
@@ -105,6 +109,7 @@ TEST(PositionTest, WinByVerticalVictoryLineSimple) {
                   &position);
   ASSERT_TRUE(position.finished());
   ASSERT_EQ(-1, position.winner());
+  ASSERT_EQ(WINNING_REASON_LINE, position.winning_reason());
 }
 
 TEST(PositionTest, NotVerticalVictoryLineSimple) {
@@ -181,6 +186,7 @@ TEST(PositionTest, VictoryIsLastPlayers1) {
                   &position);
   ASSERT_TRUE(position.finished());
   ASSERT_EQ(-1, position.winner());
+  ASSERT_EQ(WINNING_REASON_LOOP, position.winning_reason());
 }
 
 TEST(PositionTest, VictoryIsLastPlayers2) {
@@ -219,12 +225,12 @@ TEST(PositionTest, WinByHorizontalVictoryLineBecauesRightmost) {
        &position);
   ASSERT_TRUE(position.finished());
   ASSERT_EQ(1, position.winner());
+  ASSERT_EQ(WINNING_REASON_LINE, position.winning_reason());
 }
 
 TEST(PositionTest, EnumerateLines1) {
   Position position;
   SupplyNotations({"@0+"}, &position);
-  position.Dump();
   std::vector<Line> lines;
   position.EnumerateLines(&lines);
   int red_count = 0, white_count = 0;
@@ -253,7 +259,6 @@ TEST(PositionTest, EnumerateLines2) {
        "I3/", "H1/"},
        &position);
 
-  position.Dump();
   std::vector<Line> lines;
   position.EnumerateLines(&lines);
   int red_count = 0, white_count = 0;
