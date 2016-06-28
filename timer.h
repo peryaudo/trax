@@ -105,6 +105,8 @@ class Timer {
       kNanosecondsToMilliseconds;
   }
 
+  int timeout_ms() { return timeout_ms_; }
+
  private:
   int timeout_ms_;
   TimeType begin_time_;

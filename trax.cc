@@ -1108,12 +1108,6 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
 
     game_result->moves.push_back(best_move);
 
-    if (verbose) {
-      std::cerr << best_move.notation() << std::endl;
-      position.Dump();
-      std::cerr << std::endl;
-    }
-
     if (FLAGS_enable_strict_timer && overall_timer.CheckTimeout()) {
       if (!position.red_to_move()) {
         std::cerr << red_searcher->name();
@@ -1123,6 +1117,12 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
       std::cerr << " violated time constraint "
         << "(elapsed: " << overall_timer.elapsed_ms() << ")" << std::endl;
       exit(EXIT_FAILURE);
+    }
+
+    if (verbose) {
+      std::cerr << best_move.notation() << std::endl;
+      position.Dump();
+      std::cerr << std::endl;
     }
   }
 
