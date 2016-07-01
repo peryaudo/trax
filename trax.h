@@ -458,7 +458,7 @@ struct Game {
   // WINNING_REASON_LOOP or WINNING_REASON_LINE.
   void ContinueBySearcher(Searcher *searcher);
 
-  int num_moves() { return moves.size(); }
+  int num_moves() const { return moves.size(); }
 
   // Moves.
   std::vector<Move> moves;
@@ -482,7 +482,8 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
                    Game *game_result, bool verbose = false);
 
 void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
-                            int num_games, bool verbose = false);
+                            int num_games, std::vector<Game> *game_results,
+                            bool verbose = false);
 
 // Parse commented games.
 // High quality commented game data can be obtained from

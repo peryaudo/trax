@@ -15,7 +15,8 @@ DEFINE_bool(self, false, "Run self play.");
 
 DEFINE_bool(perft, false, "Run perft.");
 
-DEFINE_bool(accuracy, false, "Measure accuracy against human game log.");
+DEFINE_bool(prediction, false,
+            "Measure prediction rate against human game log.");
 
 DEFINE_bool(dump_factors, false, "Dump factors for human game log.");
 
@@ -45,6 +46,9 @@ DEFINE_bool(silent, false, "Self play silently.");
 DEFINE_string(commented_games,
               "vendor/commented/Comment.txt",
               "File name of commented game data");
+
+DEFINE_bool(interpolate_resigns, false,
+            "Finish resigned games in human game log by using contest_player.");
 
 namespace {
 
@@ -186,12 +190,89 @@ void ShowPosition() {
   }
 }
 
+void DumpGamesStatistics(const std::vector<Game>& games) {
+  int loop_count = 0;
+  int victory_line_count = 0;
+  int resigns_count = 0;
+
+  double average_moves = 0;
+
+  for (const Game& game : games) {
+    average_moves += game.num_moves();
+
+    if (game.winning_reason == WINNING_REASON_LOOP) {
+      ++loop_count;
+    } else if (game.winning_reason == WINNING_REASON_LINE) {
+      ++victory_line_count;
+    } else if (game.winning_reason == WINNING_REASON_RESIGN) {
+      ++resigns_count;
+    }
+  }
+
+  average_moves /= games.size();
+
+  std::cerr << "Total: " << games.size() << std::endl;
+  std::cerr << "  Resigns: " << resigns_count << std::endl;
+  std::cerr << "  Loop: " << loop_count << std::endl;
+  std::cerr << "  Victory Line: " << victory_line_count << std::endl;
+  std::cerr << "Average moves: " << average_moves << std::endl;
+}
+
+void DumpGamesStatisticsCSV(const std::vector<Game>& game) {
+}
+
+void DumpFactors(const std::vector<Game>& games) {
+  std::string first_line = "step,winner";
+  bool first = true;
+
+  for (const Game& game : games) {
+    if (game.winner == 0) {
+      continue;
+    }
+
+    Position position;
+    for (int i = 0; i < game.num_moves(); ++i) {
+      Position next_position;
+      Move move = game.moves[i];
+      bool success = position.DoMove(move, &next_position);
+      if (!success) {
+        std::cerr << "something went wrong!" << std::endl;
+        exit(EXIT_FAILURE);
+      }
+      position.Swap(&next_position);
+
+      if (position.finished()) {
+        continue;
+      }
+
+      std::vector<std::pair<std::string, double>> factors;
+      GenerateFactors(position, &factors);
+
+      if (first) {
+        for (std::pair<std::string, double>& factor : factors) {
+          first_line += "," + factor.first;
+        }
+        std::cout << first_line << std::endl;
+
+        first = false;
+      }
+
+      std::cout << i << "," << game.winner;
+      for (std::pair<std::string, double>& factor : factors) {
+        std::cout << "," << factor.second;
+      }
+
+      std::cout << std::endl;
+    }
+  }
+}
+
 }  // namespace
 
 int main(int argc, char *argv[]) {
   google::SetUsageMessage(
       "Trax artificial intelligence.\n\n"
-      "usage: ./trax (--client|--self|--perft)");
+      "usage: ./trax (--client|--self|--perft|--prediction|--dump_factors)");
   google::ParseCommandLineFlags(&argc, &argv, true);
 
   // Otherwise Position::GetPossiblePieces() doesn't work.
@@ -206,24 +287,44 @@ int main(int argc, char *argv[]) {
     Random();
   }
 
+  //// Realtime playing facilities.
+
+  // These modes are for trax-daemon (Trax playing online frontend) and
+  // the interface is private and subject to change.
+  if (FLAGS_best_move) {
+    Searcher *player = GetSearcherFromName(FLAGS_contest_player);
+    ReadAndFindBestMove(player);
+    delete player;
+
+    return 0;
+  }
+
+  if (FLAGS_show_position) {
+    ShowPosition();
+    return 0;
+  }
+
+  // Official contest client.
   if (FLAGS_client) {
-    // Contest client.
     Searcher *player = GetSearcherFromName(FLAGS_contest_player);
     StartTraxClient(player);
     delete player;
-  } else if (FLAGS_self) {
-    // Perform self play.
-    Searcher *white_player = GetSearcherFromName(FLAGS_white);
-    Searcher *red_player = GetSearcherFromName(FLAGS_red);
-    StartMultipleSelfGames(white_player, red_player,
-                           FLAGS_num_games, !FLAGS_silent);
-    delete white_player;
-    delete red_player;
-  } else if (FLAGS_perft) {
-    // Do perft (performance testing by counting all the possible moves
-    // within the given depth.)
+
+    return 0;
+  }
+
+  //// Benchmarking utilities.
+
+  // Benchmark its performance by counting all the possible moves within
+  // the given depth.
+  if (FLAGS_perft) {
     ShowPerft(FLAGS_depth);
-  } else if (FLAGS_accuracy) {
+    return 0;
+  }
+
+  // Measure prediction accuracy of the evaluation function against
+  // human game log.
+  if (FLAGS_prediction) {
     Searcher *searcher = GetSearcherFromName(FLAGS_contest_player);
 
     std::vector<Game> games;
@@ -231,105 +332,62 @@ int main(int argc, char *argv[]) {
 
     int numerator = 0;
     int denominator = 0;
-    int loop_count = 0;
-    int victory_line_count = 0;
-    int resigns_count = 0;
     for (Game& game : games) {
       numerator += game.CountMatchingMoves(searcher);
       denominator += game.num_moves();
-
-      if (game.winning_reason == WINNING_REASON_LOOP) {
-        ++loop_count;
-      } else if (game.winning_reason == WINNING_REASON_LINE) {
-        ++victory_line_count;
-      } else if (game.winning_reason == WINNING_REASON_RESIGN) {
-        ++resigns_count;
-      }
     }
 
-    double accuracy = numerator * 100.0 / denominator;
+    DumpGamesStatistics(games);
 
-    std::cerr << "Total: " << games.size() << std::endl;
-    std::cerr << "Resigns: " << resigns_count << std::endl;
-    std::cerr << "Loop: " << loop_count << std::endl;
-    std::cerr << "Victory Line: " << victory_line_count << std::endl;
-    std::cerr << "Accuracy: " << accuracy
+    const double prediction = numerator * 100.0 / denominator;
+    std::cerr << "Prediction: " << prediction << "% "
       << "(" << numerator << "/" << denominator << ")" << std::endl;
 
     delete searcher;
-  } else if (FLAGS_dump_factors) {
-    std::vector<Game> games;
-    ParseCommentedGames(FLAGS_commented_games, &games);
-
-#if 0
-    NegaMaxSearcher<LeafAverageEvaluator> searcher(1);
-    for (Game& game : games) {
-      game.ContinueBySearcher(&searcher);
-    }
-    for (int i = 0; i < 1000; ++i) {
-      SimpleSearcher<LeafAverageEvaluator> searcher1;
-      SimpleSearcher<LeafAverageEvaluator> searcher2;
-      // NegaMaxSearcher<LeafAverageEvaluator> searcher2(1);
-      Game game;
-      StartSelfGame(&searcher1, &searcher2, &game, true);
-      games.push_back(game);
-    }
-#endif
-
-    std::string first_line = "step,winner";
-    bool first = true;
-
-    for (Game& game : games) {
-      if (game.winner == 0) {
-        continue;
-      }
-
-      Position position;
-      for (int i = 0; i < game.num_moves(); ++i) {
-        Position next_position;
-        Move move = game.moves[i];
-        bool success = position.DoMove(move, &next_position);
-        if (!success) {
-          std::cerr << "something went wrong!" << std::endl;
-          exit(EXIT_FAILURE);
-        }
-        position.Swap(&next_position);
-
-        if (position.finished()) {
-          continue;
-        }
-
-        std::vector<std::pair<std::string, double>> factors;
-        GenerateFactors(position, &factors);
-
-        if (first) {
-          for (std::pair<std::string, double>& factor : factors) {
-            first_line += "," + factor.first;
-          }
-          std::cout << first_line << std::endl;
-
-          first = false;
-        }
-
-        std::cout << i << "," << game.winner;
-        for (std::pair<std::string, double>& factor : factors) {
-          std::cout << "," << factor.second;
-        }
-
-        std::cout << std::endl;
-      }
-    }
-  } else if (FLAGS_best_move) {
-    Searcher *player = GetSearcherFromName(FLAGS_contest_player);
-    ReadAndFindBestMove(player);
-    delete player;
-  } else if (FLAGS_show_position) {
-    ShowPosition();
-  } else {
-    google::ShowUsageWithFlags(argv[0]);
-    std::cerr << std::endl;
-    std::cerr << "Move struct size: " << sizeof(Move) << std::endl;
+    return 0;
   }
 
-  return 0;
+  //// Strategy evaluation and improvement tools.
+
+  if (FLAGS_self || FLAGS_dump_factors) {
+    std::vector<Game> games;
+
+    if (FLAGS_self) {
+      // Perform self play.
+      Searcher *white_player = GetSearcherFromName(FLAGS_white);
+      Searcher *red_player = GetSearcherFromName(FLAGS_red);
+
+      StartMultipleSelfGames(white_player, red_player,
+                             FLAGS_num_games, &games, !FLAGS_silent);
+
+      delete white_player;
+      delete red_player;
+    } else {
+      // Parse human played game logs.
+      ParseCommentedGames(FLAGS_commented_games, &games);
+      if (FLAGS_interpolate_resigns) {
+        Searcher *searcher = GetSearcherFromName(FLAGS_contest_player);
+        for (Game& game : games) {
+          game.ContinueBySearcher(searcher);
+        }
+        delete searcher;
+      }
+    }
+
+    DumpGamesStatistics(games);
+
+    // DumpGamesStatisticsCSV(games);
+
+    if (FLAGS_dump_factors) {
+      DumpFactors(games);
+    }
+
+    return 0;
+  }
+
+  google::ShowUsageWithFlags(argv[0]);
+  std::cerr << std::endl;
+  std::cerr << "Move struct size: " << sizeof(Move) << std::endl;
+
+  return EXIT_FAILURE;
 }

@@ -1147,7 +1147,10 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
 }
 
 void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
-                            int num_games, bool verbose) {
+                            int num_games, std::vector<Game>* game_results,
+                            bool verbose) {
+  game_results->clear();
+
   std::cerr
     << "white: " << white_searcher->name()
     << " red: " << red_searcher->name() << std::endl;
@@ -1155,22 +1158,15 @@ void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
   int white = 0;
   int red = 0;
 
-  int loop_count = 0;
-  int victory_line_count = 0;
-
   for (int i = 0; i < num_games; ++i) {
     Game game;
     StartSelfGame(white_searcher, red_searcher, &game, verbose);
+    game_results->push_back(game);
+
     if (game.winner > 0) {
       ++red;
     } else if (game.winner < 0) {
       ++white;
-    }
-
-    if (game.winning_reason == WINNING_REASON_LOOP) {
-      ++loop_count;
-    } else if (game.winning_reason == WINNING_REASON_LINE) {
-      ++victory_line_count;
     }
 
     if (verbose || i == num_games - 1) {
@@ -1178,8 +1174,7 @@ void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
         << "white(" << white_searcher->name() << "): " << white << " "
         << "red(" << red_searcher->name() << "): " << red << " "
         << (white * 100.0 / (white + red)) << "% "
-        << "loop: " << loop_count << " "
-        << "victory line: " << victory_line_count << std::endl;
+        << std::endl;
     }
   }
 }
