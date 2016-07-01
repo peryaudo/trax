@@ -13,12 +13,17 @@ DEFINE_bool(client, false, "Run as contest client.");
 
 DEFINE_bool(self, false, "Run self play.");
 
+DEFINE_bool(use_log, false, "Load human game log.");
+
 DEFINE_bool(perft, false, "Run perft.");
 
 DEFINE_bool(prediction, false,
             "Measure prediction rate against human game log.");
 
-DEFINE_bool(dump_factors, false, "Dump factors for human game log.");
+DEFINE_bool(factors_csv, false, "Output factors to stdout (self/use_log.)");
+
+DEFINE_bool(stats_csv, false,
+            "Output game statistics to stdout (self/use_log.)");
 
 DEFINE_bool(best_move, false,
             "Get the current board configuration from stdin"
@@ -38,17 +43,19 @@ DEFINE_string(white, "simple-la", "Searcher name of white player (first)");
 
 DEFINE_string(red, "negamax1-la", "Searcher name of red player (second)");
 
-DEFINE_string(contest_player, "iter10-fe",
-              "Searcher name of contest client player");
+DEFINE_string(searcher, "iter10-fe", "Searcher name of contest client player");
 
-DEFINE_bool(silent, false, "Self play silently.");
+DEFINE_bool(verbose, true, "Verbose output on self play.");
 
 DEFINE_string(commented_games,
               "vendor/commented/Comment.txt",
               "File name of commented game data");
 
-DEFINE_bool(interpolate_resigns, false,
-            "Finish resigned games in human game log by using contest_player.");
+DEFINE_bool(
+    interpolate,
+    false,
+    "Finish resigned games in human game log by using searcher.");
+
 
 namespace {
 
@@ -218,7 +225,31 @@ void DumpGamesStatistics(const std::vector<Game>& games) {
   std::cerr << "Average moves: " << average_moves << std::endl;
 }
 
-void DumpGamesStatisticsCSV(const std::vector<Game>& game) {
+void DumpGamesStatisticsCSV(const std::vector<Game>& games) {
+  std::cout << "total_step,winner,winning_reason" << std::endl;
+  for (const Game& game : games) {
+    std::cout
+      << game.num_moves() << ","
+      << game.winner << ",";
+    switch (game.winning_reason) {
+      case WINNING_REASON_UNKNOWN:
+        std::cout << "UNKNOWN";
+        break;
+      case WINNING_REASON_LOOP:
+        std::cout << "LOOP";
+        break;
+      case WINNING_REASON_LINE:
+        std::cout << "LINE";
+        break;
+      case WINNING_REASON_FULL:
+        std::cout << "FULL";
+        break;
+      case WINNING_REASON_RESIGN:
+        std::cout << "RESIGN";
+        break;
+    }
+    std::cout << std::endl;
+  }
 }
 
 void DumpFactors(const std::vector<Game>& games) {
@@ -272,7 +303,7 @@ void DumpFactors(const std::vector<Game>& games) {
 int main(int argc, char *argv[]) {
   google::SetUsageMessage(
       "Trax artificial intelligence.\n\n"
-      "usage: ./trax (--client|--self|--perft|--prediction|--dump_factors)");
+      "usage: ./trax (--client|--perft|--prediction|--self|--use_log)");
   google::ParseCommandLineFlags(&argc, &argv, true);
 
   // Otherwise Position::GetPossiblePieces() doesn't work.
@@ -292,9 +323,9 @@ int main(int argc, char *argv[]) {
   // These modes are for trax-daemon (Trax playing online frontend) and
   // the interface is private and subject to change.
   if (FLAGS_best_move) {
-    Searcher *player = GetSearcherFromName(FLAGS_contest_player);
-    ReadAndFindBestMove(player);
-    delete player;
+    Searcher *searcher = GetSearcherFromName(FLAGS_searcher);
+    ReadAndFindBestMove(searcher);
+    delete searcher;
 
     return 0;
   }
@@ -306,9 +337,9 @@ int main(int argc, char *argv[]) {
 
   // Official contest client.
   if (FLAGS_client) {
-    Searcher *player = GetSearcherFromName(FLAGS_contest_player);
-    StartTraxClient(player);
-    delete player;
+    Searcher *searcher = GetSearcherFromName(FLAGS_searcher);
+    StartTraxClient(searcher);
+    delete searcher;
 
     return 0;
   }
@@ -325,7 +356,7 @@ int main(int argc, char *argv[]) {
   // Measure prediction accuracy of the evaluation function against
   // human game log.
   if (FLAGS_prediction) {
-    Searcher *searcher = GetSearcherFromName(FLAGS_contest_player);
+    Searcher *searcher = GetSearcherFromName(FLAGS_searcher);
 
     std::vector<Game> games;
     ParseCommentedGames(FLAGS_commented_games, &games);
@@ -349,7 +380,7 @@ int main(int argc, char *argv[]) {
 
   //// Strategy evaluation and improvement tools.
 
-  if (FLAGS_self || FLAGS_dump_factors) {
+  if (FLAGS_self || FLAGS_use_log) {
     std::vector<Game> games;
 
     if (FLAGS_self) {
@@ -358,15 +389,15 @@ int main(int argc, char *argv[]) {
       Searcher *red_player = GetSearcherFromName(FLAGS_red);
 
       StartMultipleSelfGames(white_player, red_player,
-                             FLAGS_num_games, &games, !FLAGS_silent);
+                             FLAGS_num_games, &games, FLAGS_verbose);
 
       delete white_player;
       delete red_player;
     } else {
       // Parse human played game logs.
       ParseCommentedGames(FLAGS_commented_games, &games);
-      if (FLAGS_interpolate_resigns) {
-        Searcher *searcher = GetSearcherFromName(FLAGS_contest_player);
+      if (FLAGS_interpolate) {
+        Searcher *searcher = GetSearcherFromName(FLAGS_searcher);
         for (Game& game : games) {
           game.ContinueBySearcher(searcher);
         }
@@ -374,13 +405,13 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    DumpGamesStatistics(games);
-
-    // DumpGamesStatisticsCSV(games);
-
-    if (FLAGS_dump_factors) {
+    if (FLAGS_factors_csv) {
       DumpFactors(games);
+    } else if (FLAGS_stats_csv) {
+      DumpGamesStatisticsCSV(games);
     }
+
+    DumpGamesStatistics(games);
 
     return 0;
   }

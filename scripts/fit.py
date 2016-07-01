@@ -7,7 +7,7 @@ from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
 from StringIO import StringIO
 
-p = subprocess.Popen("./trax --dump_factors", cwd="..", shell=True,
+p = subprocess.Popen("./trax --use_log --factors_csv", cwd="..", shell=True,
                      stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE)
 stdout_data, stderr_data = p.communicate()
