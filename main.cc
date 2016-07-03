@@ -36,7 +36,7 @@ DEFINE_bool(show_position, false,
 
 DEFINE_int32(seed, 0, "Random seed.");
 
-DEFINE_int32(depth, 1, "Perft depth.");
+DEFINE_int32(perft_depth, 6, "Perft depth.");
 
 DEFINE_int32(num_games, 100, "How many times to self play.");
 
@@ -353,7 +353,7 @@ int main(int argc, char *argv[]) {
   // Benchmark its performance by counting all the possible moves within
   // the given depth.
   if (FLAGS_perft) {
-    ShowPerft(FLAGS_depth);
+    ShowPerft(FLAGS_perft_depth);
     return 0;
   }
 
