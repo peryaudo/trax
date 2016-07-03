@@ -25,7 +25,8 @@ class Timer {
   // The timer will start right after the constructor is called.
   explicit Timer(int timeout_ms = -1)
       : timeout_ms_(timeout_ms)
-      , node_count_(0) {
+      , node_count_(0)
+      , completed_depth_(0) {
     GetAccurateCurrentTime(&begin_time_);
     GetAccurateCurrentTime(&current_time_);
   }
@@ -69,6 +70,12 @@ class Timer {
 
   int timeout_ms() { return timeout_ms_; }
 
+  int completed_depth() { return completed_depth_; }
+
+  void set_completed_depth(int completed_depth) {
+    completed_depth_ = completed_depth;
+  }
+
  private:
 #if defined __MACH__
 
@@ -110,6 +117,7 @@ class Timer {
   TimeType begin_time_;
   TimeType current_time_;
   uint64_t node_count_;
+  int completed_depth_;
 };
 
 #endif  // TIMER_H_

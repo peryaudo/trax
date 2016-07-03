@@ -119,6 +119,8 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position,
 
       assert(best_moves.size() > 0);
       best_move = best_moves[Random() % best_moves.size()];
+
+      timer->set_completed_depth(current_max_depth_);
     }
 
     return best_move;
@@ -151,6 +153,8 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position,
         best_moves.push_back(move);
       }
     }
+
+    timer->set_completed_depth(current_max_depth_);
 
     assert(best_moves.size() > 0);
     return best_moves[Random() % best_moves.size()];

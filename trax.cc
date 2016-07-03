@@ -1126,7 +1126,9 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
       position.Dump();
       std::cerr
         << "Elapsed time: " << overall_timer.elapsed_ms() << "ms "
-        << "Speed: " << searcher_timer.nps() <<" node/s" << std::endl;
+        << "Speed: " << searcher_timer.nps() <<" node/s "
+        << "Completed depth: " << searcher_timer.completed_depth()
+        << std::endl;
       std::cerr << std::endl;
     }
   }
