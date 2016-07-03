@@ -255,34 +255,20 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
 }
 
 // Instantiation.
-template Move SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(
-    const Position& position, Timer* timer);
 
-template Move SimpleSearcher<MonteCarloEvaluator>::SearchBestMove(
-    const Position& position, Timer* timer);
+#define INSTANTIATE_TEMPLATES_FOR(CLASS) \
+  template Move SimpleSearcher<CLASS>::SearchBestMove( \
+    const Position& position, Timer* timer); \
+  template Move NegaMaxSearcher<CLASS>::SearchBestMove( \
+      const Position& position, Timer* timer); \
+  template int NegaMaxSearcher<CLASS>::NegaMax( \
+      const Position& position, Timer* timer, int depth, int alpha, int beta);
 
-template Move SimpleSearcher<FactorEvaluator>::SearchBestMove(
-    const Position& position, Timer* timer);
-
-template Move NegaMaxSearcher<NoneEvaluator>::SearchBestMove(
-    const Position& position, Timer* timer);
-template int NegaMaxSearcher<NoneEvaluator>::NegaMax(
-    const Position& position, Timer* timer, int depth, int alpha, int beta);
-
-template Move NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(
-    const Position& position, Timer* timer);
-template int NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(
-    const Position& position, Timer* timer, int depth, int alpha, int beta);
-
-template Move NegaMaxSearcher<MonteCarloEvaluator>::SearchBestMove(
-    const Position& position, Timer* timer);
-template int NegaMaxSearcher<MonteCarloEvaluator>::NegaMax(
-    const Position& position, Timer* timer, int depth, int alpha, int beta);
-
-template Move NegaMaxSearcher<FactorEvaluator>::SearchBestMove(
-    const Position& position, Timer* timer);
-template int NegaMaxSearcher<FactorEvaluator>::NegaMax(
-    const Position& position, Timer* timer, int depth, int alpha, int beta);
+INSTANTIATE_TEMPLATES_FOR(LeafAverageEvaluator);
+INSTANTIATE_TEMPLATES_FOR(MonteCarloEvaluator);
+INSTANTIATE_TEMPLATES_FOR(FactorEvaluator);
+INSTANTIATE_TEMPLATES_FOR(NoneEvaluator);
+INSTANTIATE_TEMPLATES_FOR(AdvancedFactorEvaluator);
 
 namespace {
 

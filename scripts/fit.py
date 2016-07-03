@@ -7,7 +7,7 @@ from sklearn.cross_validation import train_test_split
 import matplotlib.pyplot as plt
 from StringIO import StringIO
 
-p = subprocess.Popen("./trax --use_log --factors_csv", cwd="..", shell=True,
+p = subprocess.Popen("./trax --use_log --interpolate --searcher=simple-la --factors_csv", cwd="..", shell=True,
                      stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE)
 stdout_data, stderr_data = p.communicate()
@@ -24,9 +24,9 @@ factors = [
     #'min_edge_size', 'max_edge_size',
 ]
 
-# factors = ['endpoint_factor','sum_edge_factor']
+factors = ['endpoint_factor','sum_edge_factor']
 # factors = ['sum_edge_factor_max_min','endpoint_factor_average']
-factors = ['leaf_average', 'sum_edge_factor_max_min','endpoint_factor_average']
+# factors = ['leaf_average', 'sum_edge_factor_max_min','endpoint_factor_average']
 
 # plt.hist(data[data.winner > 0]['sum_edge_factor_max_min'], label=">0", color="red", alpha=0.5)
 # plt.hist(data[data.winner < 0]['sum_edge_factor_max_min'], label="<0", color="blue", alpha=0.5)
