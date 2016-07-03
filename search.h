@@ -3,6 +3,7 @@
 #ifndef SEARCH_H_
 #define SEARCH_H_
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
