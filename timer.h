@@ -18,43 +18,6 @@
 static const uint64_t kNanosecondsToMilliseconds = 1000000;
 static const uint64_t kNanosecondsToSeconds = 1000000000;
 
-namespace {
-
-#if defined __MACH__
-
-using TimeType = uint64_t;
-
-void GetAccurateCurrentTime(TimeType *current_time) {
-  mach_timebase_info_data_t base;
-  mach_timebase_info(&base);
-  *current_time = mach_absolute_time() / base.denom;
-}
-
-uint64_t DiffAccurateTime(const TimeType& after, const TimeType& before) {
-  return after - before;
-}
-
-#elif defined _POSIX_MONOTONIC_CLOCK
-
-using TimeType = struct timespec;
-
-void GetAccurateCurrentTime(TimeType *current_time) {
-  clock_gettime(CLOCK_MONOTONIC, current_time);
-}
-
-uint64_t DiffAccurateTime(const TimeType& after, const TimeType& before) {
-  if (after.tv_nsec - before.tv_nsec < 0) {
-    return (after.tv_sec - before.tv_sec - 1) * kNanosecondsToSeconds +
-      (kNanosecondsToSeconds + after.tv_nsec - before.tv_nsec);
-  } else {
-    return (after.tv_sec - before.tv_sec) * kNanosecondsToSeconds +
-      (after.tv_nsec - before.tv_nsec);
-  }
-}
-
-#endif
-}  // namespace
-
 class Timer {
  public:
   // Check() will always return false (the timer will never expire)
@@ -107,6 +70,42 @@ class Timer {
   int timeout_ms() { return timeout_ms_; }
 
  private:
+#if defined __MACH__
+
+  using TimeType = uint64_t;
+
+  static void GetAccurateCurrentTime(TimeType *current_time) {
+    mach_timebase_info_data_t base;
+    mach_timebase_info(&base);
+    *current_time = mach_absolute_time() / base.denom;
+  }
+
+  static uint64_t DiffAccurateTime(const TimeType& after,
+                                   const TimeType& before) {
+    return after - before;
+  }
+
+#elif defined _POSIX_MONOTONIC_CLOCK
+
+  using TimeType = struct timespec;
+
+  static void GetAccurateCurrentTime(TimeType *current_time) {
+    clock_gettime(CLOCK_MONOTONIC, current_time);
+  }
+
+  static uint64_t DiffAccurateTime(const TimeType& after,
+                                   const TimeType& before) {
+    if (after.tv_nsec - before.tv_nsec < 0) {
+      return (after.tv_sec - before.tv_sec - 1) * kNanosecondsToSeconds +
+        (kNanosecondsToSeconds + after.tv_nsec - before.tv_nsec);
+    } else {
+      return (after.tv_sec - before.tv_sec) * kNanosecondsToSeconds +
+        (after.tv_nsec - before.tv_nsec);
+    }
+  }
+
+#endif
+
   int timeout_ms_;
   TimeType begin_time_;
   TimeType current_time_;

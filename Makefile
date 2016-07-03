@@ -1,7 +1,7 @@
 CXX = g++
 
 # Release
-CXXFLAGS = -std=c++11 -Wall -Wno-unused-const-variable -Wno-strict-aliasing -Wno-maybe-uninitialized -Wno-unused-variable -Ivendor/googletest -Ivendor/gflags -O3 -DNDEBUG
+CXXFLAGS = -std=c++11 -Wall -Wno-unused-const-variable -Wno-strict-aliasing -Wno-maybe-uninitialized -Wno-unused-variable -Wno-unknown-warning-option -Ivendor/googletest -Ivendor/gflags -O3 -DNDEBUG
 LDFLAGS = -O3 -lpthread
 
 # Debug
