@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include "./timer.h"
+
 // Infinite.
 static const int kInf = 1000000000;
 
@@ -418,7 +420,7 @@ class Searcher {
   // Return the best move from the position, from the perspective of
   // position.red_to_move(), or more simply, you are red inside the method
   // if position.red_to_move() == true.
-  virtual Move SearchBestMove(const Position& position) = 0;
+  virtual Move SearchBestMove(const Position& position, Timer* timer) = 0;
   virtual ~Searcher() {
   }
 

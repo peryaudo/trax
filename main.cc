@@ -93,8 +93,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<NoneEvaluator>(3);
   } else if (name == "negamax4-na") {
     return new NegaMaxSearcher<NoneEvaluator>(4);
-  } else if (name == "iter5-na") {
-    return new NegaMaxSearcher<NoneEvaluator>(5, true);
+  } else if (name == "iter10-na") {
+    return new NegaMaxSearcher<NoneEvaluator>(10, true);
   } else if (name == "negamax0-fe") {
     return new NegaMaxSearcher<FactorEvaluator>(0);
   } else if (name == "negamax1-fe") {
@@ -151,7 +151,8 @@ void ReadAndFindBestMove(Searcher* searcher) {
     return;
   }
 
-  Move best_move = searcher->SearchBestMove(position);
+  Timer timer(800);
+  Move best_move = searcher->SearchBestMove(position, &timer);
   std::cout << best_move.notation();
 }
 

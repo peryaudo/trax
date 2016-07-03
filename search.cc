@@ -13,7 +13,7 @@
 #include "./trax.h"
 
 
-Move RandomSearcher::SearchBestMove(const Position& position) {
+Move RandomSearcher::SearchBestMove(const Position& position, Timer* timer) {
   std::vector<Move> legal_moves;
   for (Move move : position.GenerateMoves()) {
     Position next_position;
@@ -28,7 +28,8 @@ Move RandomSearcher::SearchBestMove(const Position& position) {
 
 // Return the best move from the perspective of position.red_to_move().
 template<typename Evaluator>
-Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
+Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position,
+                                               Timer *timer) {
   assert(!position.finished());
 
   int best_score = -kInf;
@@ -66,12 +67,11 @@ Move SimpleSearcher<Evaluator>::SearchBestMove(const Position& position) {
 
 // Return the best move from the perspective of position.red_to_move().
 template<typename Evaluator>
-Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
+Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position,
+                                                Timer* timer) {
   assert(!position.finished());
 
   if (iterative_) {
-    Timer timer(/* timeout_ms = */ 800);
-
     std::vector<Move> possible_moves = position.GenerateMoves();
 
     Move best_move;
@@ -94,12 +94,12 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
         // NegaMax() evaluates from the perspective of next_position.
         // Therefore, position that is good for next_position.red_to_move() is
         // bad for position.red_to_move().
-        const int score = -NegaMax(next_position, 0);
+        const int score = -NegaMax(next_position, timer, 0);
 
         best_score = std::max(best_score, score);
         moves.emplace_back(score, move);
 
-        if (current_max_depth_ > 0 && timer.CheckTimeout()) {
+        if (current_max_depth_ > 0 && timer->CheckTimeout()) {
           aborted = true;
           break;
         }
@@ -139,7 +139,7 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
       // NegaMax() evaluates from the perspective of next_position.
       // Therefore, position that is good for next_position.red_to_move() is
       // bad for position.red_to_move().
-      const int score = -NegaMax(next_position, 0);
+      const int score = -NegaMax(next_position, timer, 0);
 
       best_score = std::max(best_score, score);
       moves.emplace_back(score, move);
@@ -161,7 +161,7 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position) {
 // Larger is better.
 template<typename Evaluator>
 int NegaMaxSearcher<Evaluator>::NegaMax(
-    const Position& position, int depth, int alpha, int beta) {
+    const Position& position, Timer* timer, int depth, int alpha, int beta) {
   const int original_alpha = alpha;
 
   TranspositionTableEntry* entry = nullptr;
@@ -175,11 +175,11 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
   }
 
   if (entry != nullptr && entry->depth >= depth) {
-    if (entry->bound == TRANSPOSITION_TABLE_EXACT) {
+    if (entry->bound == BOUND_EXACT) {
       return entry->score;
-    } else if (entry->bound == TRANSPOSITION_TABLE_LOWER_BOUND) {
+    } else if (entry->bound == BOUND_LOWER) {
       alpha = std::max(alpha, entry->score);
-    } else if (entry->bound == TRANSPOSITION_TABLE_UPPER_BOUND) {
+    } else if (entry->bound == BOUND_UPPER) {
       beta = std::min(beta, entry->score);
     }
 
@@ -202,6 +202,8 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
     // Thus, there is no need for sign flip.
     best_score = Evaluator::Evaluate(position);
 
+    timer->IncrementNodeCounter();
+
   } else {
     for (Move move : position.GenerateMoves()) {
       Position next_position;
@@ -214,7 +216,8 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
       // NegaMax() evaluates from the perspective of next_position.
       // Therefore, position that is good for next_position.red_to_move() is
       // bad for position.red_to_move().
-      const int score = -NegaMax(next_position, depth + 1, -beta, -alpha);
+      const int score = -NegaMax(
+          next_position, timer, depth + 1, -beta, -alpha);
       best_score = std::max(best_score, score);
       alpha = std::max(alpha, score);
       if (alpha >= beta) {
@@ -228,11 +231,11 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
   entry->score = best_score;
   entry->depth = depth;
   if (best_score <= original_alpha) {
-    entry->bound = TRANSPOSITION_TABLE_UPPER_BOUND;
+    entry->bound = BOUND_UPPER;
   } else if (best_score >= beta) {
-    entry->bound = TRANSPOSITION_TABLE_LOWER_BOUND;
+    entry->bound = BOUND_LOWER;
   } else {
-    entry->bound = TRANSPOSITION_TABLE_EXACT;
+    entry->bound = BOUND_EXACT;
   }
 
   return best_score;
@@ -240,33 +243,33 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
 
 // Instantiation.
 template Move SimpleSearcher<LeafAverageEvaluator>::SearchBestMove(
-    const Position& position);
+    const Position& position, Timer* timer);
 
 template Move SimpleSearcher<MonteCarloEvaluator>::SearchBestMove(
-    const Position& position);
+    const Position& position, Timer* timer);
 
 template Move SimpleSearcher<FactorEvaluator>::SearchBestMove(
-    const Position& position);
+    const Position& position, Timer* timer);
 
 template Move NegaMaxSearcher<NoneEvaluator>::SearchBestMove(
-    const Position& position);
+    const Position& position, Timer* timer);
 template int NegaMaxSearcher<NoneEvaluator>::NegaMax(
-    const Position& position, int depth, int alpha, int beta);
+    const Position& position, Timer* timer, int depth, int alpha, int beta);
 
 template Move NegaMaxSearcher<LeafAverageEvaluator>::SearchBestMove(
-    const Position& position);
+    const Position& position, Timer* timer);
 template int NegaMaxSearcher<LeafAverageEvaluator>::NegaMax(
-    const Position& position, int depth, int alpha, int beta);
+    const Position& position, Timer* timer, int depth, int alpha, int beta);
 
 template Move NegaMaxSearcher<MonteCarloEvaluator>::SearchBestMove(
-    const Position& position);
+    const Position& position, Timer* timer);
 template int NegaMaxSearcher<MonteCarloEvaluator>::NegaMax(
-    const Position& position, int depth, int alpha, int beta);
+    const Position& position, Timer* timer, int depth, int alpha, int beta);
 
 template Move NegaMaxSearcher<FactorEvaluator>::SearchBestMove(
-    const Position& position);
+    const Position& position, Timer* timer);
 template int NegaMaxSearcher<FactorEvaluator>::NegaMax(
-    const Position& position, int depth, int alpha, int beta);
+    const Position& position, Timer* timer, int depth, int alpha, int beta);
 
 namespace {
 

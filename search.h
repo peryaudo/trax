@@ -20,7 +20,7 @@
 // Searcher that randomly selects any legal moves.
 class RandomSearcher : public Searcher {
  public:
-  virtual Move SearchBestMove(const Position& position);
+  virtual Move SearchBestMove(const Position& position, Timer *timer);
 
   virtual std::string name() { return "RandomSearcher"; }
 };
@@ -29,7 +29,7 @@ class RandomSearcher : public Searcher {
 template <typename Evaluator>
 class SimpleSearcher : public Searcher {
  public:
-  virtual Move SearchBestMove(const Position& position);
+  virtual Move SearchBestMove(const Position& position, Timer *timer);
 
   virtual std::string name() {
     return "SimpleSearcher<" + Evaluator::name() + ">";
@@ -37,10 +37,10 @@ class SimpleSearcher : public Searcher {
 };
 
 // Transposition Table boundary flags for combination with alpha-beta pruning.
-enum TranspositionTableBound {
-  TRANSPOSITION_TABLE_LOWER_BOUND = 0,
-  TRANSPOSITION_TABLE_UPPER_BOUND,
-  TRANSPOSITION_TABLE_EXACT
+enum Bound {
+  BOUND_LOWER = 0,
+  BOUND_UPPER,
+  BOUND_EXACT
 };
 
 // Entry of Transposition Table.
@@ -55,7 +55,7 @@ enum TranspositionTableBound {
 struct TranspositionTableEntry {
   int score : 32;
   int depth : 30;
-  TranspositionTableBound bound : 2;
+  Bound bound : 2;
 };
 
 // Searcher that selects the best move by using the given evaluator and NegaMax
@@ -69,7 +69,7 @@ class NegaMaxSearcher : public Searcher {
       , iterative_(iterative) {
   }
 
-  virtual Move SearchBestMove(const Position& position);
+  virtual Move SearchBestMove(const Position& position, Timer *timer);
 
   virtual std::string name() {
     std::stringstream name;
@@ -83,7 +83,7 @@ class NegaMaxSearcher : public Searcher {
   }
 
  private:
-  int NegaMax(const Position& position,
+  int NegaMax(const Position& position, Timer *timer,
               int depth, int alpha = -kInf, int beta = kInf);
 
   int max_depth_;

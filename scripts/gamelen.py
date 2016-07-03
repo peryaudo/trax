@@ -7,6 +7,7 @@ from StringIO import StringIO
 p = subprocess.Popen(
     "./trax --use_log --stats_csv --interpolate --searcher=negamax1-la",
     # "./trax --use_log --stats_csv",
+    # "./trax --self --white=random --red=random --num_games=500 --verbose=false --stats_csv",
     cwd="..", shell=True,
     stdout=subprocess.PIPE)
 stdout_data, stderr_data = p.communicate()

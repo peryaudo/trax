@@ -1040,7 +1040,8 @@ void StartTraxClient(Searcher* searcher) {
     }
 
     // Search the best move.
-    Move best_move = searcher->SearchBestMove(position);
+    Timer timer(800);
+    Move best_move = searcher->SearchBestMove(position, &timer);
     success = position.DoMove(best_move, &next_position);
     if (!success) {
       std::cerr
@@ -1085,6 +1086,7 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
 
   for (int step = 0; !position.finished(); ++step) {
     Timer overall_timer(/* timeout_ms = */ 900);
+    Timer searcher_timer(/* timeout_ms = */ 800);
 
     if (verbose) {
       std::cerr << "Step " << step << ": ";
@@ -1094,9 +1096,9 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
     bool success = false;
 
     if (position.red_to_move()) {
-      best_move = red_searcher->SearchBestMove(position);
+      best_move = red_searcher->SearchBestMove(position, &searcher_timer);
     } else {
-      best_move = white_searcher->SearchBestMove(position);
+      best_move = white_searcher->SearchBestMove(position, &searcher_timer);
     }
 
     success = position.DoMove(best_move, &next_position);
@@ -1123,7 +1125,8 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
       std::cerr << best_move.notation() << std::endl;
       position.Dump();
       std::cerr
-        << "Elapsed time: " << overall_timer.elapsed_ms() << "ms" << std::endl;
+        << "Elapsed time: " << overall_timer.elapsed_ms() << "ms "
+        << "Speed: " << searcher_timer.nps() <<" node/s" << std::endl;
       std::cerr << std::endl;
     }
   }
@@ -1277,7 +1280,8 @@ int Game::CountMatchingMoves(Searcher *searcher) {
 
   Position position;
   for (Move actual_move : moves) {
-    Move best_move = searcher->SearchBestMove(position);
+    Timer timer(800);
+    Move best_move = searcher->SearchBestMove(position, &timer);
     if (best_move == actual_move) {
       ++match_count;
     }
@@ -1309,7 +1313,8 @@ void Game::ContinueBySearcher(Searcher *searcher) {
   }
 
   while (!position.finished()) {
-    Move best_move = searcher->SearchBestMove(position);
+    Timer timer(800);
+    Move best_move = searcher->SearchBestMove(position, &timer);
     moves.push_back(best_move);
     if (!comments.empty()) {
       comments.push_back("");
