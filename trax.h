@@ -11,6 +11,7 @@
 #include <map>
 #include <queue>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -148,6 +149,16 @@ struct Move {
 
   // Return Trax notation of the move.
   std::string notation() const;
+
+  const bool operator<(const Move& to) const {
+    if (x != to.x) {
+      return x < to.x;
+    }
+    if (y != to.y) {
+      return y < to.y;
+    }
+    return piece < to.piece;
+  }
 
   // Use bit field so that Move struct will fit into 4 bytes.
   // I'm not sure if it is very effective but at least it's not harmful and
@@ -492,5 +503,22 @@ void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,
 // http://www.traxgame.com/games_comment.php .
 void ParseCommentedGames(const std::string& filename,
                          std::vector<Game> *games);
+
+// Book data.
+class Book {
+ public:
+  Book() {
+  }
+
+  // Generate book data from the games.
+  // max_steps specifies maximum steps to remember the next move.
+  void Init(const std::vector<Game>& games, int max_steps = 3);
+
+  // Return true if found.
+  bool Select(const Position& position, Move *next_move);
+
+ private:
+  std::unordered_map<PositionHash, std::vector<Move>> books_;
+};
 
 #endif  // TRAX_H_

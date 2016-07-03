@@ -71,6 +71,11 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position,
                                                 Timer* timer) {
   assert(!position.finished());
 
+  Move book_move;
+  if (book_.Select(position, &book_move)) {
+    return book_move;
+  }
+
   if (iterative_) {
     std::vector<Move> possible_moves = position.GenerateMoves();
 

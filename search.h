@@ -67,6 +67,9 @@ class NegaMaxSearcher : public Searcher {
       : max_depth_(max_depth)
       , current_max_depth_(0)
       , iterative_(iterative) {
+    std::vector<Game> games;
+    ParseCommentedGames("vendor/commented/Comment.txt", &games);
+    book_.Init(games);
   }
 
   virtual Move SearchBestMove(const Position& position, Timer *timer);
@@ -91,6 +94,7 @@ class NegaMaxSearcher : public Searcher {
   bool iterative_;
   std::unordered_map<PositionHash,
                      TranspositionTableEntry> transposition_table_;
+  Book book_;
 };
 
 //

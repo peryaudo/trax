@@ -1331,3 +1331,32 @@ void Game::ContinueBySearcher(Searcher *searcher) {
   winner = position.winner();
   winning_reason = position.winning_reason();
 }
+
+void Book::Init(const std::vector<Game>& games, int max_steps) {
+  for (const Game& game : games) {
+    Position position;
+    for (int i = 0; i < game.num_moves(); ++i) {
+      if (i > max_steps) {
+        break;
+      }
+
+      Move move = game.moves[i];
+
+      // TODO(tetsui): Register all the rotated moves of this move.
+      books_[position.Hash()].push_back(move);
+
+      Position next_position;
+      position.DoMove(move, &next_position);
+      position.Swap(&next_position);
+    }
+  }
+}
+
+bool Book::Select(const Position& position, Move *next_move) {
+  auto it = books_.find(position.Hash());
+  if (it == books_.end()) {
+    return false;
+  }
+  *next_move = it->second[Random() % it->second.size()];
+  return true;
+}
