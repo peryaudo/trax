@@ -26,6 +26,8 @@ DEFINE_bool(factors_csv, false, "Output factors to stdout (self/use_log.)");
 DEFINE_bool(stats_csv, false,
             "Output game statistics to stdout (self/use_log.)");
 
+DEFINE_bool(tournament, false, "Run tournament.");
+
 DEFINE_bool(best_move, false,
             "Get the current board configuration from stdin"
             " and return the best move in trax notation."
@@ -300,12 +302,80 @@ void DumpFactors(const std::vector<Game>& games) {
   }
 }
 
+// Ranks searchers by simplified version of Elo rating.
+// https://en.wikipedia.org/wiki/Elo_rating_system
+//
+// The method is based on that of Shogi Club 24 or floodgate's one.
+void RunTournament() {
+  Searcher *searchers[] = {
+    new RandomSearcher(),
+    new SimpleSearcher<LeafAverageEvaluator>(),
+    new SimpleSearcher<FactorEvaluator>(),
+    new NegaMaxSearcher<LeafAverageEvaluator>(1),
+    new NegaMaxSearcher<LeafAverageEvaluator>(10, true),
+    new NegaMaxSearcher<FactorEvaluator>(10, true)
+  };
+
+  const int num_searchers = sizeof(searchers) / sizeof(searchers[0]);
+  std::vector<double> rates(num_searchers, 1500.0);
+
+  for (int i = 0; i < FLAGS_num_games; ++i) {
+    std::cerr << "Game " << i << ": ";
+
+    int white_index = Random() % num_searchers;
+    int red_index = white_index;
+    while (white_index == red_index) {
+      red_index = Random() % num_searchers;
+    }
+
+    Game game;
+    StartSelfGame(searchers[white_index],
+                  searchers[red_index], &game, FLAGS_verbose);
+
+    if (game.winner > 0) {
+      std::cerr << "[LOSE]white: " << searchers[white_index]->name() <<
+        " [WIN]red: " << searchers[red_index]->name() << std::endl;
+
+      double delta_r =
+        16 + (rates[white_index] - rates[red_index]) * 0.04;
+      delta_r = std::min(31.0, std::max(1.0, delta_r));
+      rates[red_index] += delta_r;
+      rates[white_index] -= delta_r;
+    } else if (game.winner < 0) {
+      std::cerr << "[WIN]white: " << searchers[white_index]->name() <<
+        " [LOSE]red: " << searchers[red_index]->name() << std::endl;
+
+      double delta_r =
+        16 + (rates[red_index] - rates[white_index]) * 0.04;
+      delta_r = std::min(31.0, std::max(1.0, delta_r));
+      rates[white_index] += delta_r;
+      rates[red_index] -= delta_r;
+    } else {
+      std::cerr << "[DRAW]white: " << searchers[white_index]->name() <<
+        " [DRAW]red: " << searchers[red_index]->name() << std::endl;
+    }
+
+    std::vector<std::pair<double, std::string>> ranking;
+    for (int i = 0; i < num_searchers; ++i) {
+      ranking.emplace_back(rates[i], searchers[i]->name());
+    }
+
+    std::sort(ranking.rbegin(), ranking.rend());
+    for (auto& ranked : ranking) {
+      std::cerr << ranked.first << "\t" << ranked.second << std::endl;
+    }
+    std::cerr << std::endl;
+    std::cerr << std::endl;
+  }
+}
+
 }  // namespace
 
 int main(int argc, char *argv[]) {
   google::SetUsageMessage(
       "Trax artificial intelligence.\n\n"
-      "usage: ./trax (--client|--perft|--prediction|--self|--use_log)");
+      "usage: ./trax (--client|--perft|--prediction|--self|--use_log|"
+      "--tournament)");
   google::ParseCommandLineFlags(&argc, &argv, true);
 
   // Otherwise Position::GetPossiblePieces() doesn't work.
@@ -417,6 +487,11 @@ int main(int argc, char *argv[]) {
 
     DumpGamesStatistics(games);
 
+    return 0;
+  }
+
+  if (FLAGS_tournament) {
+    RunTournament();
     return 0;
   }
 
