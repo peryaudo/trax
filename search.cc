@@ -227,6 +227,10 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
       if (alpha >= beta) {
        break;
       }
+
+      if (timer->CheckTimeout()) {
+        return 0;
+      }
     }
   }
 
