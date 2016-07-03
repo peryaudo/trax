@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 
 #include "./perft.h"
 #include "./search.h"
@@ -323,9 +324,10 @@ int main(int argc, char *argv[]) {
   // These modes are for trax-daemon (Trax playing online frontend) and
   // the interface is private and subject to change.
   if (FLAGS_best_move) {
-    Searcher *searcher = GetSearcherFromName(FLAGS_searcher);
-    ReadAndFindBestMove(searcher);
-    delete searcher;
+    std::unique_ptr<Searcher> searcher;
+    searcher.reset(GetSearcherFromName(FLAGS_searcher));
+
+    ReadAndFindBestMove(searcher.get());
 
     return 0;
   }
@@ -337,9 +339,10 @@ int main(int argc, char *argv[]) {
 
   // Official contest client.
   if (FLAGS_client) {
-    Searcher *searcher = GetSearcherFromName(FLAGS_searcher);
-    StartTraxClient(searcher);
-    delete searcher;
+    std::unique_ptr<Searcher> searcher;
+    searcher.reset(GetSearcherFromName(FLAGS_searcher));
+
+    StartTraxClient(searcher.get());
 
     return 0;
   }
@@ -356,7 +359,8 @@ int main(int argc, char *argv[]) {
   // Measure prediction accuracy of the evaluation function against
   // human game log.
   if (FLAGS_prediction) {
-    Searcher *searcher = GetSearcherFromName(FLAGS_searcher);
+    std::unique_ptr<Searcher> searcher;
+    searcher.reset(GetSearcherFromName(FLAGS_searcher));
 
     std::vector<Game> games;
     ParseCommentedGames(FLAGS_commented_games, &games);
@@ -364,7 +368,7 @@ int main(int argc, char *argv[]) {
     int numerator = 0;
     int denominator = 0;
     for (Game& game : games) {
-      numerator += game.CountMatchingMoves(searcher);
+      numerator += game.CountMatchingMoves(searcher.get());
       denominator += game.num_moves();
     }
 
@@ -374,7 +378,6 @@ int main(int argc, char *argv[]) {
     std::cerr << "Prediction: " << prediction << "% "
       << "(" << numerator << "/" << denominator << ")" << std::endl;
 
-    delete searcher;
     return 0;
   }
 
@@ -385,23 +388,23 @@ int main(int argc, char *argv[]) {
 
     if (FLAGS_self) {
       // Perform self play.
-      Searcher *white_player = GetSearcherFromName(FLAGS_white);
-      Searcher *red_player = GetSearcherFromName(FLAGS_red);
+      std::unique_ptr<Searcher> white_player;
+      std::unique_ptr<Searcher> red_player;
+      white_player.reset(GetSearcherFromName(FLAGS_white));
+      red_player.reset(GetSearcherFromName(FLAGS_red));
 
-      StartMultipleSelfGames(white_player, red_player,
+      StartMultipleSelfGames(white_player.get(), red_player.get(),
                              FLAGS_num_games, &games, FLAGS_verbose);
-
-      delete white_player;
-      delete red_player;
     } else {
       // Parse human played game logs.
       ParseCommentedGames(FLAGS_commented_games, &games);
       if (FLAGS_interpolate) {
-        Searcher *searcher = GetSearcherFromName(FLAGS_searcher);
+        std::unique_ptr<Searcher> searcher;
+        searcher.reset(GetSearcherFromName(FLAGS_searcher));
+
         for (Game& game : games) {
-          game.ContinueBySearcher(searcher);
+          game.ContinueBySearcher(searcher.get());
         }
-        delete searcher;
       }
     }
 
