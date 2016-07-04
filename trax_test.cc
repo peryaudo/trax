@@ -25,7 +25,7 @@ void SupplyNotations(const std::vector<std::string>& notations,
 
 using NeighborKey = uint32_t;
 extern NeighborKey EncodeNeighborKey(int right, int top, int left, int bottom);
-extern std::unordered_map<NeighborKey, PieceSet> g_possible_pieces_table;
+extern PieceSet g_possible_pieces_table[1 << 12];
 
 TEST(PossiblePieceTest, NoHitForInvalidPlace) {
   //  /
@@ -35,7 +35,7 @@ TEST(PossiblePieceTest, NoHitForInvalidPlace) {
                                       PIECE_WRRW,
                                       PIECE_RWWR,
                                       PIECE_RWWR);
-  ASSERT_EQ(0, g_possible_pieces_table.count(key));
+  ASSERT_EQ(PieceSet(), g_possible_pieces_table[key]);
 }
 
 TEST(MoveTest, PutInitialPiece) {

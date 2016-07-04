@@ -52,17 +52,21 @@ using NeighborKey = uint32_t;
 // Encode neighboring pieces into key.
 NeighborKey EncodeNeighborKey(int right, int top, int left, int bottom) {
   return static_cast<NeighborKey>(
-      right + (top << 8) + (left << 16) + (bottom << 24));
+      right + (top << 3) + (left << 6) + (bottom << 9));
 }
 
 // Table of possible piece kinds for the certain neighboring piece combination.
 // Using this gives significant performance improvement on
 // Position::GetPossiblePieces().
-std::unordered_map<NeighborKey, PieceSet> g_possible_pieces_table;
+PieceSet g_possible_pieces_table[1 << 12];
 
 // Should be called before Position::GetPossiblePieces().
 void GeneratePossiblePiecesTable() {
-  g_possible_pieces_table.clear();
+  std::fill(g_possible_pieces_table,
+            g_possible_pieces_table +
+            sizeof(g_possible_pieces_table) /
+            sizeof(g_possible_pieces_table[0]),
+            PieceSet());
 
   for (int i_right = 0; i_right < NUM_PIECES; ++i_right) {
     for (int j_top = 0; j_top < NUM_PIECES; ++j_top) {
@@ -156,10 +160,6 @@ void GenerateForcedPlayTable() {
         for (int l_bottom = 0; l_bottom < NUM_PIECES; ++l_bottom) {
           NeighborKey key = EncodeNeighborKey(
               i_right, j_top, k_left, l_bottom);
-          if (!g_possible_pieces_table.count(key)) {
-            continue;
-          }
-
           PieceSet pieces = g_possible_pieces_table[key];
           // No possible piece including empty one for the location.
           // The position is invalid.
@@ -429,12 +429,7 @@ PieceSet Position::GetPossiblePieces(int x, int y) const {
       at(x + kDx[1], y + kDy[1]),
       at(x + kDx[2], y + kDy[2]),
       at(x + kDx[3], y + kDy[3]));
-  auto it = g_possible_pieces_table.find(key);
-  if (it == g_possible_pieces_table.end()) {
-    return PieceSet();
-  } else {
-    return it->second;
-  }
+  return g_possible_pieces_table[key];
 }
 
 void Position::EnumerateLines(std::vector<Line> *lines) const {
