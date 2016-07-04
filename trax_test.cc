@@ -143,24 +143,6 @@ TEST(PositionTest, NotHorizontalVictoryLineRealWorld2) {
   ASSERT_EQ(-1, position.winner());
 }
 
-/*
-TEST(PositionTest, LongestLines1) {
-  Position position;
-  SupplyNotations({"@0+", "B1+", "C1+", "B0+", "C1+"}, &position);
-  ASSERT_FALSE(position.finished());
-  ASSERT_EQ(3, position.red_longest());
-  ASSERT_EQ(2, position.white_longest());
-}
-
-TEST(PositionTest, LongestLines2) {
-  Position position;
-  SupplyNotations({"@0+", "B1+", "B0+", "B0/"}, &position);
-  ASSERT_FALSE(position.finished());
-  ASSERT_EQ(2, position.red_longest());
-  ASSERT_EQ(3, position.white_longest());
-}
-*/
-
 TEST(PositionTest, ForcedPlays) {
   Position position;
   SupplyNotations(
@@ -246,7 +228,7 @@ TEST(PositionTest, EnumerateLines1) {
       ASSERT_EQ(9, line.edge_distances[0]);
       ASSERT_EQ(7, line.edge_distances[1]);
     }
-    ASSERT_EQ(4, line.endpoint_distance);
+    ASSERT_EQ(5, line.endpoint_distance);
   }
   ASSERT_EQ(1, red_count);
   ASSERT_EQ(1, white_count);
@@ -274,6 +256,48 @@ TEST(PositionTest, EnumerateLines2) {
 
   ASSERT_EQ(5, red_count);
   ASSERT_EQ(7, white_count);
+}
+
+TEST(PositionTest, EnumerateLines3) {
+  Position position;
+  SupplyNotations({"@0/", "B1\\", "C1/", "D1\\", "B0+"}, &position);
+
+  std::vector<Line> lines;
+  position.EnumerateLines(&lines);
+
+  int red_mates = 0;
+  int white_mates = 0;
+  for (const Line& line : lines) {
+    if (line.is_mate()) {
+      if (line.is_red) {
+        ++red_mates;
+      } else {
+        ++white_mates;
+      }
+    }
+  }
+
+  ASSERT_EQ(6, lines.size());
+
+  ASSERT_EQ(2, red_mates);
+  ASSERT_EQ(0, white_mates);
+  ASSERT_LT(0, CalcMateScore(position, lines));
+}
+
+TEST(PositionTest, EnumerateLines4) {
+  Position position;
+  SupplyNotations({"@0/", "B1\\", "C1/", "D1\\"}, &position);
+  std::vector<Line> lines;
+  position.EnumerateLines(&lines);
+  ASSERT_LT(0, CalcMateScore(position, lines));
+}
+
+TEST(PositionTest, EnumerateLines5) {
+  Position position;
+  SupplyNotations({"@0/", "B1\\", "C1/", "D1\\", "B0+", "@2+"}, &position);
+  std::vector<Line> lines;
+  position.EnumerateLines(&lines);
+  ASSERT_GT(0, CalcMateScore(position, lines));
 }
 
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {

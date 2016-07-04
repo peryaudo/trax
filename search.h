@@ -249,6 +249,39 @@ class MonteCarloEvaluator {
   static std::string name() { return "MonteCarloEvaluator"; }
 };
 
+static int CalcMateScore(const Position& position,
+                         const std::vector<Line>& lines) {
+  int red_mates = 0;
+  int white_mates = 0;
+  for (const Line& line : lines) {
+    if (line.is_mate()) {
+      if (line.is_red) {
+        ++red_mates;
+      } else {
+        ++white_mates;
+      }
+    }
+  }
+
+  if (position.red_to_move()) {
+    if (red_mates > 0) {
+      return kInf / 10 * 9;
+    }
+    if (white_mates >= 2) {
+      return -kInf / 10 * 9;
+    }
+  } else {
+    if (white_mates > 0) {
+      return kInf / 10 * 9;
+    }
+    if (red_mates >= 2) {
+      return -kInf / 10 * 9;
+    }
+  }
+
+  return 0;
+}
+
 class FactorEvaluator {
  public:
   // Evaluate the position, from the perspective of position.red_to_move().
@@ -271,35 +304,7 @@ class FactorEvaluator {
     std::vector<Line> lines;
     position.EnumerateLines(&lines);
 
-#if 0
-    int red_mates = 0;
-    int white_mates = 0;
-    for (Line& line : lines) {
-      if (line.is_mate()) {
-        if (line.is_red) {
-          ++red_mates;
-        } else {
-          ++white_mates;
-        }
-      }
-    }
-
-    if (position.red_to_move()) {
-      if (red_mates > 0) {
-        return kInf / 10 * 9;
-      }
-      if (white_mates >= 2) {
-        return -kInf / 10 * 9;
-      }
-    } else {
-      if (white_mates > 0) {
-        return kInf / 10 * 9;
-      }
-      if (red_mates >= 2) {
-        return -kInf / 10 * 9;
-      }
-    }
-#endif
+    // TODO(tetsui): Do shortcut
 
     const int unit = kInf / 100;
     int endpoint_factor = 0;

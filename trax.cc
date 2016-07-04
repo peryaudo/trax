@@ -979,8 +979,9 @@ Line::Line(const std::pair<int, int>& endpoint_a,
 
   endpoint_distance =
     std::min(
-        upper_index - lower_index,
-        lower_index + static_cast<int>(indexed_edges.size()) - upper_index);
+        upper_index - lower_index + 1,
+        lower_index + static_cast<int>(indexed_edges.size()) - upper_index
+        + 1);
 }
 
 void StartTraxClient(Searcher* searcher) {

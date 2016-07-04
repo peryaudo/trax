@@ -211,6 +211,17 @@ struct Line {
        const Position& position,
        const std::map<std::pair<int, int>, int>& indexed_edges);
 
+  void Dump() const {
+    if (is_red) {
+      std::cerr << "Red line, ";
+    } else {
+      std::cerr << "White line, ";
+    }
+    std::cerr << "endpoint_distance: " << endpoint_distance << ", ";
+    std::cerr << "edge_distances[0]: " << edge_distances[0] << ", ";
+    std::cerr << "edge_distances[1]: " << edge_distances[1] << std::endl;
+  }
+
   bool is_mate() const {
     return (endpoint_distance <= 2 ||
             edge_distances[0] <= 1 ||
