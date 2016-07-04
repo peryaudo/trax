@@ -166,6 +166,17 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position,
   }
 }
 
+// Decrement the value in a way its absolute value will desrease.
+int AbsoluteDecrement(int x) {
+  if (x > 0) {
+    return x - 1;
+  } else if (x < 0) {
+    return x + 1;
+  } else {
+    return 0;
+  }
+}
+
 // Score the move from the perspective of position.red_to_move().
 // Larger is better.
 template<typename Evaluator>
@@ -225,8 +236,14 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
       // NegaMax() evaluates from the perspective of next_position.
       // Therefore, position that is good for next_position.red_to_move() is
       // bad for position.red_to_move().
-      const int score = -NegaMax(
-          next_position, timer, depth + 1, -beta, -alpha);
+      const int score = AbsoluteDecrement(
+          -NegaMax(next_position, timer, depth + 1, -beta, -alpha));
+
+      // The reason why we used AbsoluteDecrement here is to finish the game
+      // as early as possible.
+      // This not only reduces unexpected behavior to human players, but also
+      // works as very good pruning.
+
       best_score = std::max(best_score, score);
       alpha = std::max(alpha, score);
       if (alpha >= beta) {

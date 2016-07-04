@@ -219,6 +219,7 @@ TEST(PositionTest, EnumerateLines1) {
   position.EnumerateLines(&lines);
   int red_count = 0, white_count = 0;
   for (Line& line : lines) {
+    line.Dump();
     if (line.is_red) {
       ++red_count;
       ASSERT_EQ(7, line.edge_distances[0]);
@@ -228,7 +229,7 @@ TEST(PositionTest, EnumerateLines1) {
       ASSERT_EQ(9, line.edge_distances[0]);
       ASSERT_EQ(7, line.edge_distances[1]);
     }
-    ASSERT_EQ(5, line.endpoint_distance);
+    ASSERT_EQ(6, line.endpoint_distance);
   }
   ASSERT_EQ(1, red_count);
   ASSERT_EQ(1, white_count);
@@ -297,6 +298,16 @@ TEST(PositionTest, EnumerateLines5) {
   SupplyNotations({"@0/", "B1\\", "C1/", "D1\\", "B0+", "@2+"}, &position);
   std::vector<Line> lines;
   position.EnumerateLines(&lines);
+  ASSERT_GT(0, CalcMateScore(position, lines));
+}
+
+TEST(PositionTest, EnumerateLines6) {
+  Position position;
+  SupplyNotations(
+      {"@0/", "B1+", "C1\\", "D1/", "E1\\", "E0\\"}, &position);
+  std::vector<Line> lines;
+  position.EnumerateLines(&lines);
+
   ASSERT_GT(0, CalcMateScore(position, lines));
 }
 

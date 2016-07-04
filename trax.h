@@ -209,7 +209,8 @@ struct Line {
        const std::pair<int, int>& endpoint_b,
        bool is_red,
        const Position& position,
-       const std::map<std::pair<int, int>, int>& indexed_edges);
+       const std::map<std::pair<int, int>, int>& indexed_edges,
+       int total_index);
 
   void Dump() const {
     if (is_red) {
@@ -393,7 +394,8 @@ class Position {
 
   void TraceAndIndexEdges(
       int start_x, int start_y,
-      std::map<std::pair<int, int>, int> *indexed_edges) const;
+      std::map<std::pair<int, int>, int> *indexed_edges,
+      int *total_index) const;
 
   // Reference access to board is only allowed from other instances of the
   // class.

@@ -304,7 +304,10 @@ class FactorEvaluator {
     std::vector<Line> lines;
     position.EnumerateLines(&lines);
 
-    // TODO(tetsui): Do shortcut
+    const int mate_score = CalcMateScore(position, lines);
+    if (mate_score != 0) {
+      return mate_score;
+    }
 
     const int unit = kInf / 100;
     int endpoint_factor = 0;
@@ -339,6 +342,46 @@ class AdvancedFactorEvaluator {
   // or more simply, you are red inside the method if red_to_move() == true.
   // Larger value is better.
   static int Evaluate(const Position& position) {
+#if 1
+    if (position.finished()) {
+      if (position.red_to_move()) {
+        // I'm red.
+        // winner() > 0 if red wins.
+        return kInf * position.winner();
+      } else {
+        // I'm white.
+        // winner() > 0 if red wins.
+        // Flip the sign.
+        return kInf * -position.winner();
+      }
+    }
+
+    std::vector<Line> lines;
+    position.EnumerateLines(&lines);
+
+    const int unit = kInf / 100;
+    int endpoint_factor = 0;
+    int edge_factor = 0;
+    for (Line& line : lines) {
+      int endpoint = unit / (1 + line.endpoint_distance);
+      int edge = (
+          unit / (1 + line.edge_distances[0]) +
+          unit / (1 + line.edge_distances[1]));
+      if (!line.is_red) {
+        endpoint *= -1;
+        edge *= -1;
+      }
+      endpoint_factor += endpoint;
+      edge_factor += edge;
+    }
+
+    int score = endpoint_factor + (-edge_factor);
+    if (!position.red_to_move()) {
+      score *= -1;
+    }
+
+    return score;
+#else
     if (position.finished()) {
       if (position.red_to_move()) {
         // I'm red.
@@ -401,6 +444,7 @@ class AdvancedFactorEvaluator {
     }
 
     return score;
+#endif
   }
 
   static std::string name() { return "AdvancedFactorEvaluator"; }

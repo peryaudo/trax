@@ -446,6 +446,7 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
   }
 
   std::map<std::pair<int, int>, int> indexed_edges;
+  int total_index;
 
   std::set<std::tuple<std::pair<int, int>, std::pair<int, int>, bool>> traced;
 
@@ -463,7 +464,7 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
           is_edge = true;
 
           if (indexed_edges.empty()) {
-            TraceAndIndexEdges(nx, ny, &indexed_edges);
+            TraceAndIndexEdges(nx, ny, &indexed_edges, &total_index);
           }
           break;
         }
@@ -491,7 +492,8 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
           // We ignore these cases for now.
           continue;
         }
-        Line line(endpoint_a, endpoint_b, is_red, *this, indexed_edges);
+        Line line(endpoint_a, endpoint_b, is_red, *this,
+                  indexed_edges, total_index);
 
         lines->push_back(line);
       }
@@ -894,7 +896,8 @@ void Position::TraceLineToEndpoints(int x, int y, bool red_line,
 
 void Position::TraceAndIndexEdges(
     int start_x, int start_y,
-    std::map<std::pair<int, int>, int> *indexed_edges) const {
+    std::map<std::pair<int, int>, int> *indexed_edges,
+    int *total_index) const {
   int x = start_x;
   int y = start_y;
   int previous_direction = -1;
@@ -930,9 +933,13 @@ void Position::TraceAndIndexEdges(
 
   assert(previous_direction >= 0);
 
+  int current_index = 0;
+
   while (true) {
     indexed_edges->insert(std::make_pair(std::make_pair(x, y),
-                                         indexed_edges->size()));
+                                         current_index));
+    // std::cerr << "Tracing: (" << x << ", " << y << ") " << current_index << std::endl;
+    ++current_index;
 
     // Trace in clockwise order.
     for (int i = -1; i < 3; ++i) {
@@ -943,6 +950,10 @@ void Position::TraceAndIndexEdges(
         x = nx;
         y = ny;
         previous_direction = next_direction;
+
+        if (i == -1) {
+          ++current_index;
+        }
         break;
       }
     }
@@ -951,13 +962,16 @@ void Position::TraceAndIndexEdges(
       break;
     }
   }
+
+  *total_index = current_index;
 }
 
 Line::Line(const std::pair<int, int>& endpoint_a,
            const std::pair<int, int>& endpoint_b,
            bool is_red,
            const Position& position,
-           const std::map<std::pair<int, int>, int>& indexed_edges)
+           const std::map<std::pair<int, int>, int>& indexed_edges,
+           int total_index)
     : is_red(is_red) {
   int lowers[2] = {endpoint_a.first, endpoint_a.second};
   int uppers[2] = {endpoint_b.first, endpoint_b.second};
@@ -977,11 +991,12 @@ Line::Line(const std::pair<int, int>& endpoint_a,
     std::swap(lower_index, upper_index);
   }
 
+  // std::cerr << lower_index << " vs " << upper_index << std::endl;
+
   endpoint_distance =
     std::min(
-        upper_index - lower_index + 1,
-        lower_index + static_cast<int>(indexed_edges.size()) - upper_index
-        + 1);
+        upper_index - lower_index,
+        lower_index + total_index - upper_index);
 }
 
 void StartTraxClient(Searcher* searcher) {
