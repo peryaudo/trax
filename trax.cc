@@ -760,16 +760,24 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
 void Position::FillWinnerFlags(int x, int y) {
   assert(at(x, y) != PIECE_EMPTY);
 
-  if (!red_winner_ && TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) {
+  WinningReason reason;
+
+  if (!red_winner_ &&
+      (reason = TraceVictoryLineOrLoop(x, y, /* red_line = */ true)) !=
+      WINNING_REASON_UNKNOWN) {
     red_winner_ = true;
+    red_winning_reason_ = reason;
   }
 
-  if (!white_winner_ && TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) {
+  if (!white_winner_ &&
+      (reason = TraceVictoryLineOrLoop(x, y, /* red_line = */ false)) !=
+      WINNING_REASON_UNKNOWN) {
     white_winner_ = true;
+    white_winning_reason_ = reason;
   }
 }
 
-bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
+WinningReason Position::TraceVictoryLineOrLoop(int start_x, int start_y,
                                       bool red_line) {
   assert(at(start_x, start_y) != PIECE_EMPTY);
   assert(0 <= start_x && start_x < max_x_ && 0 <= start_y && start_y < max_y_);
@@ -810,12 +818,7 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
     while (at(x, y) != PIECE_EMPTY) {
       if (x == start_x && y == start_y) {
         // This is loop.
-        if (red_line) {
-          red_winning_reason_ = WINNING_REASON_LOOP;
-        } else {
-          white_winning_reason_ = WINNING_REASON_LOOP;
-        }
-        return true;
+        return WINNING_REASON_LOOP;
       }
 
       assert(0 <= x && x < max_x_ && 0 <= y && y < max_y_);
@@ -844,16 +847,11 @@ bool Position::TraceVictoryLineOrLoop(int start_x, int start_y,
   for (int i = 0; i < 2; ++i) {
     if (victory_line_enabled[i] && hits[i] && hits[(i + 2) & 3]) {
       // This is victory line.
-      if (red_line) {
-        red_winning_reason_ = WINNING_REASON_LINE;
-      } else {
-        white_winning_reason_ = WINNING_REASON_LINE;
-      }
-      return true;
+      return WINNING_REASON_LINE;
     }
   }
 
-  return false;
+  return WINNING_REASON_UNKNOWN;
 }
 
 void Position::TraceLineToEndpoints(int x, int y, bool red_line,

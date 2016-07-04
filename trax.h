@@ -371,9 +371,10 @@ class Position {
   // This is only called from FillForcedPieces().
   void FillWinnerFlags(int x, int y);
 
-  // Return true if the line of the given color starts from (x, y)
+  // Return winning reason if the line of the given color starts from (x, y)
   // constitutes victory line or loop, i.e. the given color wins.
-  bool TraceVictoryLineOrLoop(int start_x, int start_y, bool red_line);
+  WinningReason TraceVictoryLineOrLoop(int start_x, int start_y,
+                                       bool red_line);
 
   void TraceLineToEndpoints(int x, int y, bool red_line,
                             std::pair<int, int> *endpoint_a,
