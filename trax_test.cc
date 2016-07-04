@@ -143,6 +143,7 @@ TEST(PositionTest, NotHorizontalVictoryLineRealWorld2) {
   ASSERT_EQ(-1, position.winner());
 }
 
+/*
 TEST(PositionTest, LongestLines1) {
   Position position;
   SupplyNotations({"@0+", "B1+", "C1+", "B0+", "C1+"}, &position);
@@ -158,6 +159,7 @@ TEST(PositionTest, LongestLines2) {
   ASSERT_EQ(2, position.red_longest());
   ASSERT_EQ(3, position.white_longest());
 }
+*/
 
 TEST(PositionTest, ForcedPlays) {
   Position position;
@@ -275,7 +277,8 @@ TEST(PositionTest, EnumerateLines2) {
 }
 
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {
-  ASSERT_EQ(246888, Perft(5));
+  Timer timer(-1);
+  ASSERT_EQ(246888, Perft(5, &timer));
 }
 
 TEST(TimerTest, Measure800Ms) {
@@ -297,8 +300,10 @@ TEST(RandomSearcherTest, OneTime) {
 
 TEST(RandomSearcherTest, MultiTime) {
   RandomSearcher random_searcher;
+  std::vector<Game> games;
   StartMultipleSelfGames(&random_searcher, &random_searcher,
-                         /* num_games = */ 100, /* verbose = */ false);
+                         /* num_games = */ 100,  &games,
+                         /* verbose = */ false);
 }
 
 TEST(ParseCommentedGameTest, Parse) {

@@ -303,6 +303,8 @@ std::string Move::notation() const {
 std::vector<Move> Position::GenerateMoves() const {
   std::vector<Move> moves;
 
+  moves.reserve(32);
+
   if (finished()) {
     // This is a finished game.
     return moves;
@@ -598,15 +600,16 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
   // but suddenly forced play filled the rightmost cells.
   //
   // Thus, we have to enumerate all of them first.
-  std::vector<std::pair<int, int>> winner_flag_checkpoints;
+  std::pair<int8_t, int8_t> winner_flag_checkpoints[64];
+  int num_checkpoints = 0;
 
-  // Surprisingly this has really huge impact on performance.
-  // Larger than 8 seems not very effective.
-  winner_flag_checkpoints.reserve(8);
+  winner_flag_checkpoints[num_checkpoints].first = move_x;
+  winner_flag_checkpoints[num_checkpoints].second = move_y;
+  ++num_checkpoints;
 
-  winner_flag_checkpoints.emplace_back(move_x, move_y);
-
-  std::queue<std::pair<int, int>> possible_queue;
+  std::pair<int8_t, int8_t> possible_queue[64];
+  int queue_begin = 0;
+  int queue_end = 0;
 
   // Add neighboring cells to the queue as forced play candidates.
   for (int j = 0; j < 4; ++j) {
@@ -620,15 +623,23 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
     }
 
     if (at(nx, ny) == PIECE_EMPTY) {
-      possible_queue.emplace(nx, ny);
+      if (queue_end + 1 >=
+          sizeof(possible_queue) / sizeof(possible_queue[0])) {
+        std::cerr << "queue overflow" << std::endl;
+        exit(EXIT_FAILURE);
+      }
+      possible_queue[queue_end].first = nx;
+      possible_queue[queue_end].second = ny;
+      ++queue_end;
     }
   }
 
   // Loop while chain of forced plays is happening.
-  while (!possible_queue.empty()) {
-    const int x = possible_queue.front().first;
-    const int y = possible_queue.front().second;
-    possible_queue.pop();
+  // while (!possible_queue.empty()) {
+  while (queue_begin < queue_end) {
+    const int x = possible_queue[queue_begin].first;
+    const int y = possible_queue[queue_begin].second;
+    ++queue_begin;
 
     // A place may be filled after the coordinate is pushed to the queue,
     // before the coordinate is popped.
@@ -669,7 +680,14 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
 
     // Add the coordinate to winner flag checkpoints, because
     // it may constitute new loop or victory line.
-    winner_flag_checkpoints.emplace_back(x, y);
+    if (num_checkpoints + 1 >=
+        sizeof(winner_flag_checkpoints) / sizeof(winner_flag_checkpoints[0])) {
+      std::cerr << "checkpoints overflow" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    winner_flag_checkpoints[num_checkpoints].first = x;
+    winner_flag_checkpoints[num_checkpoints].second = y;
+    ++num_checkpoints;
 
     // Add neighboring cells to the queue as new forced play candidates.
     for (int j = 0; j < 4; ++j) {
@@ -683,14 +701,22 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
       }
 
       if (at(nx, ny) == PIECE_EMPTY) {
-        possible_queue.emplace(nx, ny);
+        if (queue_end + 1 >=
+            sizeof(possible_queue) / sizeof(possible_queue[0])) {
+          std::cerr << "queue overflow" << std::endl;
+          exit(EXIT_FAILURE);
+        }
+        possible_queue[queue_end].first = nx;
+        possible_queue[queue_end].second = ny;
+        ++queue_end;
       }
     }
   }
 
   // Fill winner flags based on the position state.
-  for (std::pair<int, int>& coordinate : winner_flag_checkpoints) {
-    FillWinnerFlags(coordinate.first, coordinate.second);
+  for (int i = 0; i < num_checkpoints; ++i) {
+    FillWinnerFlags(winner_flag_checkpoints[i].first,
+                    winner_flag_checkpoints[i].second);
   }
 
   if (red_winner_ && white_winner_) {
