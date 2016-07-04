@@ -150,10 +150,16 @@ void GenerateTrackDirectionTable() {
   }
 }
 
-std::unordered_set<NeighborKey> g_forced_play_table;
+bool g_forced_play_table[1 << 12];
 
 // Should be called before Position::FillForcedPieces().
 void GenerateForcedPlayTable() {
+  std::fill(g_forced_play_table,
+            g_forced_play_table +
+            sizeof(g_forced_play_table) /
+            sizeof(g_forced_play_table[0]),
+            false);
+
   for (int i_right = 0; i_right < NUM_PIECES; ++i_right) {
     for (int j_top = 0; j_top < NUM_PIECES; ++j_top) {
       for (int k_left = 0; k_left < NUM_PIECES; ++k_left) {
@@ -193,7 +199,7 @@ void GenerateForcedPlayTable() {
             }
           }
           if (red_count >= 2 || white_count >= 2) {
-            g_forced_play_table.insert(key);
+            g_forced_play_table[key] = true;
           }
         }
       }
@@ -650,12 +656,12 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
     }
 
     // This is forced play.
-    const bool is_forced_play = g_forced_play_table.count(
+    const bool is_forced_play = g_forced_play_table[
         EncodeNeighborKey(
           at(x + kDx[0], y + kDy[0]),
           at(x + kDx[1], y + kDy[1]),
           at(x + kDx[2], y + kDy[2]),
-          at(x + kDx[3], y + kDy[3])));
+          at(x + kDx[3], y + kDy[3]))];
 
     if (!is_forced_play) {
       continue;
