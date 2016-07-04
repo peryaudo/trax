@@ -71,6 +71,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new SimpleSearcher<MonteCarloEvaluator>();
   } else if (name == "simple-fe") {
     return new SimpleSearcher<FactorEvaluator>();
+  } else if (name == "simple-afe") {
+    return new SimpleSearcher<AdvancedFactorEvaluator>();
   } else if (name == "negamax0-la") {
     return new NegaMaxSearcher<LeafAverageEvaluator>(0);
   } else if (name == "negamax1-la") {
@@ -111,6 +113,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<FactorEvaluator>(3);
   } else if (name == "negamax4-fe") {
     return new NegaMaxSearcher<FactorEvaluator>(4);
+  } else if (name == "iter10-afe") {
+    return new NegaMaxSearcher<AdvancedFactorEvaluator>(10, true);
   } else {
     std::cerr << "cannot find searcher with name " << name << std::endl;
     exit(EXIT_FAILURE);
@@ -313,7 +317,8 @@ void RunTournament() {
     new SimpleSearcher<FactorEvaluator>(),
     new NegaMaxSearcher<LeafAverageEvaluator>(1),
     new NegaMaxSearcher<LeafAverageEvaluator>(10, true),
-    new NegaMaxSearcher<FactorEvaluator>(10, true)
+    new NegaMaxSearcher<FactorEvaluator>(10, true),
+    new NegaMaxSearcher<AdvancedFactorEvaluator>(10, true)
   };
 
   const int num_searchers = sizeof(searchers) / sizeof(searchers[0]);
