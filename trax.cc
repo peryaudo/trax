@@ -31,6 +31,9 @@ DEFINE_bool(trax8x8, false, "Run as 8x8 Trax.");
 DEFINE_string(player_id, "PR",
             "Contest issued player ID.");
 
+DEFINE_int32(thinking_time_ms, 1000,
+            "Thinking time in milliseconds.");
+
 
 uint32_t Random() {
   // TODO(tetsui): Make it thread safe and remove static.
@@ -1049,7 +1052,7 @@ void StartTraxClient(Searcher* searcher) {
     }
 
     // Search the best move.
-    Timer timer(800);
+    Timer timer(FLAGS_thinking_time_ms - 100);
     Move best_move = searcher->SearchBestMove(position, &timer);
     success = position.DoMove(best_move, &next_position);
     if (!success) {
@@ -1094,8 +1097,8 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
   Position position;
 
   for (int step = 0; !position.finished(); ++step) {
-    Timer overall_timer(/* timeout_ms = */ 900);
-    Timer searcher_timer(/* timeout_ms = */ 800);
+    Timer overall_timer(FLAGS_thinking_time_ms - 50);
+    Timer searcher_timer(FLAGS_thinking_time_ms - 100);
 
     if (verbose) {
       std::cerr << "Step " << step << ": ";
@@ -1291,7 +1294,7 @@ int Game::CountMatchingMoves(Searcher *searcher) {
 
   Position position;
   for (Move actual_move : moves) {
-    Timer timer(800);
+    Timer timer(FLAGS_thinking_time_ms - 100);
     Move best_move = searcher->SearchBestMove(position, &timer);
     if (best_move == actual_move) {
       ++match_count;
@@ -1324,7 +1327,7 @@ void Game::ContinueBySearcher(Searcher *searcher) {
   }
 
   while (!position.finished()) {
-    Timer timer(800);
+    Timer timer(FLAGS_thinking_time_ms - 100);
     Move best_move = searcher->SearchBestMove(position, &timer);
     moves.push_back(best_move);
     if (!comments.empty()) {
@@ -1368,4 +1371,87 @@ bool Book::Select(const Position& position, Move *next_move) {
   }
   *next_move = it->second[Random() % it->second.size()];
   return true;
+}
+
+// Read current board configuration from stdin and return the best move to
+// stdout.
+void ReadAndFindBestMove(Searcher* searcher) {
+  int num_moves = 0;
+  std::cin >> num_moves;
+
+  std::vector<std::string> moves_notation(num_moves);
+  for (std::string& move_notation : moves_notation) {
+    std::cin >> move_notation;
+  }
+
+  Position position;
+  for (const std::string& move_notation : moves_notation) {
+    Move move;
+    if (!move.Parse(move_notation, position)) {
+      std::cerr
+        << "Illegal move. Please go back and try another." << std::endl;
+      exit(EXIT_FAILURE);
+    }
+
+    Position next_position;
+    if (!position.DoMove(move, &next_position)) {
+      std::cerr
+        << "Illegal move. Please go back and try another." << std::endl;
+      exit(EXIT_FAILURE);
+    }
+
+    position.Swap(&next_position);
+  }
+
+  if (position.finished()) {
+    // Otherwise SearchBestMove may crash! Reported by takiyu. (thx!)
+    return;
+  }
+
+  Timer timer(FLAGS_thinking_time_ms - 100);
+  Move best_move = searcher->SearchBestMove(position, &timer);
+  std::cout << best_move.notation();
+}
+
+// See the description of the corresponding flag.
+void ShowPosition() {
+  int num_moves = 0;
+  std::cin >> num_moves;
+
+  std::vector<std::string> moves_notation(num_moves);
+  for (std::string& move_notation : moves_notation) {
+    std::cin >> move_notation;
+  }
+
+  Position position;
+  for (const std::string& move_notation : moves_notation) {
+    Move move;
+    if (!move.Parse(move_notation, position)) {
+      exit(EXIT_FAILURE);
+    }
+
+    Position next_position;
+    if (!position.DoMove(move, &next_position)) {
+      exit(EXIT_FAILURE);
+    }
+
+    position.Swap(&next_position);
+  }
+
+  if (position.finished()) {
+    std::cout << position.winner() << std::endl;
+  } else {
+    std::cout << std::endl;
+  }
+
+  for (int i_y = -1; i_y < position.max_y() + 1; ++i_y) {
+    for (int j_x = -1; j_x < position.max_x() + 1; ++j_x) {
+      std::cout << static_cast<const Position &>(position).at(j_x, i_y);
+      if (j_x == position.max_x()) {
+        std::cout << std::endl;
+      } else {
+        std::cout << " ";
+      }
+    }
+  }
 }

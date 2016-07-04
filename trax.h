@@ -510,4 +510,11 @@ class Book {
   std::unordered_map<PositionHash, std::vector<Move>> books_;
 };
 
+// Read current board configuration from stdin and return the best move to
+// stdout.
+void ReadAndFindBestMove(Searcher* searcher);
+
+// See the description of the corresponding flag.
+void ShowPosition();
+
 #endif  // TRAX_H_
