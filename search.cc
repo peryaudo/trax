@@ -347,7 +347,7 @@ void GenerateFactors(const Position& position,
     leaf_average *= -1.0;
   }
 
-  double longest_line = position.red_longest() - position.white_longest();
+  // double longest_line = position.red_longest() - position.white_longest();
   double edge_color = CountEdgeColors(position);
 
   std::vector<Line> lines;
@@ -380,7 +380,7 @@ void GenerateFactors(const Position& position,
   }
 
   factors->emplace_back("leaf_average", leaf_average);
-  factors->emplace_back("longest_line", longest_line);
+  // factors->emplace_back("longest_line", longest_line);
   factors->emplace_back("edge_color", edge_color);
 
   factors->emplace_back("endpoint_factor",

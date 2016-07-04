@@ -239,8 +239,6 @@ class Position {
       , red_to_move_(false)  // White places first.
       , red_winner_(false)
       , white_winner_(false)
-      , red_longest_(0)
-      , white_longest_(0)
       , red_winning_reason_(WINNING_REASON_UNKNOWN)
       , white_winning_reason_(WINNING_REASON_UNKNOWN) {
   }
@@ -300,8 +298,6 @@ class Position {
     std::swap(red_to_move_, to->red_to_move_);
     std::swap(red_winner_, to->red_winner_);
     std::swap(white_winner_, to->white_winner_);
-    std::swap(red_longest_, to->red_longest_);
-    std::swap(white_longest_, to->white_longest_);
     std::swap(red_winning_reason_, to->red_winning_reason_);
     std::swap(white_winning_reason_, to->white_winning_reason_);
   }
@@ -350,11 +346,6 @@ class Position {
   int winner() const {
     return static_cast<int>(red_winner_) - static_cast<int>(white_winner_);
   }
-
-  // Length of the longest red line.
-  int red_longest() const { return red_longest_; }
-  // Length of the longest white line.
-  int white_longest() const { return white_longest_; }
 
   WinningReason winning_reason() const {
     if (!finished()) {
@@ -416,9 +407,6 @@ class Position {
 
   bool red_winner_;
   bool white_winner_;
-
-  int red_longest_;
-  int white_longest_;
 
   WinningReason red_winning_reason_;
   WinningReason white_winning_reason_;
