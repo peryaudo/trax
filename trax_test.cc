@@ -311,6 +311,31 @@ TEST(PositionTest, EnumerateLines6) {
   ASSERT_GT(0, CalcMateScore(position, lines));
 }
 
+TEST(PositionTest, EnumerateLines7) {
+  Position position;
+  SupplyNotations({"@0+", "B1+", "C1+", "D1+", "E1+", "F1+", "G1+"},
+                  &position);
+  std::vector<Line> lines;
+  position.EnumerateLines(&lines);
+
+  int red_mates = 0;
+  int white_mates = 0;
+  for (const Line& line : lines) {
+    if (line.is_mate()) {
+      if (line.is_red) {
+        ++red_mates;
+      } else {
+        ++white_mates;
+      }
+    }
+  }
+
+  ASSERT_EQ(8, lines.size());
+
+  ASSERT_EQ(1, red_mates);
+  ASSERT_EQ(0, white_mates);
+}
+
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {
   Timer timer(-1);
   ASSERT_EQ(246888, Perft(5, &timer));
