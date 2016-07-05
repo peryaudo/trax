@@ -312,7 +312,7 @@ class FactorEvaluator {
     const int unit = kInf / 100;
     int endpoint_factor = 0;
     for (Line& line : lines) {
-      int endpoint = unit / (1 + line.endpoint_distance);
+      int endpoint = unit / (5 + line.endpoint_distance);
       if (!line.is_red) {
         endpoint *= -1;
       }

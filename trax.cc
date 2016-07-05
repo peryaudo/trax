@@ -1323,7 +1323,7 @@ int Game::CountMatchingMoves(Searcher *searcher) {
     }
 
     position.Swap(&next_position);
-    position.Dump();
+    // position.Dump();
   }
 
   return match_count;
