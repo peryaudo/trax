@@ -311,21 +311,15 @@ class FactorEvaluator {
 
     const int unit = kInf / 100;
     int endpoint_factor = 0;
-    int edge_factor = 0;
     for (Line& line : lines) {
       int endpoint = unit / (1 + line.endpoint_distance);
-      int edge = (
-          unit / (1 + line.edge_distances[0]) +
-          unit / (1 + line.edge_distances[1]));
       if (!line.is_red) {
         endpoint *= -1;
-        edge *= -1;
       }
       endpoint_factor += endpoint;
-      edge_factor += edge;
     }
 
-    int score = endpoint_factor + (-edge_factor);
+    int score = endpoint_factor;
     if (!position.red_to_move()) {
       score *= -1;
     }
@@ -358,6 +352,11 @@ class AdvancedFactorEvaluator {
 
     std::vector<Line> lines;
     position.EnumerateLines(&lines);
+
+    const int mate_score = CalcMateScore(position, lines);
+    if (mate_score != 0) {
+      return mate_score;
+    }
 
     const int unit = kInf / 100;
     int endpoint_factor = 0;
