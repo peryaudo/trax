@@ -40,7 +40,7 @@ void GenerateForcedPlayTable();
 // Piece kinds. It includes color information so it is more specific than
 // Trax notation. The alphabets after the prefix specify colors on the edges
 // in anti-clockwise order from the rightmost one.
-enum Piece {
+enum Piece : uint8_t {
   PIECE_EMPTY = 0,
 
   //  W

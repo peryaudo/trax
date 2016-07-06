@@ -402,16 +402,21 @@ bool Position::DoMove(Move move, Position *next_position) const {
   // Sentinels with its depth 2 is used here.
   next_position->board_ = new Piece[next_position->board_size()];
 
-  // Fill the board with empty pieces.
-  std::fill(next_position->board_,
-            next_position->board_ + next_position->board_size(),
-            PIECE_EMPTY);
+  if (max_x_ == next_position->max_x_ && max_y_ == next_position->max_y_) {
+    // Hope it will be vectorized :)
+    std::copy(board_, board_ + board_size(), next_position->board_);
+  } else {
+    // Fill the board with empty pieces.
+    std::fill(next_position->board_,
+              next_position->board_ + next_position->board_size(),
+              PIECE_EMPTY);
 
-  // Copy the board (if exists).
-  if (board_ != nullptr) {
-    for (int i_x = 0; i_x < max_x_; ++i_x) {
-      for (int j_y = 0; j_y < max_y_; ++j_y) {
-        next_position->at(i_x + offset_x, j_y + offset_y) = at(i_x, j_y);
+    // Copy the board (if exists).
+    if (board_ != nullptr) {
+      for (int i_x = 0; i_x < max_x_; ++i_x) {
+        for (int j_y = 0; j_y < max_y_; ++j_y) {
+          next_position->at(i_x + offset_x, j_y + offset_y) = at(i_x, j_y);
+        }
       }
     }
   }
