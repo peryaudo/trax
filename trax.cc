@@ -794,6 +794,45 @@ WinningReason Position::TraceVictoryLineOrLoop(int start_x, int start_y,
 
   const char traced_color = red_line ? 'R' : 'W';
 
+  // Omit edge hit detection for most of the boards.
+  if (max_x_ < 8 && max_y_ < 8) {
+    // Traces line to two directions with the edges of the given color.
+    for (int i = 0; i < 4; ++i) {
+      if (kPieceColors[at(start_x, start_y)][i] != traced_color) {
+        // continue if the i-th edge color of the starting piece is
+        // not trace_color.
+        continue;
+      }
+
+      int x = start_x + kDx[i];
+      int y = start_y + kDy[i];
+      int previous_direction = (i + 2) & 3;
+
+      assert(-2 <= x && x < max_x_ + 2 && -2 <= y && y < max_y_ + 2);
+
+      // Trace the line until it hits an empty cell.
+      while (at(x, y) != PIECE_EMPTY) {
+        if (x == start_x && y == start_y) {
+          // This is loop.
+          return WINNING_REASON_LOOP;
+        }
+
+        assert(0 <= x && x < max_x_ && 0 <= y && y < max_y_);
+
+        // Continue tracing the line.
+        const int next_direction =
+          g_track_direction_table[at(x, y)][previous_direction];
+
+        x += kDx[next_direction];
+        y += kDy[next_direction];
+
+        previous_direction = (next_direction + 2) & 3;
+      }
+    }
+
+    return WINNING_REASON_UNKNOWN;
+  }
+
   // See also: definition of kDx[] and kDy[]
   //                    x           y  x  y
   const int edges[4] = {max_x_ - 1, 0, 0, max_y_ - 1};
