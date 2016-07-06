@@ -632,11 +632,8 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
     }
 
     if (at(nx, ny) == PIECE_EMPTY) {
-      if (queue_end + 1 >=
-          sizeof(possible_queue) / sizeof(possible_queue[0])) {
-        std::cerr << "queue overflow" << std::endl;
-        exit(EXIT_FAILURE);
-      }
+      assert(
+          queue_end + 1 < sizeof(possible_queue) / sizeof(possible_queue[0]));
       possible_queue[queue_end].first = nx;
       possible_queue[queue_end].second = ny;
       ++queue_end;
@@ -689,11 +686,9 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
 
     // Add the coordinate to winner flag checkpoints, because
     // it may constitute new loop or victory line.
-    if (num_checkpoints + 1 >=
-        sizeof(winner_flag_checkpoints) / sizeof(winner_flag_checkpoints[0])) {
-      std::cerr << "checkpoints overflow" << std::endl;
-      exit(EXIT_FAILURE);
-    }
+    assert(
+        num_checkpoints + 1 <
+        sizeof(winner_flag_checkpoints) / sizeof(winner_flag_checkpoints[0]));
     winner_flag_checkpoints[num_checkpoints].first = x;
     winner_flag_checkpoints[num_checkpoints].second = y;
     ++num_checkpoints;
@@ -710,11 +705,9 @@ bool Position::FillForcedPieces(int move_x, int move_y) {
       }
 
       if (at(nx, ny) == PIECE_EMPTY) {
-        if (queue_end + 1 >=
-            sizeof(possible_queue) / sizeof(possible_queue[0])) {
-          std::cerr << "queue overflow" << std::endl;
-          exit(EXIT_FAILURE);
-        }
+        assert(
+            queue_end + 1 <
+            sizeof(possible_queue) / sizeof(possible_queue[0]));
         possible_queue[queue_end].first = nx;
         possible_queue[queue_end].second = ny;
         ++queue_end;
@@ -980,9 +973,7 @@ void Position::TraceAndIndexEdges(
   int current_index = 0;
 
   while (true) {
-    indexed_edges->insert(std::make_pair(std::make_pair(x, y),
-                                         current_index));
-    // std::cerr << "Tracing: (" << x << ", " << y << ") " << current_index << std::endl;
+    indexed_edges->insert(std::make_pair(std::make_pair(x, y), current_index));
     ++current_index;
 
     // Trace in clockwise order.
