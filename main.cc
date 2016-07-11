@@ -178,7 +178,7 @@ void DumpGamesStatisticsCSV(const std::vector<Game>& games) {
 }
 
 void DumpFactors(const std::vector<Game>& games) {
-  std::string first_line = "step,winner";
+  std::string first_line = "step,winner,field";
   bool first = true;
 
   for (const Game& game : games) {
@@ -213,7 +213,7 @@ void DumpFactors(const std::vector<Game>& games) {
         first = false;
       }
 
-      std::cout << i << "," << game.winner;
+      std::cout << i << "," << game.winner << "," << position.ToString64x64();
       for (std::pair<std::string, double>& factor : factors) {
         std::cout << "," << factor.second;
       }
