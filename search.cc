@@ -346,9 +346,12 @@ double AverageColor(const std::vector<double>& v) {
 void GenerateFactors(const Position& position,
                      std::vector<std::pair<std::string, double>> *factors) {
   double leaf_average = LeafAverageEvaluator::Evaluate(position);
+  double factor_evaluator = FactorEvaluator::Evaluate(position);
   if (!position.red_to_move()) {
     leaf_average *= -1.0;
+    factor_evaluator *= -1.0;
   }
+
 
   // double longest_line = position.red_longest() - position.white_longest();
   double edge_color = CountEdgeColors(position);
@@ -383,6 +386,7 @@ void GenerateFactors(const Position& position,
   }
 
   factors->emplace_back("leaf_average", leaf_average);
+  factors->emplace_back("factor_evaluator", factor_evaluator);
   // factors->emplace_back("longest_line", longest_line);
   factors->emplace_back("edge_color", edge_color);
 
