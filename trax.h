@@ -340,8 +340,10 @@ class Position {
 
     std::string result;
     for (const std::string& line : result_field) {
+      if (!result.empty()) {
+        result += "|";
+      }
       result += line;
-      result += "|";
     }
 
     return result;
