@@ -200,9 +200,16 @@ enum WinningReason {
 
 // Denotes decompoesed line information returned by Position::EnumerateLines().
 struct Line {
-  Line() : is_red(false), endpoint_distance(0) {
+  Line()
+      : is_red(false)
+      , endpoint_distance(0)
+      , is_inner(false)
+      , endpoint_index_a(0)
+      , endpoint_index_b(0) {
     edge_distances[0] = 0;
     edge_distances[1] = 0;
+    loop_distances[0] = 0;
+    loop_distances[1] = 0;
   }
 
   Line(const std::pair<int, int>& endpoint_a,
@@ -232,6 +239,16 @@ struct Line {
   bool is_red;
   int edge_distances[2];
   int endpoint_distance;
+
+  // These are added for LoopFactorEvaluator.
+
+  bool is_inner;
+  // Only have values when is_inner is true.
+  int loop_distances[2];
+
+  // Internally used to calculate is_inner and loop_distances.
+  int endpoint_index_a;
+  int endpoint_index_b;
 };
 
 // Integer hash of position. Can be used for transposition table, etc.
@@ -417,6 +434,10 @@ class Position {
                             std::pair<int, int> *endpoint_a,
                             std::pair<int, int> *endpoint_b) const;
 
+  // Trace external facing edges of the position in clockwise order and
+  // enumerate all of them.
+  // Returns <coordinate, index> map. Total number of index is total_index.
+  // The index may jump and some index may be lacking.
   void TraceAndIndexEdges(
       int start_x, int start_y,
       std::map<std::pair<int, int>, int> *indexed_edges,

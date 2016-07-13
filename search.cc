@@ -286,6 +286,7 @@ INSTANTIATE_TEMPLATES_FOR(MonteCarloEvaluator);
 INSTANTIATE_TEMPLATES_FOR(FactorEvaluator);
 INSTANTIATE_TEMPLATES_FOR(NoneEvaluator);
 INSTANTIATE_TEMPLATES_FOR(AdvancedFactorEvaluator);
+INSTANTIATE_TEMPLATES_FOR(LoopFactorEvaluator);
 
 namespace {
 

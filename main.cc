@@ -73,6 +73,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new SimpleSearcher<FactorEvaluator>();
   } else if (name == "simple-afe") {
     return new SimpleSearcher<AdvancedFactorEvaluator>();
+  } else if (name == "simple-lfe") {
+    return new SimpleSearcher<LoopFactorEvaluator>();
   } else if (name == "negamax0-la") {
     return new NegaMaxSearcher<LeafAverageEvaluator>(0);
   } else if (name == "negamax1-la") {
@@ -115,6 +117,8 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<FactorEvaluator>(4);
   } else if (name == "iter10-afe") {
     return new NegaMaxSearcher<AdvancedFactorEvaluator>(10, true);
+  } else if (name == "iter10-lfe") {
+    return new NegaMaxSearcher<LoopFactorEvaluator>(10, true);
   } else {
     std::cerr << "cannot find searcher with name " << name << std::endl;
     exit(EXIT_FAILURE);

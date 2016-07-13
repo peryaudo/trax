@@ -450,9 +450,11 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
     return;
   }
 
+  // Clockwisely traced external facing edges.
   std::map<std::pair<int, int>, int> indexed_edges;
   int total_index;
 
+  // Set of <endpoint_a, endpoint_b, is_red> to keep traced lines unique.
   std::set<std::tuple<std::pair<int, int>, std::pair<int, int>, bool>> traced;
 
   for (int i_x = 0; i_x < max_x_; ++i_x) {
@@ -501,6 +503,34 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
                   indexed_edges, total_index);
 
         lines->push_back(line);
+      }
+    }
+  }
+
+  // Map endpoints with clockwise index to the line index by the colors.
+  std::map<int, int> endpoints_by_color[2];
+  for (int i_red = 0; i_red < 2; ++i_red) {
+    for (int j = 0; j < lines->size(); ++j) {
+      Line& line = (*lines)[j];
+      if (i_red == line.is_red) {
+        endpoints_by_color[i_red][line.endpoint_index_a] = j;
+        endpoints_by_color[i_red][line.endpoint_index_b] = j;
+      }
+    }
+  }
+
+  for (int i_red = 0; i_red < 2; ++i_red) {
+    for (Line& line : *lines) {
+      // TODO(tetsui): Fill is_inner by referencing neighboring endpoints.
+      // If more than one of its neighbor is the line's,
+      // then it's not inner line.
+    }
+  }
+
+  for (int i_red = 0; i_red < 2; ++i_red) {
+    for (Line& line : *lines) {
+      if (line.is_inner) {
+        // TODO(tetsui): Fill loop_distances for lines with is_inner == true.
       }
     }
   }
@@ -1007,7 +1037,11 @@ Line::Line(const std::pair<int, int>& endpoint_a,
            const Position& position,
            const std::map<std::pair<int, int>, int>& indexed_edges,
            int total_index)
-    : is_red(is_red) {
+    : is_red(is_red)
+    , is_inner(false) {
+  loop_distances[0] = 0;
+  loop_distances[1] = 0;
+
   int lowers[2] = {endpoint_a.first, endpoint_a.second};
   int uppers[2] = {endpoint_b.first, endpoint_b.second};
   int maxs[2] = {std::max(position.max_x(), 8), std::max(position.max_y(), 8)};
@@ -1020,8 +1054,12 @@ Line::Line(const std::pair<int, int>& endpoint_a,
 
   assert(indexed_edges.find(endpoint_a) != indexed_edges.end());
   assert(indexed_edges.find(endpoint_b) != indexed_edges.end());
-  int lower_index = indexed_edges.find(endpoint_a)->second;
-  int upper_index = indexed_edges.find(endpoint_b)->second;
+
+  endpoint_index_a = indexed_edges.find(endpoint_a)->second;
+  endpoint_index_b = indexed_edges.find(endpoint_b)->second;
+
+  int lower_index = endpoint_index_a;
+  int upper_index = endpoint_index_b;
   if (lower_index > upper_index) {
     std::swap(lower_index, upper_index);
   }
