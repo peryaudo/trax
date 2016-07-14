@@ -480,13 +480,12 @@ class LoopFactorEvaluator {
     int loop_factor = 0;
     for (Line& line : lines) {
       int loop = 0;
-      // TODO(tetsui): The constant added to denoms may be subject to change.
 
       if (line.is_inner) {
-        loop += unit / (5 + line.loop_distances[0]);
-        loop += unit / (5 + line.loop_distances[1]);
+        loop += unit / (3 + line.loop_distances[0]);
+        loop += unit / (3 + line.loop_distances[1]);
       } else {
-        loop += unit / (5 + line.endpoint_distance);
+        loop += unit / line.endpoint_distance;
       }
       if (!line.is_red) {
         loop *= -1;

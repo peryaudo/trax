@@ -5,6 +5,7 @@
 #include <gflags/gflags.h>
 
 #include <algorithm>
+#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -261,6 +262,11 @@ bool Move::Parse(const std::string& trax_notation,
       return false;
     }
   } else {
+    if (previous_position.at(x, y) != PIECE_EMPTY) {
+      // Trying to place on already placed coordinate.
+      return false;
+    }
+
     PieceSet candidates = previous_position.GetPossiblePieces(x, y);
 
     // Exclude EMPTY piece for added piece candidates.
@@ -457,6 +463,7 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
   // Set of <endpoint_a, endpoint_b, is_red> to keep traced lines unique.
   std::set<std::tuple<std::pair<int, int>, std::pair<int, int>, bool>> traced;
 
+  // Iterate over cells with external facing edge.
   for (int i_x = 0; i_x < max_x_; ++i_x) {
     for (int j_y = 0; j_y < max_y_; ++j_y) {
       if (at(i_x, j_y) == PIECE_EMPTY) {
@@ -468,8 +475,10 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
         const int nx = i_x + kDx[k];
         const int ny = j_y + kDy[k];
         if (at(nx, ny) == PIECE_EMPTY) {
+          // The cell at <i_x, j_y> has external facing edge.
           is_edge = true;
 
+          // Generate indexed_edges if not yet generated.
           if (indexed_edges.empty()) {
             TraceAndIndexEdges(nx, ny, &indexed_edges, &total_index);
           }
@@ -477,17 +486,25 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
         }
       }
 
+      // Nothing to do if the cell does not have external facing edge.
       if (!is_edge) {
         continue;
       }
 
+      // Trace line from the cell for each color.
       for (int k_red = 0; k_red < 2; ++k_red) {
         bool is_red = static_cast<bool>(k_red);
+
         std::pair<int, int> endpoint_a, endpoint_b;
+
+        // Trace the line.
         TraceLineToEndpoints(i_x, j_y, is_red, &endpoint_a, &endpoint_b);
+
         if (endpoint_a > endpoint_b) {
           std::swap(endpoint_a, endpoint_b);
         }
+
+        // Skip to add to list if already added.
         if (traced.count(make_tuple(endpoint_a, endpoint_b, is_red))) {
           continue;
         }
@@ -502,6 +519,7 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
         Line line(endpoint_a, endpoint_b, is_red, *this,
                   indexed_edges, total_index);
 
+        // Add to the list.
         lines->push_back(line);
       }
     }
@@ -509,29 +527,116 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
 
   // Map endpoints with clockwise index to the line index by the colors.
   std::map<int, int> endpoints_by_color[2];
-  for (int i_red = 0; i_red < 2; ++i_red) {
-    for (int j = 0; j < lines->size(); ++j) {
-      Line& line = (*lines)[j];
-      if (i_red == line.is_red) {
-        endpoints_by_color[i_red][line.endpoint_index_a] = j;
-        endpoints_by_color[i_red][line.endpoint_index_b] = j;
-      }
+  for (int i = 0; i < lines->size(); ++i) {
+    Line& line = (*lines)[i];
+    const bool is_red = line.is_red;
+
+    endpoints_by_color[is_red][line.endpoint_index_a] = i;
+    endpoints_by_color[is_red][line.endpoint_index_b] = i;
+  }
+
+  // Fill Line.is_inner by referencing neighboring endpoints.
+  for (int i = 0; i < lines->size(); ++i) {
+    Line& line = (*lines)[i];
+
+    const bool is_red = line.is_red;
+
+    // Just tracing from endpoint_a is sufficient.
+    auto it = endpoints_by_color[is_red].find(line.endpoint_index_a);
+    assert(it != endpoints_by_color[is_red].end());
+
+    auto previous_it = it;
+    if (previous_it == endpoints_by_color[is_red].begin()) {
+      previous_it = endpoints_by_color[is_red].end();
+    }
+    --previous_it;
+
+    auto next_it = it;
+    ++next_it;
+    if (next_it == endpoints_by_color[is_red].end()) {
+      next_it = endpoints_by_color[is_red].begin();
+    }
+
+    // If more than one of its neighboring points is the line's,
+    // it's not inner line.
+    if (previous_it->second == i || next_it->second == i) {
+      line.is_inner = false;
+    } else {
+      line.is_inner = true;
     }
   }
 
-  for (int i_red = 0; i_red < 2; ++i_red) {
-    for (Line& line : *lines) {
-      // TODO(tetsui): Fill is_inner by referencing neighboring endpoints.
-      // If more than one of its neighbor is the line's,
-      // then it's not inner line.
+  // Fill loop_distances for lines with is_inner == true.
+  for (Line& line : *lines) {
+    if (!line.is_inner) {
+      continue;
     }
-  }
 
-  for (int i_red = 0; i_red < 2; ++i_red) {
-    for (Line& line : *lines) {
-      if (line.is_inner) {
-        // TODO(tetsui): Fill loop_distances for lines with is_inner == true.
+    const bool is_red = line.is_red;
+
+    auto it_a = endpoints_by_color[is_red].find(line.endpoint_index_a);
+    auto it_b = endpoints_by_color[is_red].find(line.endpoint_index_b);
+    assert(it_a != endpoints_by_color[is_red].end());
+    assert(it_b != endpoints_by_color[is_red].end());
+
+    // Calculate loop distances.
+    // It moves to opposite directions for different endpoints so that
+    // they form possible loops.
+    // One inner line can form two loops so we first try
+    // clockwise-anticlockwise for endpoint_a, endpoint_b, then flip to
+    // anticlockwise-clockwise for endpoint_a, endpoint_b.
+    for (int i = 0; i < 2; ++i) {
+      int loop_distance = 0;
+
+      auto it = it_a;
+      while (true) {
+        auto forward_it = it;
+        ++forward_it;
+        if (forward_it == endpoints_by_color[is_red].end()) {
+          forward_it = endpoints_by_color[is_red].begin();
+        }
+
+        if (it->second != forward_it->second) {
+          loop_distance += abs(forward_it->first - it->first);
+        }
+
+        assert(forward_it->second < lines->size());
+
+        it = forward_it;
+
+        if ((*lines)[it->second].is_inner) {
+          break;
+        }
       }
+
+      // If reached endpoint is same as endpoint_b, you don't have to trace
+      // again. Otherwise, it would be double counted.
+
+      if (it != it_b) {
+        it = it_b;
+        while (true) {
+          auto backward_it = it;
+          if (it == endpoints_by_color[is_red].begin()) {
+            backward_it = endpoints_by_color[is_red].end();
+          }
+          --backward_it;
+
+          if (it->second != backward_it->second) {
+            loop_distance += abs(it->first - backward_it->first);
+          }
+
+          assert(backward_it->second < lines->size());
+
+          it = backward_it;
+
+          if ((*lines)[it->second].is_inner) {
+            break;
+          }
+        }
+      }
+
+      line.loop_distances[i] = loop_distance;
+      swap(it_a, it_b);
     }
   }
 }

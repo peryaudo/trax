@@ -192,7 +192,7 @@ TEST(PositionTest, NotHorizontalVictoryLineBecauesNotRightmost) {
   SupplyNotations(
       {"@0/", "B1\\", "C1/", "D1+", "E1\\", "F1\\", "G1/", "A2/", "B2+",
        "C2\\", "D2\\", "E2\\", "F2+", "G2+", "H2/", "A3\\", "B3\\", "C3+",
-       "D3/", "E3/", "F3\\", "G3/", "H3+",
+       "F3\\", "H3+",
        "I3/", "H1/"},
        &position);
   ASSERT_FALSE(position.finished());
@@ -204,7 +204,7 @@ TEST(PositionTest, WinByHorizontalVictoryLineBecauesRightmost) {
   SupplyNotations(
       {"@0/", "B1\\", "C1/", "D1+", "E1\\", "F1\\", "G1/", "A2/", "B2+",
        "C2\\", "D2\\", "E2\\", "F2+", "G2+", "H2/", "A3\\", "B3\\", "C3+",
-       "D3/", "E3/", "F3\\", "G3/", "H3+",
+       "F3\\", "H3+",
        "H1/"},
        &position);
   ASSERT_TRUE(position.finished());
@@ -219,7 +219,6 @@ TEST(PositionTest, EnumerateLines1) {
   position.EnumerateLines(&lines);
   int red_count = 0, white_count = 0;
   for (Line& line : lines) {
-    line.Dump();
     if (line.is_red) {
       ++red_count;
       ASSERT_EQ(7, line.edge_distances[0]);
@@ -240,7 +239,7 @@ TEST(PositionTest, EnumerateLines2) {
   SupplyNotations(
       {"@0/", "B1\\", "C1/", "D1+", "E1\\", "F1\\", "G1/", "A2/", "B2+",
        "C2\\", "D2\\", "E2\\", "F2+", "G2+", "H2/", "A3\\", "B3\\", "C3+",
-       "D3/", "E3/", "F3\\", "G3/", "H3+",
+       "F3\\", "H3+",
        "I3/", "H1/"},
        &position);
 
@@ -334,6 +333,51 @@ TEST(PositionTest, EnumerateLines7) {
 
   ASSERT_EQ(1, red_mates);
   ASSERT_EQ(0, white_mates);
+}
+
+TEST(PositionTest, EnumreateLinesLoop1) {
+  Position position;
+  SupplyNotations({"@0/", "B1+", "C1/"}, &position);
+
+  std::vector<Line> lines;
+  position.EnumerateLines(&lines);
+  int inner_count = 0;
+  for (const Line& line : lines) {
+    if (line.is_inner) {
+      ASSERT_EQ(5, line.loop_distances[0]);
+      ASSERT_EQ(5, line.loop_distances[1]);
+
+      ++inner_count;
+    }
+  }
+
+  ASSERT_EQ(1, inner_count);
+}
+
+TEST(PositionTest, EnumreateLinesLoop2) {
+  Position position;
+  SupplyNotations({"@0/", "B1+", "C1+", "D1/"}, &position);
+
+  std::vector<Line> lines;
+  position.EnumerateLines(&lines);
+  int inner_count = 0;
+
+  for (const Line& line : lines) {
+    if (line.is_inner) {
+      int loop_distance_a = line.loop_distances[0];
+      int loop_distance_b = line.loop_distances[1];
+      if (loop_distance_a > loop_distance_b) {
+        std::swap(loop_distance_a, loop_distance_b);
+      }
+
+      ASSERT_EQ(2, loop_distance_a);
+      ASSERT_EQ(5, loop_distance_b);
+
+      ++inner_count;
+    }
+  }
+
+  ASSERT_EQ(2, inner_count);
 }
 
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {
