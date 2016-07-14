@@ -353,7 +353,6 @@ void GenerateFactors(const Position& position,
     factor_evaluator *= -1.0;
   }
 
-
   // double longest_line = position.red_longest() - position.white_longest();
   double edge_color = CountEdgeColors(position);
 
@@ -368,7 +367,24 @@ void GenerateFactors(const Position& position,
   std::vector<double> sum_edges;
   std::vector<double> max_edges;
 
+  double total_count = 0.0;
+  double inner_count = 0.0;
+
   for (Line& line : lines) {
+    if (line.is_inner) {
+      if (line.is_red) {
+        inner_count += 1.0;
+      } else {
+        inner_count -= 1.0;
+      }
+    }
+
+    if (line.is_red) {
+      total_count += 1.0;
+    } else {
+      total_count -= 1.0;
+    }
+
     double endpoint = 1.0 / (1.0 + line.endpoint_distance);
     double sum_edge = (1.0 / (1.0 + line.edge_distances[0]) +
         1.0 / (1.0 + line.edge_distances[1]));
@@ -388,6 +404,8 @@ void GenerateFactors(const Position& position,
 
   factors->emplace_back("leaf_average", leaf_average);
   factors->emplace_back("factor_evaluator", factor_evaluator);
+  factors->emplace_back("inner_count", inner_count);
+  factors->emplace_back("total_count", total_count);
   // factors->emplace_back("longest_line", longest_line);
   factors->emplace_back("edge_color", edge_color);
 

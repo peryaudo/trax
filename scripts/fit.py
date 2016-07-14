@@ -47,7 +47,8 @@ print 'measuring factors'
 #   #'min_edge_size', 'max_edge_size',
 #]
 
-factors = ['factor_evaluator']
+# factors = ['factor_evaluator', 'inner_count']
+factors = ['inner_count']
 # factors = ['svm']
 # factors = ['factor_evaluator', 'svm']
 # factors = ['endpoint_factor','sum_edge_factor']

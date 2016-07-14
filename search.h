@@ -336,7 +336,6 @@ class AdvancedFactorEvaluator {
   // or more simply, you are red inside the method if red_to_move() == true.
   // Larger value is better.
   static int Evaluate(const Position& position) {
-#if 1
     if (position.finished()) {
       if (position.red_to_move()) {
         // I'm red.
@@ -360,90 +359,25 @@ class AdvancedFactorEvaluator {
 
     const int unit = kInf / 100;
     int endpoint_factor = 0;
-    int edge_factor = 0;
+    int inner_count_factor = 0;
     for (Line& line : lines) {
-      int endpoint = unit / (1 + line.endpoint_distance);
-      int edge = (
-          unit / (1 + line.edge_distances[0]) +
-          unit / (1 + line.edge_distances[1]));
+      int endpoint = unit / (5 + line.endpoint_distance);
+      int inner = line.is_inner;
       if (!line.is_red) {
         endpoint *= -1;
-        edge *= -1;
+        inner *= -1;
       }
       endpoint_factor += endpoint;
-      edge_factor += edge;
+      inner_count_factor += inner;
     }
 
-    int score = endpoint_factor + (-edge_factor);
+    int score = endpoint_factor + inner_count_factor;
     if (!position.red_to_move()) {
       score *= -1;
     }
 
     return score;
-#else
-    if (position.finished()) {
-      if (position.red_to_move()) {
-        // I'm red.
-        // winner() > 0 if red wins.
-        return kInf * position.winner();
-      } else {
-        // I'm white.
-        // winner() > 0 if red wins.
-        // Flip the sign.
-        return kInf * -position.winner();
-      }
-    }
 
-    std::vector<Line> lines;
-    position.EnumerateLines(&lines);
-
-    const int unit = kInf / 1000;
-    int sum_edge_max = -kInf;
-    int sum_edge_min = kInf;
-
-    int red_endpoint_numerator = 0;
-    int red_endpoint_denominator = 0;
-    int white_endpoint_numerator = 0;
-    int white_endpoint_denominator = 0;
-    for (Line& line : lines) {
-      int endpoint = unit / (1 + line.endpoint_distance);
-      int sum_edge = (
-          unit / (1 + line.edge_distances[0]) +
-          unit / (1 + line.edge_distances[1]));
-      if (!line.is_red) {
-        endpoint *= -1;
-        sum_edge *= -1;
-      }
-      sum_edge_max = std::max(sum_edge_max, sum_edge);
-      sum_edge_min = std::min(sum_edge_min, sum_edge);
-
-      if (line.is_red) {
-        red_endpoint_numerator += endpoint;
-        ++red_endpoint_numerator;
-      } else {
-        white_endpoint_numerator += endpoint;
-        ++white_endpoint_numerator;
-      }
-    }
-
-    if (red_endpoint_denominator > 0) {
-      red_endpoint_numerator /= red_endpoint_denominator;
-    }
-    if (white_endpoint_denominator > 0) {
-      white_endpoint_numerator /= white_endpoint_denominator;
-    }
-    const int sum_edge_factor_max_min = sum_edge_max + sum_edge_min;
-    const int endpoint_factor_average =
-        red_endpoint_numerator + white_endpoint_numerator;
-
-    int score = 27 * sum_edge_factor_max_min + 37 * endpoint_factor_average;
-    // int score = 17 * sum_edge_factor_max_min + 33 * endpoint_factor_average;
-    if (!position.red_to_move()) {
-      score *= -1;
-    }
-
-    return score;
-#endif
   }
 
   static std::string name() { return "AdvancedFactorEvaluator"; }
