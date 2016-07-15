@@ -377,7 +377,6 @@ class AdvancedFactorEvaluator {
     }
 
     return score;
-
   }
 
   static std::string name() { return "AdvancedFactorEvaluator"; }

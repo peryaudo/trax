@@ -342,11 +342,12 @@ class Position {
   // Convert the position to 2D 64x64 map string splitted by '|'.
   // For external SVM classifier, etc.
   std::string ToString64x64() {
-    std::vector<std::string> result_field(64, std::string(64, '0'));
-    const int offset_x = max_x_ / 2 - 32;
-    const int offset_y = max_y_ / 2 - 32;
-    for (int i_x = 0; i_x < 64; ++i_x) {
-      for (int j_y = 0; j_y < 64; ++j_y) {
+    const int width = 32;
+    std::vector<std::string> result_field(width, std::string(width, '0'));
+    const int offset_x = max_x_ / 2 - width / 2;
+    const int offset_y = max_y_ / 2 - width / 2;
+    for (int i_x = 0; i_x < width; ++i_x) {
+      for (int j_y = 0; j_y < width; ++j_y) {
         const int x = i_x + offset_x;
         const int y = j_y + offset_y;
         if (0 <= x && x < max_x_ && 0 <= y && y < max_y_) {

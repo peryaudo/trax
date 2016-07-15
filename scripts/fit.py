@@ -48,7 +48,8 @@ print 'measuring factors'
 #]
 
 # factors = ['factor_evaluator', 'inner_count']
-factors = ['inner_count']
+factors = ['factor_evaluator']
+# factors = ['inner_count']
 # factors = ['svm']
 # factors = ['factor_evaluator', 'svm']
 # factors = ['endpoint_factor','sum_edge_factor']

@@ -25,21 +25,23 @@ stdout_data, stderr_data = p.communicate()
 print('parsing csv...')
 data = pd.read_csv(StringIO(stdout_data))
 X = [fieldtonp(row) for row in list(data['field'])]
-X += [fieldtonplr(row) for row in list(data['field'])]
-X += [fieldtonpud(row) for row in list(data['field'])]
+y = list(data['winner'])
 
-y = list(data['winner']) * 3
+if False:
+    X += [fieldtonplr(row) for row in list(data['field'])]
+    X += [fieldtonpud(row) for row in list(data['field'])]
+    y = y * 3
 
 X = np.array(X)
 y = np.array(y)
 
-if True:
+if False:
     print('grid searching...')
     C_range = np.logspace(-2, 10, 13)
     gamma_range = np.logspace(-9, 3, 13)
-    param_grid = dict(gamma=gamma_range, C=C_range, kernel='rbf')
+    param_grid = dict(gamma=gamma_range, C=C_range, kernel=['rbf'])
 
-    grid = GridSearchCV(svm.SVR(), param_grid=param_grid, verbose=3)
+    grid = GridSearchCV(svm.SVR(), param_grid=param_grid, verbose=3, n_jobs=8)
     grid.fit(X, y)
 
     print("The best parameters are %s with a score of %0.2f"
