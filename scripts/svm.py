@@ -35,7 +35,7 @@ if False:
 X = np.array(X)
 y = np.array(y)
 
-if False:
+if True:
     print('grid searching...')
     C_range = np.logspace(-2, 10, 13)
     gamma_range = np.logspace(-9, 3, 13)
