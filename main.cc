@@ -140,6 +140,9 @@ void DumpGamesStatistics(const std::vector<Game>& games) {
 
   double average_moves = 0;
 
+  double average_search_depths[2] = {0.0};
+  double average_nps[2] = {0.0};
+
   for (const Game& game : games) {
     average_moves += game.num_moves();
 
@@ -156,17 +159,32 @@ void DumpGamesStatistics(const std::vector<Game>& games) {
     } else if (game.winner == -1) {
       ++white_win;
     }
+
+    for (int i = 0; i < 2; ++i) {
+      average_search_depths[i] += game.average_search_depths[i];
+      average_nps[i] += game.average_nps[i];
+    }
   }
 
   average_moves /= games.size();
+  for (int i = 0; i < 2; ++i) {
+    average_search_depths[i] /= games.size();
+    average_nps[i] /= games.size();
+  }
 
   std::cerr << "Total: " << games.size() << std::endl;
   std::cerr << "  Resigns: " << resigns_count << std::endl;
   std::cerr << "  Loop: " << loop_count << std::endl;
   std::cerr << "  Victory Line: " << victory_line_count << std::endl;
   std::cerr << "Average moves: " << average_moves << std::endl;
-  std::cerr << "Red win: " << red_win << std::endl;
   std::cerr << "White win: " << white_win << std::endl;
+  std::cerr << "Red win: " << red_win << std::endl;
+  std::cerr << "Average search depth: "
+    << average_search_depths[0] << "(white) "
+    << average_search_depths[1] << "(red)" << std::endl;
+  std::cerr << "Average nps: "
+    << average_nps[0] << "(white) "
+    << average_nps[1] << "(red)" << std::endl;
 }
 
 void DumpGamesStatisticsCSV(const std::vector<Game>& games) {

@@ -1307,6 +1307,11 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
       best_move = white_searcher->SearchBestMove(position, &searcher_timer);
     }
 
+    game_result->average_search_depths[position.red_to_move()]
+      += searcher_timer.completed_depth();
+    game_result->average_nps[position.red_to_move()]
+      += searcher_timer.nps();
+
     success = position.DoMove(best_move, &next_position);
     if (!success) {
       std::cerr << "searcher returned invalid move in self play." << std::endl;
@@ -1355,6 +1360,11 @@ void StartSelfGame(Searcher* white_searcher, Searcher* red_searcher,
 
   game_result->winner = position.winner();
   game_result->winning_reason = position.winning_reason();
+
+  game_result->average_search_depths[0] /= game_result->num_moves() / 2;
+  game_result->average_search_depths[1] /= game_result->num_moves() / 2;
+  game_result->average_nps[0] /= game_result->num_moves() / 2;
+  game_result->average_nps[1] /= game_result->num_moves() / 2;
 }
 
 void StartMultipleSelfGames(Searcher* white_searcher, Searcher* red_searcher,

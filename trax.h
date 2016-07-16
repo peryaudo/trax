@@ -503,6 +503,10 @@ struct Game {
       , comments()
       , winner(0)
       , winning_reason(WINNING_REASON_UNKNOWN) {
+    average_search_depths[0] = 0;
+    average_search_depths[1] = 0;
+    average_nps[0] = 0;
+    average_nps[1] = 0;
   }
 
   void Clear() {
@@ -510,6 +514,11 @@ struct Game {
     comments.clear();
     winner = 0;
     winning_reason = WINNING_REASON_UNKNOWN;
+
+    average_search_depths[0] = 0;
+    average_search_depths[1] = 0;
+    average_nps[0] = 0;
+    average_nps[1] = 0;
   }
 
   // void Dump();
@@ -538,6 +547,11 @@ struct Game {
 
   // Winning reason such as loop or line.
   WinningReason winning_reason;
+
+  // Statistic information for self play games.
+  // [0] for white and [1] for red.
+  double average_search_depths[2];
+  double average_nps[2];
 };
 
 // Start the self game between white_searcher and red_searcher and
