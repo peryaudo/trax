@@ -64,13 +64,18 @@ struct TranspositionTableEntry {
 template <typename Evaluator>
 class NegaMaxSearcher : public Searcher {
  public:
-  explicit NegaMaxSearcher(int max_depth, bool iterative = false)
+  explicit NegaMaxSearcher(int max_depth,
+                           bool iterative = false,
+                           bool use_book = true)
       : max_depth_(max_depth)
       , current_max_depth_(0)
-      , iterative_(iterative) {
-    std::vector<Game> games;
-    ParseCommentedGames("vendor/commented/Comment.txt", &games);
-    book_.Init(games);
+      , iterative_(iterative)
+      , use_book_(use_book) {
+    if (use_book_) {
+      std::vector<Game> games;
+      ParseCommentedGames("vendor/commented/Comment.txt", &games);
+      book_.Init(games);
+    }
   }
 
   virtual Move SearchBestMove(const Position& position, Timer *timer);
@@ -81,6 +86,9 @@ class NegaMaxSearcher : public Searcher {
       << ">(max_depth=" << max_depth_;
     if (iterative_) {
       name << ", iterative";
+    }
+    if (use_book_) {
+      name << ", use_book";
     }
     name << ")";
     return name.str();
@@ -93,6 +101,7 @@ class NegaMaxSearcher : public Searcher {
   int max_depth_;
   int current_max_depth_;
   bool iterative_;
+  bool use_book_;
   std::unordered_map<PositionHash,
                      TranspositionTableEntry> transposition_table_;
   Book book_;
