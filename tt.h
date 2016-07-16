@@ -63,6 +63,7 @@ class TranspositionTable {
 
   // Clustered transposition table. See Stockfish or YaneuraOu.
   struct Cluster {
+    // TODO(tetsui): Consider using alignas.
     Entry entries[kClusterSize];
   };
 
