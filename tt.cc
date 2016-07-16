@@ -26,7 +26,8 @@ bool TranspositionTable::Probe(PositionHash key,
   std::lock_guard<std::mutex> lock(mutex_);
   const Cluster& cluster = table_[key & mask_];
   for (int i = 0; i < kClusterSize; ++i) {
-    if (cluster.entries[i].key == key) {
+    if (cluster.entries[i].bound != BOUND_NONE &&
+        cluster.entries[i].key == key) {
       *entry = cluster.entries[i];
       return true;
     }
@@ -62,6 +63,7 @@ void TranspositionTable::Store(PositionHash key, Move best_move,
   }
 
   assert(entry != nullptr);
+  assert(bound != BOUND_NONE);
   entry->generation = generation_;
   entry->key = key;
   entry->best_move = best_move;
