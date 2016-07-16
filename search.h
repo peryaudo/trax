@@ -13,6 +13,7 @@
 
 #include "./timer.h"
 #include "./trax.h"
+#include "./tt.h"
 
 //
 // Searchers
@@ -37,28 +38,6 @@ class SimpleSearcher : public Searcher {
   }
 };
 
-// Transposition Table boundary flags for combination with alpha-beta pruning.
-enum Bound {
-  BOUND_LOWER = 0,
-  BOUND_UPPER,
-  BOUND_EXACT
-};
-
-// Entry of Transposition Table.
-//
-// See also:
-//
-// https://en.wikipedia.org/wiki/Negamax
-// #Negamax_with_alpha_beta_pruning_and_transposition_tables
-//
-// https://groups.google.com/forum/#!msg/
-// rec.games.chess.computer/p8GbiiLjp0o/81vZ3czsthIJ
-struct TranspositionTableEntry {
-  int score : 32;
-  int depth : 30;
-  Bound bound : 2;
-};
-
 // Searcher that selects the best move by using the given evaluator and NegaMax
 // search with Alpha-Beta pruning.
 template <typename Evaluator>
@@ -68,7 +47,6 @@ class NegaMaxSearcher : public Searcher {
                            bool iterative = false,
                            bool use_book = true)
       : max_depth_(max_depth)
-      , current_max_depth_(0)
       , iterative_(iterative)
       , use_book_(use_book) {
     if (use_book_) {
@@ -99,11 +77,10 @@ class NegaMaxSearcher : public Searcher {
               int depth, int alpha = -kInf, int beta = kInf);
 
   int max_depth_;
-  int current_max_depth_;
   bool iterative_;
   bool use_book_;
-  std::unordered_map<PositionHash,
-                     TranspositionTableEntry> transposition_table_;
+
+  TranspositionTable transposition_table_;
   Book book_;
 };
 

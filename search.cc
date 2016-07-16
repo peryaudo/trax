@@ -76,13 +76,13 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position,
     return book_move;
   }
 
+  transposition_table_.NewSearch();
+
   if (iterative_) {
     std::vector<Move> possible_moves = position.GenerateMoves();
 
     Move best_move;
-    for (current_max_depth_ = 0;
-         current_max_depth_ <= max_depth_; ++current_max_depth_) {
-      transposition_table_.clear();
+    for (int current_depth = 0; current_depth <= max_depth_; ++current_depth) {
       int best_score = -kInf;
       std::vector<ScoredMove> moves;
 
@@ -99,12 +99,12 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position,
         // NegaMax() evaluates from the perspective of next_position.
         // Therefore, position that is good for next_position.red_to_move() is
         // bad for position.red_to_move().
-        const int score = -NegaMax(next_position, timer, 0);
+        const int score = -NegaMax(next_position, timer, current_depth);
 
         best_score = std::max(best_score, score);
         moves.emplace_back(score, move);
 
-        if (current_max_depth_ > 0 && timer->CheckTimeout()) {
+        if (current_depth > 0 && timer->CheckTimeout()) {
           aborted = true;
           break;
         }
@@ -125,13 +125,11 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position,
       assert(best_moves.size() > 0);
       best_move = best_moves[Random() % best_moves.size()];
 
-      timer->set_completed_depth(current_max_depth_);
+      timer->set_completed_depth(current_depth);
     }
 
     return best_move;
   } else {
-    current_max_depth_ = max_depth_;
-
     int best_score = -kInf;
     std::vector<ScoredMove> moves;
 
@@ -146,7 +144,7 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position,
       // NegaMax() evaluates from the perspective of next_position.
       // Therefore, position that is good for next_position.red_to_move() is
       // bad for position.red_to_move().
-      const int score = -NegaMax(next_position, timer, 0);
+      const int score = -NegaMax(next_position, timer, max_depth_);
 
       best_score = std::max(best_score, score);
       moves.emplace_back(score, move);
@@ -159,7 +157,7 @@ Move NegaMaxSearcher<Evaluator>::SearchBestMove(const Position& position,
       }
     }
 
-    timer->set_completed_depth(current_max_depth_);
+    timer->set_completed_depth(max_depth_);
 
     assert(best_moves.size() > 0);
     return best_moves[Random() % best_moves.size()];
@@ -184,46 +182,37 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
     const Position& position, Timer* timer, int depth, int alpha, int beta) {
   const int original_alpha = alpha;
 
-  TranspositionTableEntry* entry = nullptr;
+  TranspositionTable::Entry entry;
 
   // At that point of time, we don't care about conflicts.
-  const PositionHash hash = position.Hash();
+  const PositionHash key = position.Hash();
 
-  auto it = transposition_table_.find(hash);
-  if (it != transposition_table_.end()) {
-    entry = &it->second;
-  }
+  const bool found = transposition_table_.Probe(key, &entry);
 
-  if (entry != nullptr && entry->depth >= depth) {
-    if (entry->bound == BOUND_EXACT) {
-      return entry->score;
-    } else if (entry->bound == BOUND_LOWER) {
-      alpha = std::max(alpha, entry->score);
-    } else if (entry->bound == BOUND_UPPER) {
-      beta = std::min(beta, entry->score);
+  if (found && entry.depth >= depth) {
+    if (entry.bound == BOUND_EXACT) {
+      return entry.score;
+    } else if (entry.bound == BOUND_LOWER) {
+      alpha = std::max(alpha, entry.score);
+    } else if (entry.bound == BOUND_UPPER) {
+      beta = std::min(beta, entry.score);
     }
 
     if (alpha >= beta) {
-      return entry->score;
+      return entry.score;
     }
   }
 
-  if (entry == nullptr) {
-    entry = &transposition_table_[hash];
-  }
+  entry.score = -kInf;
+  entry.best_move = Move();
 
-  assert(depth <= max_depth_);
-
-  int best_score = -kInf;
-
-  if (position.finished() || depth >= current_max_depth_) {
+  if (position.finished() || depth <= 0) {
     // Evaluate the position, from the perspective of position.red_to_move(),
     // and this is same as NegaMax().
     // Thus, there is no need for sign flip.
-    best_score = Evaluator::Evaluate(position);
+    entry.score = Evaluator::Evaluate(position);
 
     timer->IncrementNodeCounter();
-
   } else {
     for (Move move : position.GenerateMoves()) {
       Position next_position;
@@ -237,14 +226,18 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
       // Therefore, position that is good for next_position.red_to_move() is
       // bad for position.red_to_move().
       const int score = AbsoluteDecrement(
-          -NegaMax(next_position, timer, depth + 1, -beta, -alpha));
+          -NegaMax(next_position, timer, depth - 1, -beta, -alpha));
 
       // The reason why we used AbsoluteDecrement here is to finish the game
       // as early as possible.
       // This not only reduces unexpected behavior to human players, but also
       // works as very good pruning.
 
-      best_score = std::max(best_score, score);
+      if (entry.score < score) {
+        entry.score = score;
+        entry.best_move = move;
+      }
+
       alpha = std::max(alpha, score);
       if (alpha >= beta) {
        break;
@@ -256,19 +249,20 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
     }
   }
 
-  assert(entry != nullptr);
+  entry.depth = depth;
 
-  entry->score = best_score;
-  entry->depth = depth;
-  if (best_score <= original_alpha) {
-    entry->bound = BOUND_UPPER;
-  } else if (best_score >= beta) {
-    entry->bound = BOUND_LOWER;
+  if (entry.score <= original_alpha) {
+    entry.bound = BOUND_UPPER;
+  } else if (entry.score >= beta) {
+    entry.bound = BOUND_LOWER;
   } else {
-    entry->bound = BOUND_EXACT;
+    entry.bound = BOUND_EXACT;
   }
 
-  return best_score;
+  transposition_table_.Store(
+      key, entry.best_move, entry.score, entry.depth, entry.bound);
+
+  return entry.score;
 }
 
 // Instantiation.
