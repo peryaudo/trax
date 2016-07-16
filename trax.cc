@@ -1395,6 +1395,11 @@ void ParseCommentedGames(const std::string& filename,
   games->clear();
 
   std::ifstream ifs(filename);
+  if (ifs.fail()) {
+    std::cerr << "Cannot open commented game file " << filename << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
   std::string line;
   Position position;
   Game game;
@@ -1548,8 +1553,11 @@ void Book::Init(const std::vector<Game>& games, int max_steps) {
 
       Move move = game.moves[i];
 
-      // TODO(tetsui): Register all the rotated moves of this move.
-      books_[position.Hash()].push_back(move);
+      // Only add moves that lead to the win of that player
+      if ((i % 2 ? 1 : -1) == game.winner) {
+        // TODO(tetsui): Register all the rotated moves of this move.
+        books_[position.Hash()].push_back(move);
+      }
 
       Position next_position;
       position.DoMove(move, &next_position);

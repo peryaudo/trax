@@ -131,6 +131,9 @@ void DumpGamesStatistics(const std::vector<Game>& games) {
   int victory_line_count = 0;
   int resigns_count = 0;
 
+  int red_win = 0;
+  int white_win = 0;
+
   double average_moves = 0;
 
   for (const Game& game : games) {
@@ -143,6 +146,12 @@ void DumpGamesStatistics(const std::vector<Game>& games) {
     } else if (game.winning_reason == WINNING_REASON_RESIGN) {
       ++resigns_count;
     }
+
+    if (game.winner == 1) {
+      ++red_win;
+    } else if (game.winner == -1) {
+      ++white_win;
+    }
   }
 
   average_moves /= games.size();
@@ -152,6 +161,8 @@ void DumpGamesStatistics(const std::vector<Game>& games) {
   std::cerr << "  Loop: " << loop_count << std::endl;
   std::cerr << "  Victory Line: " << victory_line_count << std::endl;
   std::cerr << "Average moves: " << average_moves << std::endl;
+  std::cerr << "Red win: " << red_win << std::endl;
+  std::cerr << "White win: " << white_win << std::endl;
 }
 
 void DumpGamesStatisticsCSV(const std::vector<Game>& games) {
