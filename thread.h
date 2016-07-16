@@ -18,6 +18,8 @@ class ThreadedSearcher : public Searcher {
   virtual Move SearchBestMove(const Position& position, Timer *timer);
 
   virtual void DoSearchBestMove(const Position& position,
+                                int thread_index,
+                                int num_threads,
                                 Timer* timer,
                                 Move* best_move, int* best_score,
                                 int* completed_depth) = 0;

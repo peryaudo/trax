@@ -47,7 +47,7 @@ clean:
 	rm -f *.o trax trax_test
 
 lint:
-	cpplint --filter=-build/c++11 *.cc *.h
+	cpplint *.cc *.h
 	cloc *.cc *.h
 
 .PHONY: all test clean lint

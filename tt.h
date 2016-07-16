@@ -3,8 +3,8 @@
 #ifndef TT_H_
 #define TT_H_
 
-#include <mutex>
-#include <thread>
+#include <mutex>   // NOLINT
+#include <thread>  // NOLINT
 
 #include "./trax.h"
 

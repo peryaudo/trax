@@ -13,6 +13,22 @@
 #include "./trax.h"
 
 
+static const std::vector<int> kDepthDensityMatrix[] = {
+  {1},
+  {0, 1},
+  {1, 0},
+  {0, 0, 1, 1},
+  {0, 1, 1, 0},
+  {1, 1, 0, 0},
+  {1, 0, 0, 1},
+  {0, 0, 0, 1, 1, 1},
+  {0, 0, 1, 1, 1, 0},
+  {0, 1, 1, 1, 0, 0},
+  {1, 1, 1, 0, 0, 0},
+  {1, 1, 0, 0, 0, 1},
+  {1, 0, 0, 0, 1, 1}
+};
+
 Move RandomSearcher::SearchBestMove(const Position& position, Timer* timer) {
   std::vector<Move> legal_moves;
   for (Move move : position.GenerateMoves()) {
