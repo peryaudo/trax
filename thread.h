@@ -9,6 +9,8 @@
 
 #include "./trax.h"
 
+class ThreadedSearcher;
+
 class SearchThread {
  public:
   SearchThread()
@@ -19,9 +21,11 @@ class SearchThread {
       , thread_index_(0)
       , num_threads_(0)
       , root_position_(nullptr)
+      , timer_(nullptr)
       , best_move_()
       , best_score_(-kInf)
       , completed_depth_(0)
+      , searcher_(nullptr)
       , thread_(&SearchThread::Loop, this) {
   }
 
@@ -32,12 +36,32 @@ class SearchThread {
   SearchThread(SearchThread&) = delete;
   void operator=(SearchThread) = delete;
 
+  void StartSearch(const Position& position, Timer *timer);
+
+  void Wait();
+
+  Move best_move() const {
+    return best_move_;
+  }
+
+  int best_score() const {
+    return best_score_;
+  }
+
+  int completed_depth() const {
+    return completed_depth_;
+  }
+
   void set_thread_index(int thread_index) {
     thread_index_ = thread_index;
   }
 
   void set_num_threads(int num_threads) {
     num_threads_ = num_threads;
+  }
+
+  void set_searcher(ThreadedSearcher *searcher) {
+    searcher_ = searcher;
   }
 
  private:
@@ -52,10 +76,12 @@ class SearchThread {
   int thread_index_;
   int num_threads_;
 
-  Position *root_position_;
+  const Position *root_position_;
+  Timer *timer_;
   Move best_move_;
   int best_score_;
   int completed_depth_;
+  ThreadedSearcher *searcher_;
 
   std::thread thread_;
 };
