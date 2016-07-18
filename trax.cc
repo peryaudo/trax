@@ -1508,14 +1508,26 @@ int Game::CountMatchingMoves(Searcher *searcher) {
   for (Move actual_move : moves) {
     Timer timer(FLAGS_thinking_time_ms - 100);
     Move best_move = searcher->SearchBestMove(position, &timer);
-    if (best_move == actual_move) {
-      ++match_count;
+
+    Position best_position;
+    if (!position.DoMove(best_move, &best_position)) {
+      std::cerr << "illegal move returned by searcher" << std::endl;
+      exit(EXIT_FAILURE);
     }
 
     Position next_position;
     if (!position.DoMove(actual_move, &next_position)) {
       std::cerr << "illegal move in game" << std::endl;
       exit(EXIT_FAILURE);
+    }
+
+    // Count different moves that result into same position as same.
+    // This significantly improves reliability of prediction.
+    // Pointed out by Nakahara senpai. Thanks!
+
+    // if (best_move == actual_move) {
+    if (best_position.Hash() == next_position.Hash()) {
+       ++match_count;
     }
 
     position.Swap(&next_position);
