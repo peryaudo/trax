@@ -30,6 +30,12 @@ class SearchThread {
   }
 
   ~SearchThread() {
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      is_quit_ = true;
+      is_searching_ = false;
+    }
+    condition_.notify_all();
     thread_.join();
   }
 
@@ -65,8 +71,7 @@ class SearchThread {
   }
 
  private:
-  void Loop() {
-  }
+  void Loop();
 
   bool is_quit_;
   bool is_searching_;
