@@ -13,22 +13,6 @@
 #include "./trax.h"
 
 
-static const std::vector<int> kDepthDensityMatrix[] = {
-  {1},
-  {0, 1},
-  {1, 0},
-  {0, 0, 1, 1},
-  {0, 1, 1, 0},
-  {1, 1, 0, 0},
-  {1, 0, 0, 1},
-  {0, 0, 0, 1, 1, 1},
-  {0, 0, 1, 1, 1, 0},
-  {0, 1, 1, 1, 0, 0},
-  {1, 1, 1, 0, 0, 0},
-  {1, 1, 0, 0, 0, 1},
-  {1, 0, 0, 0, 1, 1}
-};
-
 Move RandomSearcher::SearchBestMove(const Position& position, Timer* timer) {
   std::vector<Move> legal_moves;
   for (Move move : position.GenerateMoves()) {
@@ -281,6 +265,188 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
   return entry.score;
 }
 
+template<typename Evaluator>
+Move ThreadedIterativeSearcher<Evaluator>::SearchBestMove(
+    const Position& position, Timer* timer) {
+  assert(!position.finished());
+
+  Move book_move;
+  if (book_.Select(position, &book_move)) {
+    return book_move;
+  }
+
+  transposition_table_.NewSearch();
+
+  return ThreadedSearcher::SearchBestMove(position, timer);
+}
+
+static const std::vector<int> kDepthDensityMatrix[] = {
+  {1},
+  {0, 1},
+  {1, 0},
+  {0, 0, 1, 1},
+  {0, 1, 1, 0},
+  {1, 1, 0, 0},
+  {1, 0, 0, 1},
+  {0, 0, 0, 1, 1, 1},
+  {0, 0, 1, 1, 1, 0},
+  {0, 1, 1, 1, 0, 0},
+  {1, 1, 1, 0, 0, 0},
+  {1, 1, 0, 0, 0, 1},
+  {1, 0, 0, 0, 1, 1}
+};
+
+template<typename Evaluator>
+void ThreadedIterativeSearcher<Evaluator>::DoSearchBestMove(
+    const Position& position, int thread_index, int num_threads,
+    Timer* timer, Move* best_move, int* best_score, int* completed_depth) {
+  std::vector<Move> possible_moves = position.GenerateMoves();
+
+  for (int current_depth = 0; ; ++current_depth) {
+    // Skip different depths for each thread using density matrix.
+    auto& row = kDepthDensityMatrix[thread_index];
+    if (!row[current_depth % row.size()]) {
+      continue;
+    }
+
+    *best_score = -kInf;
+    std::vector<ScoredMove> moves;
+
+    bool aborted = false;
+
+    for (Move move : possible_moves) {
+      Position next_position;
+      if (!position.DoMove(move, &next_position)) {
+        // This is illegal move.
+        continue;
+      }
+
+      // next_position.red_to_move() == !position.red_to_move() holds.
+      // NegaMax() evaluates from the perspective of next_position.
+      // Therefore, position that is good for next_position.red_to_move() is
+      // bad for position.red_to_move().
+      const int score = -NegaMax(next_position, timer, current_depth);
+
+      *best_score = std::max(*best_score, score);
+      moves.emplace_back(score, move);
+
+      if (current_depth > 0 && timer->CheckTimeout()) {
+        aborted = true;
+        break;
+      }
+    }
+
+    if (aborted) {
+      // Drop the result of that iteration.
+      break;
+    }
+
+    std::vector<Move> best_moves;
+    for (ScoredMove& move : moves) {
+      if (move.score == *best_score) {
+        best_moves.push_back(move);
+      }
+    }
+
+    assert(best_moves.size() > 0);
+    *best_move = best_moves[Random() % best_moves.size()];
+
+    timer->set_completed_depth(current_depth);
+    *completed_depth = current_depth;
+  }
+}
+
+// Score the move from the perspective of position.red_to_move().
+// Larger is better.
+template<typename Evaluator>
+int ThreadedIterativeSearcher<Evaluator>::NegaMax(
+    const Position& position, Timer* timer, int depth, int alpha, int beta) {
+  const int original_alpha = alpha;
+
+  TranspositionTable::Entry entry;
+
+  // At that point of time, we don't care about conflicts.
+  const PositionHash key = position.Hash();
+
+  const bool found = transposition_table_.Probe(key, &entry);
+
+  if (found && entry.depth >= depth) {
+    if (entry.bound == BOUND_EXACT) {
+      return entry.score;
+    } else if (entry.bound == BOUND_LOWER) {
+      alpha = std::max(alpha, entry.score);
+    } else if (entry.bound == BOUND_UPPER) {
+      beta = std::min(beta, entry.score);
+    }
+
+    if (alpha >= beta) {
+      return entry.score;
+    }
+  }
+
+  entry.score = -kInf;
+  entry.best_move = Move();
+
+  if (position.finished() || depth <= 0) {
+    // Evaluate the position, from the perspective of position.red_to_move(),
+    // and this is same as NegaMax().
+    // Thus, there is no need for sign flip.
+    entry.score = Evaluator::Evaluate(position);
+
+    timer->IncrementNodeCounter();
+  } else {
+    for (Move move : position.GenerateMoves()) {
+      Position next_position;
+      if (!position.DoMove(move, &next_position)) {
+        // This is illegal move.
+        continue;
+      }
+
+      // next_position.red_to_move() == !position.red_to_move() holds.
+      // NegaMax() evaluates from the perspective of next_position.
+      // Therefore, position that is good for next_position.red_to_move() is
+      // bad for position.red_to_move().
+      const int score = AbsoluteDecrement(
+          -NegaMax(next_position, timer, depth - 1, -beta, -alpha));
+
+      // The reason why we used AbsoluteDecrement here is to finish the game
+      // as early as possible.
+      // This not only reduces unexpected behavior to human players, but also
+      // works as very good pruning.
+
+      if (entry.score < score) {
+        entry.score = score;
+        entry.best_move = move;
+      }
+
+      alpha = std::max(alpha, score);
+      if (alpha >= beta) {
+       break;
+      }
+
+      if (timer->CheckTimeout()) {
+        return 0;
+      }
+    }
+  }
+
+  entry.depth = depth;
+
+  if (entry.score <= original_alpha) {
+    entry.bound = BOUND_UPPER;
+  } else if (entry.score >= beta) {
+    entry.bound = BOUND_LOWER;
+  } else {
+    entry.bound = BOUND_EXACT;
+  }
+
+  transposition_table_.Store(
+      key, entry.best_move, entry.score, entry.depth, entry.bound);
+
+  return entry.score;
+}
+
+
 // Instantiation.
 
 #define INSTANTIATE_TEMPLATES_FOR(CLASS) \
@@ -289,7 +455,15 @@ int NegaMaxSearcher<Evaluator>::NegaMax(
   template Move NegaMaxSearcher<CLASS>::SearchBestMove( \
       const Position& position, Timer* timer); \
   template int NegaMaxSearcher<CLASS>::NegaMax( \
-      const Position& position, Timer* timer, int depth, int alpha, int beta);
+      const Position& position, Timer* timer, \
+      int depth, int alpha, int beta); \
+  template Move ThreadedIterativeSearcher<CLASS>::SearchBestMove( \
+      const Position& position, Timer* timer); \
+  template void ThreadedIterativeSearcher<CLASS>::DoSearchBestMove( \
+      const Position& position, int thread_index, int num_threads, \
+      Timer* timer, Move* best_move, int* best_score, int* completed_depth); \
+  template int ThreadedIterativeSearcher<CLASS>::NegaMax( \
+      const Position& position, Timer* timer, int depth, int alpha, int beta)
 
 INSTANTIATE_TEMPLATES_FOR(LeafAverageEvaluator);
 INSTANTIATE_TEMPLATES_FOR(MonteCarloEvaluator);

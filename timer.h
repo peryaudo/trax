@@ -14,6 +14,8 @@
 #endif
 
 #include <cstdint>
+#include <mutex>   // NOLINT
+#include <thread>  // NOLINT
 
 static const uint64_t kNanosecondsToMilliseconds = 1000000;
 static const uint64_t kNanosecondsToSeconds = 1000000000;
@@ -26,13 +28,15 @@ class Timer {
   explicit Timer(int timeout_ms = -1)
       : timeout_ms_(timeout_ms)
       , node_count_(0)
-      , completed_depth_(0) {
+      , completed_depth_(0)
+      , mutex_() {
     GetAccurateCurrentTime(&begin_time_);
     GetAccurateCurrentTime(&current_time_);
   }
 
   // Return true if the timer is expired.
   bool CheckTimeout() {
+    std::lock_guard<std::mutex> lock(mutex_);
     GetAccurateCurrentTime(&current_time_);
 
     if (timeout_ms_ < 0) {
@@ -49,6 +53,7 @@ class Timer {
 
   // Should be called from the bottom of the search.
   void IncrementNodeCounter() {
+    std::lock_guard<std::mutex> lock(mutex_);
     ++node_count_;
   }
 
@@ -73,7 +78,10 @@ class Timer {
   int completed_depth() { return completed_depth_; }
 
   void set_completed_depth(int completed_depth) {
-    completed_depth_ = completed_depth;
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (completed_depth_ < completed_depth) {
+      completed_depth_ = completed_depth;
+    }
   }
 
  private:
@@ -118,6 +126,7 @@ class Timer {
   TimeType current_time_;
   uint64_t node_count_;
   int completed_depth_;
+  std::mutex mutex_;
 };
 
 #endif  // TIMER_H_

@@ -8,13 +8,13 @@ LDFLAGS = -O3 -lpthread
 # CXXFLAGS = -std=c++11 -Wall -Wno-unused-const-variable -Wno-tautological-constant-out-of-range-compare -Ivendor/googletest -Ivendor/gflags -O1 -g -fsanitize=address #-pg -DNDEBUG
 # LDFLAGS = -O1 -fsanitize=address -fno-omit-frame-pointer -lpthread #-pg -DNDEBUG
 
-trax: main.o trax.o search.o gflags.o gflags_completions.o gflags_reporting.o perft.o tt.o trax.o
+trax: main.o trax.o search.o gflags.o gflags_completions.o gflags_reporting.o perft.o tt.o thread.o trax.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 test: trax_test
 	./trax_test
 
-trax_test: trax_test.o trax.o search.o gtest-all.o gflags.o gflags_completions.o gflags_reporting.o perft.o tt.o trax.o
+trax_test: trax_test.o trax.o search.o gtest-all.o gflags.o gflags_completions.o gflags_reporting.o perft.o tt.o thread.o trax.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 trax_test.o: trax_test.cc trax.h timer.h search.h tt.h thread.h

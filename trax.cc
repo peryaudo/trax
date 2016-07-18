@@ -10,9 +10,11 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <mutex>   // NOLINT
 #include <set>
 #include <sstream>
 #include <string>
+#include <thread>  // NOLINT
 #include <utility>
 
 #include "./timer.h"
@@ -37,12 +39,13 @@ DEFINE_int32(thinking_time_ms, 1000,
 
 
 uint32_t Random() {
-  // TODO(tetsui): Make it thread safe and remove static.
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
   static uint32_t w = 88675123;
+  static std::mutex mutex;
   uint32_t t;
+  std::lock_guard<std::mutex> lock(mutex);
 
   t = x ^ (x << 11);
   x = y; y = z; z = w;

@@ -123,6 +123,10 @@ Searcher *GetSearcherFromName(const std::string& name) {
     return new NegaMaxSearcher<AdvancedFactorEvaluator>(10, true);
   } else if (name == "iter10-lfe") {
     return new NegaMaxSearcher<LoopFactorEvaluator>(10, true);
+  } else if (name == "itersmp-fe") {
+    return new ThreadedIterativeSearcher<FactorEvaluator>();
+  } else if (name == "itersmp-la") {
+    return new ThreadedIterativeSearcher<LeafAverageEvaluator>();
   } else {
     std::cerr << "cannot find searcher with name " << name << std::endl;
     exit(EXIT_FAILURE);

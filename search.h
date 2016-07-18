@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "./thread.h"
 #include "./timer.h"
 #include "./trax.h"
 #include "./tt.h"
@@ -79,6 +80,39 @@ class NegaMaxSearcher : public Searcher {
   int max_depth_;
   bool iterative_;
   bool use_book_;
+
+  TranspositionTable transposition_table_;
+  Book book_;
+};
+
+template <typename Evaluator>
+class ThreadedIterativeSearcher : public ThreadedSearcher {
+ public:
+  ThreadedIterativeSearcher() : ThreadedSearcher() {
+    std::vector<Game> games;
+    ParseCommentedGames("vendor/commented/Comment.txt", &games);
+    book_.Init(games);
+  }
+
+  virtual Move SearchBestMove(const Position& position, Timer *timer);
+
+  virtual void DoSearchBestMove(const Position& position,
+                                int thread_index,
+                                int num_threads,
+                                Timer* timer,
+                                Move* best_move, int* best_score,
+                                int* completed_depth);
+
+  virtual std::string name() {
+    std::stringstream name;
+    name << "ThreadedIterativeSearcher<" << Evaluator::name()
+      << ">";
+    return name.str();
+  }
+
+ private:
+  int NegaMax(const Position& position, Timer *timer,
+              int depth, int alpha = -kInf, int beta = kInf);
 
   TranspositionTable transposition_table_;
   Book book_;
