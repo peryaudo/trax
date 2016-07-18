@@ -203,6 +203,7 @@ struct Line {
   Line()
       : is_red(false)
       , endpoint_distance(0)
+      , manhattan_distance(0)
       , is_inner(false)
       , endpoint_index_a(0)
       , endpoint_index_b(0) {
@@ -239,6 +240,7 @@ struct Line {
   bool is_red;
   int edge_distances[2];
   int endpoint_distance;
+  int manhattan_distance;
 
   // These are added for LoopFactorEvaluator.
 

@@ -1178,6 +1178,8 @@ Line::Line(const std::pair<int, int>& endpoint_a,
     std::min(
         upper_index - lower_index,
         lower_index + total_index - upper_index);
+  manhattan_distance = abs(endpoint_a.first - endpoint_b.first) +
+    abs(endpoint_a.second - endpoint_b.second);
 }
 
 void StartTraxClient(Searcher* searcher) {

@@ -333,6 +333,7 @@ class FactorEvaluator {
     int endpoint_factor = 0;
     for (Line& line : lines) {
       int endpoint = unit / (5 + line.endpoint_distance);
+      // int endpoint = unit / (5 + line.manhattan_distance);
       if (!line.is_red) {
         endpoint *= -1;
       }
