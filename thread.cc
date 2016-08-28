@@ -40,11 +40,13 @@ void SearchThread::Wait() {
 
 void SearchThread::Loop() {
   while (!is_quit_) {
-    std::unique_lock<std::mutex> lock(mutex_);
+    {
+      std::unique_lock<std::mutex> lock(mutex_);
 
-    // This may help you understand that lambda:
-    //   https://cpplover.blogspot.jp/2010/06/lambda_15.html
-    condition_.wait(lock, [=]{ return is_searching_ || is_quit_; });
+      // This may help you understand that lambda:
+      //   https://cpplover.blogspot.jp/2010/06/lambda_15.html
+      condition_.wait(lock, [=]{ return is_searching_ || is_quit_; });
+    }
 
     if (is_searching_ && !is_quit_) {
       // Perform actual search.
