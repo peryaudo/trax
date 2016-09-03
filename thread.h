@@ -5,6 +5,7 @@
 
 #include <mutex>   // NOLINT
 #include <thread>  // NOLINT
+#include <condition_variable>  // NOLINT
 #include <vector>
 
 #include "./trax.h"
