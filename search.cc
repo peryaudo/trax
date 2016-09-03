@@ -304,10 +304,10 @@ void ThreadedIterativeSearcher<Evaluator>::DoSearchBestMove(
 
   for (int current_depth = 0; ; ++current_depth) {
     // Skip different depths for each thread using density matrix.
-    auto& row = kDepthDensityMatrix[thread_index];
-    if (!row[current_depth % row.size()]) {
-      continue;
-    }
+    // auto& row = kDepthDensityMatrix[thread_index];
+    // if (!row[current_depth % row.size()]) {
+    //   continue;
+    // }
 
     *best_score = -kInf;
     std::vector<ScoredMove> moves;

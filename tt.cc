@@ -5,7 +5,7 @@
 #include <gflags/gflags.h>
 
 DEFINE_int32(tt_size_lg,
-             23,
+             24,
              "Logarithmic transposition table size. "
              "2^tt_size_lg * sizeof(one tt cluster) will be allocated.");
 
@@ -23,9 +23,9 @@ TranspositionTable::~TranspositionTable() {
 
 bool TranspositionTable::Probe(PositionHash key,
                                TranspositionTable::Entry *entry) const {
-  std::lock_guard<std::mutex> lock(mutex_);
   const Cluster& cluster = table_[key & mask_];
   for (int i = 0; i < kClusterSize; ++i) {
+    // std::lock_guard<std::mutex> lock(mutex_);
     if (cluster.entries[i].bound != BOUND_NONE &&
         cluster.entries[i].key == key) {
       *entry = cluster.entries[i];
@@ -37,7 +37,6 @@ bool TranspositionTable::Probe(PositionHash key,
 
 void TranspositionTable::Store(PositionHash key, Move best_move,
                                int score, int depth, Bound bound) {
-  std::lock_guard<std::mutex> lock(mutex_);
   Cluster& cluster = table_[key & mask_];
   Entry *entry = nullptr;
 
@@ -64,6 +63,7 @@ void TranspositionTable::Store(PositionHash key, Move best_move,
 
   assert(entry != nullptr);
   assert(bound != BOUND_NONE);
+  // std::lock_guard<std::mutex> lock(mutex_);
   entry->generation = generation_;
   entry->key = key;
   entry->best_move = best_move;

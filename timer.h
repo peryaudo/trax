@@ -36,7 +36,7 @@ class Timer {
 
   // Return true if the timer is expired.
   bool CheckTimeout() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    // std::lock_guard<std::mutex> lock(mutex_);
     GetAccurateCurrentTime(&current_time_);
 
     if (timeout_ms_ < 0) {
@@ -53,7 +53,7 @@ class Timer {
 
   // Should be called from the bottom of the search.
   void IncrementNodeCounter() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    // std::lock_guard<std::mutex> lock(mutex_);
     ++node_count_;
   }
 

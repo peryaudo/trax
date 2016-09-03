@@ -84,11 +84,18 @@ Move ThreadedSearcher::SearchBestMove(const Position& position, Timer *timer) {
   // Select the thread with the best search depth and the best score.
   int best_index = 0;
   for (int i = 0; i < threads_.size(); ++i) {
+    /*
+    std::cerr << "thread " << i << ": depth " << threads_[i].completed_depth()
+      << " score: " << threads_[i].best_score() << std::endl;
+      */
     if (threads_[i].completed_depth() > threads_[best_index].completed_depth()
-        && threads_[i].best_score() > threads_[best_index].best_score()) {
+        || (
+          threads_[i].completed_depth() == threads_[best_index].completed_depth()
+          && threads_[i].best_score() >= threads_[best_index].best_score())) {
       best_index = i;
     }
   }
+
 
   // Return the best move of that thread.
   return threads_[best_index].best_move();
