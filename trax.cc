@@ -31,7 +31,7 @@ DEFINE_bool(enable_strict_timer, true,
 
 DEFINE_bool(trax8x8, false, "Run as 8x8 Trax.");
 
-DEFINE_string(player_id, "PR",
+DEFINE_string(player_id, "PE",
             "Contest issued player ID.");
 
 DEFINE_int32(thinking_time_ms, 1000,
