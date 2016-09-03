@@ -424,7 +424,7 @@ int ThreadedIterativeSearcher<Evaluator>::NegaMax(
        break;
       }
 
-      if (timer->CheckTimeout()) {
+      if (timer->CheckTimeout(/* allow_false_negative = */true)) {
         return 0;
       }
     }

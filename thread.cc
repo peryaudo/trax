@@ -89,9 +89,9 @@ Move ThreadedSearcher::SearchBestMove(const Position& position, Timer *timer) {
       << " score: " << threads_[i].best_score() << std::endl;
       */
     if (threads_[i].completed_depth() > threads_[best_index].completed_depth()
-        || (
-          threads_[i].completed_depth() == threads_[best_index].completed_depth()
-          && threads_[i].best_score() >= threads_[best_index].best_score())) {
+        ||
+        (threads_[i].completed_depth() == threads_[best_index].completed_depth()
+         && threads_[i].best_score() >= threads_[best_index].best_score())) {
       best_index = i;
     }
   }

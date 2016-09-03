@@ -35,7 +35,12 @@ class Timer {
   }
 
   // Return true if the timer is expired.
-  bool CheckTimeout() {
+  bool CheckTimeout(bool allow_false_negative = false) {
+    if (allow_false_negative) {
+      if (node_count_ % 100 > 0) {
+        return false;
+      }
+    }
     // std::lock_guard<std::mutex> lock(mutex_);
     GetAccurateCurrentTime(&current_time_);
 
