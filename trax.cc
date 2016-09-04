@@ -528,6 +528,7 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
     }
   }
 
+#if 0
   // Map endpoints with clockwise index to the line index by the colors.
   std::map<int, int> endpoints_by_color[2];
   for (int i = 0; i < lines->size(); ++i) {
@@ -642,6 +643,7 @@ void Position::EnumerateLines(std::vector<Line> *lines) const {
       swap(it_a, it_b);
     }
   }
+#endif
 }
 
 void Position::Dump() const {
@@ -1178,8 +1180,10 @@ Line::Line(const std::pair<int, int>& endpoint_a,
     std::min(
         upper_index - lower_index,
         lower_index + total_index - upper_index);
+#if 0
   manhattan_distance = abs(endpoint_a.first - endpoint_b.first) +
     abs(endpoint_a.second - endpoint_b.second);
+#endif
 }
 
 void StartTraxClient(Searcher* searcher) {

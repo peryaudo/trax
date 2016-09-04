@@ -335,6 +335,7 @@ TEST(PositionTest, EnumerateLines7) {
   ASSERT_EQ(0, white_mates);
 }
 
+#if 0
 TEST(PositionTest, EnumreateLinesLoop1) {
   Position position;
   SupplyNotations({"@0/", "B1+", "C1/"}, &position);
@@ -379,6 +380,7 @@ TEST(PositionTest, EnumreateLinesLoop2) {
 
   ASSERT_EQ(2, inner_count);
 }
+#endif
 
 TEST(PerftTest, PerftReturnsCorrectNumberIn4) {
   Timer timer(-1);
