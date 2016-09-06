@@ -5,7 +5,7 @@
 #include <gflags/gflags.h>
 
 DEFINE_int32(tt_size_lg,
-             24,
+             23,
              "Logarithmic transposition table size. "
              "2^tt_size_lg * sizeof(one tt cluster) will be allocated.");
 
