@@ -45,6 +45,41 @@ TEST(MoveTest, PutInitialPiece) {
   ASSERT_EQ(-1, move.y);
 }
 
+TEST(MoveTest, UsualAlphabetEncode) {
+  Move move(0, 0, PIECE_RWWR);
+  ASSERT_EQ("A1/", move.notation());
+}
+
+TEST(MoveTest, LargeAlphabetEncode) {
+  Move move(79, 80, PIECE_RWWR);
+  ASSERT_EQ("CB81/", move.notation());
+
+  Move move2(702, 80, PIECE_RWWR);
+  ASSERT_EQ("AAA81/", move2.notation());
+}
+
+TEST(MoveTest, LargeAlphabetDecode) {
+  std::vector<std::string> notations =
+      {"@0/", "B1+", "B2/", "C2+", "C3/", "D3+", "D4/", "E4+", "E5/", "F5+",
+      "F6/",
+      "G6+", "G7/", "H7+", "H8/", "I8+", "I9/", "J9+", "J10/", "K10+", "K11/",
+      "L11+", "L12/", "M12+", "M13/", "N13+", "N14/", "O14+", "O15/", "P15+",
+      "P16/", "Q16+", "Q17/", "R17+", "R18/", "S18+", "S19/", "T19+", "T20/",
+      "U20+", "U21/", "V21+", "V22/", "W22+", "W23/", "X23+", "X24/", "Y24+",
+      "Y25/", "Z25+", "Z26/", "AA26+"};
+
+  Position position;
+  for (const std::string& notation : notations) {
+    Position next_position;
+    Move move;
+    ASSERT_TRUE(move.Parse(notation, position));
+    ASSERT_EQ(notation, move.notation());
+    ASSERT_TRUE(position.DoMove(move, &next_position));
+    position.Swap(&next_position);
+  }
+  position.Dump();
+}
+
 TEST(PositionTest, TriggerForcedPlay) {
   Position position;
   SupplyNotations({"@0+", "B1+", "A2\\"}, &position);

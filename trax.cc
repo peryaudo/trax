@@ -23,9 +23,6 @@
 DEFINE_bool(enable_pretty_dump, true,
             "Position::Dump() will return pretty colored boards.");
 
-DEFINE_bool(enable_strict_notation, true,
-            "Exit immediately if Trax::notation() fail.");
-
 DEFINE_bool(enable_strict_timer, true,
             "Exit immediately if the searcher violates time constraint.");
 
@@ -233,11 +230,19 @@ bool Move::Parse(const std::string& trax_notation,
 
   if (*it == '@') {
     x = -1;
+    ++it;
   } else {
-    x = static_cast<int>(*it - 'A');
+    // This way of encoding is called Bijective base-26.
+    // http://stackoverflow.com/a/1004651/6583019
+    // Specified in: http://fpt.massey.ac.nz/design_competition_rules.asp
+    x = 0;
+    while (it != trax_notation.end() && 'A' <= *it && *it <= 'Z') {
+      x *= static_cast<int>('Z' - 'A') + 1;
+      x += static_cast<int>(*it - 'A') + 1;
+      ++it;
+    }
+    --x;
   }
-
-  ++it;
 
   if (it == trax_notation.end()) {
     return false;
@@ -300,15 +305,18 @@ std::string Move::notation() const {
   if (x == -1) {
     trax_notation << '@';
   } else {
-    if (static_cast<char>(x + 'A') >= 'Z') {
-      if (FLAGS_enable_strict_notation) {
-        std::cerr << "cannot encode trax notation" << std::endl;
-        exit(EXIT_FAILURE);
-      } else {
-        return "(N/A)";
-      }
+    // This way of encoding is called Bijective base-26.
+    // https://github.com/alexfeseto/hexavigesimal
+    // Specified in: http://fpt.massey.ac.nz/design_competition_rules.asp
+    std::string columns;
+    int num = x + 1;
+    while (num > 0) {
+      --num;
+      columns += static_cast<char>(num % ('Z' - 'A' + 1) + 'A');
+      num /= 'Z' - 'A' + 1;
     }
-    trax_notation << static_cast<char>(x + 'A');
+    std::reverse(columns.begin(), columns.end());
+    trax_notation << columns;
   }
 
   trax_notation << y + 1;
@@ -1188,12 +1196,6 @@ Line::Line(const std::pair<int, int>& endpoint_a,
 
 void StartTraxClient(Searcher* searcher) {
   assert(searcher != nullptr);
-
-  if (!FLAGS_enable_strict_notation) {
-    std::cerr
-      << "You must enable strict notation for real game." << std::endl;
-    exit(EXIT_FAILURE);
-  }
 
   std::cerr << "Searcher: " << searcher->name() << std::endl;
 
